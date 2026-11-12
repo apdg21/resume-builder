@@ -1,0 +1,93 @@
+[
+  { "path": "fullName", "label": "Full name", "type": "text", "section": "Basics", "required": true },
+  { "path": "jobTitle", "label": "Job title / headline", "type": "text", "section": "Basics" },
+  { "path": "profileImage", "label": "Profile photo", "type": "image", "section": "Basics" },
+  {
+    "path": "heroImage", "label": "Hero image (leave empty to keep the design’s photo)", "type": "image", "section": "Basics",
+    "showWhenMapped": true
+  },
+  { "path": "summary", "label": "Professional summary", "type": "textarea", "section": "Basics" },
+
+  {
+    "path": "stats", "label": "Highlight cards", "type": "repeatable", "section": "Basics",
+    "showWhenMapped": true,
+    "itemFields": [
+      { "path": "value", "label": "Value (e.g. 8+)", "type": "text" },
+      { "path": "label", "label": "Label (e.g. Years experience)", "type": "text" }
+    ]
+  },
+
+  { "path": "contact.email", "label": "Email", "type": "text", "section": "Contact" },
+  { "path": "contact.phone", "label": "Phone", "type": "text", "section": "Contact" },
+  { "path": "contact.location", "label": "Location", "type": "text", "section": "Contact" },
+  { "path": "contact.website", "label": "Website", "type": "text", "section": "Contact" },
+
+  {
+    "path": "socialLinks", "label": "Social links", "type": "repeatable", "section": "Contact",
+    "itemFields": [
+      { "path": "platform", "label": "Platform (e.g. LinkedIn)", "type": "text" },
+      { "path": "url", "label": "URL", "type": "text" }
+    ]
+  },
+
+  {
+    "path": "skills", "label": "Skills", "type": "repeatable", "section": "Skills",
+    "itemFields": [
+      { "path": "name", "label": "Skill", "type": "text" },
+      { "path": "level", "label": "Level 0-100 (optional)", "type": "number" },
+      { "path": "category", "label": "Group (optional, becomes a column)", "type": "text" }
+    ]
+  },
+
+  {
+    "path": "languages", "label": "Languages", "type": "repeatable", "section": "Languages",
+    "itemFields": [
+      { "path": "name", "label": "Language", "type": "text" },
+      { "path": "level", "label": "Level 0-100 (optional)", "type": "number" }
+    ]
+  },
+
+  {
+    "path": "experience", "label": "Work experience", "type": "repeatable", "section": "Experience",
+    "itemFields": [
+      { "path": "jobTitle", "label": "Job title", "type": "text" },
+      { "path": "company", "label": "Company", "type": "text" },
+      { "path": "location", "label": "Location (optional)", "type": "text" },
+      { "path": "startDate", "label": "Start date", "type": "text" },
+      { "path": "endDate", "label": "End date (or 'Present')", "type": "text" },
+      { "path": "bullets", "label": "Highlights (one per line)", "type": "textarea-lines" }
+    ]
+  },
+
+  {
+    "path": "education", "label": "Education", "type": "repeatable", "section": "Education",
+    "itemFields": [
+      { "path": "degree", "label": "Degree", "type": "text" },
+      { "path": "institution", "label": "Institution", "type": "text" },
+      { "path": "startDate", "label": "Start date", "type": "text" },
+      { "path": "endDate", "label": "End date", "type": "text" },
+      { "path": "description", "label": "Description (optional)", "type": "text" }
+    ]
+  },
+
+  {
+    "path": "projects", "label": "Projects", "type": "repeatable", "section": "Projects",
+    "itemFields": [
+      { "path": "name", "label": "Project name", "type": "text" },
+      { "path": "description", "label": "Description", "type": "textarea" },
+      { "path": "liveUrl", "label": "Live URL (optional)", "type": "text" },
+      { "path": "codeUrl", "label": "Code URL (optional)", "type": "text" }
+    ]
+  },
+
+  {
+    "path": "references", "label": "References", "type": "repeatable", "section": "References",
+    "itemFields": [
+      { "path": "name", "label": "Name", "type": "text" },
+      { "path": "title", "label": "Title / relationship", "type": "text" },
+      { "path": "company", "label": "Company (optional)", "type": "text" },
+      { "path": "phone", "label": "Phone (optional)", "type": "text" },
+      { "path": "email", "label": "Email (optional)", "type": "text" }
+    ]
+  }
+]

@@ -1,0 +1,1688 @@
+{
+  "style1": {
+    "scalar": {
+      "fullName": "name",
+      "jobTitle": "title",
+      "summary": "about",
+      "profileImage": "profile.image",
+      "contact.email": "contact.email",
+      "contact.phone": "contact.phone",
+      "contact.location": "contact.address"
+    },
+    "arrays": {
+      "skills": {
+        "targetPath": "skills",
+        "itemMap": {
+          "name": "name",
+          "level": "level"
+        }
+      },
+      "languages": {
+        "targetPath": "languages",
+        "itemMap": {
+          "name": "name",
+          "level": "level"
+        }
+      },
+      "socialLinks": {
+        "targetPath": "footer.socials",
+        "itemMap": {
+          "platform": "name",
+          "url": "url"
+        },
+        "inheritIconFrom": "footer.socials"
+      },
+      "experience": {
+        "targetPath": "experience",
+        "itemMap": {
+          "jobTitle": "role",
+          "company": "company",
+          "startDate": "start",
+          "endDate": "end",
+          "bullets": "details"
+        }
+      },
+      "education": {
+        "targetPath": "education",
+        "itemMap": {
+          "degree": "degree",
+          "institution": "institution",
+          "startDate": "start",
+          "endDate": "end",
+          "description": "description"
+        }
+      },
+      "projects": {
+        "targetPath": "projects",
+        "itemMap": {
+          "name": "name",
+          "description": "description",
+          "liveUrl": "liveUrl",
+          "codeUrl": "codeUrl"
+        }
+      },
+      "references": {
+        "targetPath": "references",
+        "itemMap": {
+          "name": "name",
+          "title": "role",
+          "phone": "phone",
+          "email": "email"
+        }
+      }
+    },
+    "clear": [
+      "profile.eyebrow"
+    ],
+    "clearIfBlank": {
+      "socialLinks": [
+        "footer.socials"
+      ]
+    }
+  },
+  "style2": {
+    "_note": "skills/languages in this template are plain string arrays, not objects — see scalarFromItem below.",
+    "scalar": {
+      "fullName": "name",
+      "jobTitle": "title",
+      "summary": "about",
+      "profileImage": "profile.image",
+      "contact.email": "contact.email",
+      "contact.phone": "contact.phone",
+      "contact.location": "contact.address"
+    },
+    "arrays": {
+      "skills": {
+        "targetPath": "skills",
+        "scalarFromItem": "name"
+      },
+      "languages": {
+        "targetPath": "languages",
+        "scalarFromItem": "name"
+      },
+      "socialLinks": {
+        "targetPath": "footer.socials",
+        "itemMap": {
+          "platform": "name",
+          "url": "url"
+        },
+        "inheritIconFrom": "footer.socials"
+      },
+      "experience": {
+        "targetPath": "experience",
+        "itemMap": {
+          "jobTitle": "role",
+          "company": "company",
+          "startDate": "start",
+          "endDate": "end",
+          "bullets": "details"
+        }
+      },
+      "education": {
+        "targetPath": "education",
+        "itemMap": {
+          "degree": "degree",
+          "institution": "institution",
+          "startDate": "start",
+          "endDate": "end",
+          "description": "description"
+        }
+      },
+      "references": {
+        "targetPath": "references",
+        "itemMap": {
+          "name": "name",
+          "title": "role",
+          "phone": "phone",
+          "email": "email"
+        }
+      }
+    },
+    "clear": [
+      "profile.eyebrow"
+    ],
+    "clearIfBlank": {
+      "socialLinks": [
+        "footer.socials"
+      ]
+    }
+  },
+  "style3": {
+    "_note": "structurally identical to style1, plus a contact.website field.",
+    "scalar": {
+      "fullName": "name",
+      "jobTitle": "title",
+      "summary": "about",
+      "profileImage": "profile.image",
+      "contact.email": "contact.email",
+      "contact.phone": "contact.phone",
+      "contact.location": "contact.address",
+      "contact.website": "contact.website"
+    },
+    "arrays": {
+      "skills": {
+        "targetPath": "skills",
+        "itemMap": {
+          "name": "name",
+          "level": "level"
+        }
+      },
+      "languages": {
+        "targetPath": "languages",
+        "itemMap": {
+          "name": "name",
+          "level": "level"
+        }
+      },
+      "socialLinks": {
+        "targetPath": "footer.socials",
+        "itemMap": {
+          "platform": "name",
+          "url": "url"
+        },
+        "inheritIconFrom": "footer.socials"
+      },
+      "experience": {
+        "targetPath": "experience",
+        "itemMap": {
+          "jobTitle": "role",
+          "company": "company",
+          "startDate": "start",
+          "endDate": "end",
+          "bullets": "details"
+        }
+      },
+      "education": {
+        "targetPath": "education",
+        "itemMap": {
+          "degree": "degree",
+          "institution": "institution",
+          "startDate": "start",
+          "endDate": "end",
+          "description": "description"
+        }
+      },
+      "references": {
+        "targetPath": "references",
+        "itemMap": {
+          "name": "name",
+          "title": "role",
+          "phone": "phone",
+          "email": "email"
+        }
+      }
+    },
+    "clear": [
+      "profile.eyebrow"
+    ],
+    "clearIfBlank": {
+      "socialLinks": [
+        "footer.socials"
+      ]
+    }
+  },
+  "style4": {
+    "_note": "same core shape as style1. The About stat cards come from the master 'stats' repeatable (value/label -> top-level stats). The design's hero photo (hero.image) is replaced only when the master 'heroImage' is supplied; otherwise the template's own artwork stays. 'awards' is a template-only section left as the template's default.",
+    "scalar": {
+      "fullName": "name",
+      "jobTitle": "title",
+      "summary": "about",
+      "profileImage": "profile.image",
+      "heroImage": {
+        "path": "hero.image",
+        "keepWhenBlank": true
+      },
+      "contact.email": "contact.email",
+      "contact.phone": "contact.phone",
+      "contact.location": "contact.address"
+    },
+    "arrays": {
+      "skills": {
+        "targetPath": "skills",
+        "itemMap": {
+          "name": "name",
+          "level": "level"
+        }
+      },
+      "languages": {
+        "targetPath": "languages",
+        "itemMap": {
+          "name": "name",
+          "level": "level"
+        }
+      },
+      "socialLinks": {
+        "targetPath": "footer.socials",
+        "itemMap": {
+          "platform": "name",
+          "url": "url"
+        },
+        "inheritIconFrom": "footer.socials"
+      },
+      "experience": {
+        "targetPath": "experience",
+        "itemMap": {
+          "jobTitle": "role",
+          "company": "company",
+          "startDate": "start",
+          "endDate": "end",
+          "bullets": "details"
+        }
+      },
+      "education": {
+        "targetPath": "education",
+        "itemMap": {
+          "degree": "degree",
+          "institution": "institution",
+          "startDate": "start",
+          "endDate": "end",
+          "description": "description"
+        }
+      },
+      "references": {
+        "targetPath": "references",
+        "itemMap": {
+          "name": "name",
+          "title": "role",
+          "phone": "phone",
+          "email": "email"
+        }
+      },
+      "stats": {
+        "targetPath": "stats",
+        "itemMap": {
+          "value": "value",
+          "label": "label"
+        }
+      }
+    },
+    "clear": [
+      "profile.eyebrow",
+      "awards"
+    ],
+    "clearIfBlank": {
+      "socialLinks": [
+        "footer.socials"
+      ]
+    }
+  },
+  "style5": {
+    "_note": "skills/languages are plain string arrays, like style2.",
+    "scalar": {
+      "fullName": "name",
+      "jobTitle": "title",
+      "summary": "about",
+      "profileImage": "profile.image",
+      "contact.email": "contact.email",
+      "contact.phone": "contact.phone",
+      "contact.location": "contact.address"
+    },
+    "arrays": {
+      "skills": {
+        "targetPath": "skills",
+        "scalarFromItem": "name"
+      },
+      "languages": {
+        "targetPath": "languages",
+        "scalarFromItem": "name"
+      },
+      "socialLinks": {
+        "targetPath": "footer.socials",
+        "itemMap": {
+          "platform": "name",
+          "url": "url"
+        },
+        "inheritIconFrom": "footer.socials"
+      },
+      "experience": {
+        "targetPath": "experience",
+        "itemMap": {
+          "jobTitle": "role",
+          "company": "company",
+          "startDate": "start",
+          "endDate": "end",
+          "bullets": "details"
+        }
+      },
+      "education": {
+        "targetPath": "education",
+        "itemMap": {
+          "degree": "degree",
+          "institution": "institution",
+          "startDate": "start",
+          "endDate": "end",
+          "description": "description"
+        }
+      },
+      "references": {
+        "targetPath": "references",
+        "itemMap": {
+          "name": "name",
+          "title": "role",
+          "phone": "phone",
+          "email": "email"
+        }
+      }
+    },
+    "clear": [
+      "profile.eyebrow"
+    ],
+    "clearIfBlank": {
+      "socialLinks": [
+        "footer.socials"
+      ]
+    }
+  },
+  "style6": {
+    "_note": "skills/languages are plain string arrays, like style2/style5.",
+    "scalar": {
+      "fullName": "name",
+      "jobTitle": "title",
+      "summary": "about",
+      "profileImage": "profile.image",
+      "contact.email": "contact.email",
+      "contact.phone": "contact.phone",
+      "contact.location": "contact.address"
+    },
+    "arrays": {
+      "skills": {
+        "targetPath": "skills",
+        "scalarFromItem": "name"
+      },
+      "languages": {
+        "targetPath": "languages",
+        "scalarFromItem": "name"
+      },
+      "socialLinks": {
+        "targetPath": "footer.socials",
+        "itemMap": {
+          "platform": "name",
+          "url": "url"
+        },
+        "inheritIconFrom": "footer.socials"
+      },
+      "experience": {
+        "targetPath": "experience",
+        "itemMap": {
+          "jobTitle": "role",
+          "company": "company",
+          "startDate": "start",
+          "endDate": "end",
+          "bullets": "details"
+        }
+      },
+      "education": {
+        "targetPath": "education",
+        "itemMap": {
+          "degree": "degree",
+          "institution": "institution",
+          "startDate": "start",
+          "endDate": "end",
+          "description": "description"
+        }
+      },
+      "references": {
+        "targetPath": "references",
+        "itemMap": {
+          "name": "name",
+          "title": "role",
+          "phone": "phone",
+          "email": "email"
+        }
+      }
+    },
+    "clear": [
+      "profile.eyebrow"
+    ],
+    "clearIfBlank": {
+      "socialLinks": [
+        "footer.socials"
+      ]
+    }
+  },
+  "style7": {
+    "_note": "structurally identical to style1.",
+    "scalar": {
+      "fullName": "name",
+      "jobTitle": "title",
+      "summary": "about",
+      "profileImage": "profile.image",
+      "contact.email": "contact.email",
+      "contact.phone": "contact.phone",
+      "contact.location": "contact.address"
+    },
+    "arrays": {
+      "skills": {
+        "targetPath": "skills",
+        "itemMap": {
+          "name": "name",
+          "level": "level"
+        }
+      },
+      "languages": {
+        "targetPath": "languages",
+        "itemMap": {
+          "name": "name",
+          "level": "level"
+        }
+      },
+      "socialLinks": {
+        "targetPath": "footer.socials",
+        "itemMap": {
+          "platform": "name",
+          "url": "url"
+        },
+        "inheritIconFrom": "footer.socials"
+      },
+      "experience": {
+        "targetPath": "experience",
+        "itemMap": {
+          "jobTitle": "role",
+          "company": "company",
+          "startDate": "start",
+          "endDate": "end",
+          "bullets": "details"
+        }
+      },
+      "education": {
+        "targetPath": "education",
+        "itemMap": {
+          "degree": "degree",
+          "institution": "institution",
+          "startDate": "start",
+          "endDate": "end",
+          "description": "description"
+        }
+      },
+      "references": {
+        "targetPath": "references",
+        "itemMap": {
+          "name": "name",
+          "title": "role",
+          "phone": "phone",
+          "email": "email"
+        }
+      }
+    },
+    "clear": [
+      "profile.eyebrow"
+    ],
+    "clearIfBlank": {
+      "socialLinks": [
+        "footer.socials"
+      ]
+    }
+  },
+  "style8": {
+    "_note": "same core shape as style1, plus a 'hero' section and per-skill 'icon' fields (left as template defaults, not core resume data). KNOWN LIMITATION: this template's references include 'photo' and 'quote' fields (testimonial-style) that the master form doesn't collect — mapped references will have name/role/phone/email filled correctly but no photo/quote, which may look incomplete depending on the template's reference-card design.",
+    "scalar": {
+      "fullName": "name",
+      "jobTitle": "title",
+      "summary": "about",
+      "profileImage": "profile.image",
+      "contact.email": "contact.email",
+      "contact.phone": "contact.phone",
+      "contact.location": "contact.address"
+    },
+    "arrays": {
+      "skills": {
+        "targetPath": "skills",
+        "itemMap": {
+          "name": "name",
+          "level": "level"
+        }
+      },
+      "languages": {
+        "targetPath": "languages",
+        "itemMap": {
+          "name": "name",
+          "level": "level"
+        }
+      },
+      "socialLinks": {
+        "targetPath": "footer.socials",
+        "itemMap": {
+          "platform": "name",
+          "url": "url"
+        },
+        "inheritIconFrom": "footer.socials",
+        "iconFallback": "fab fa-{slug}"
+      },
+      "experience": {
+        "targetPath": "experience",
+        "itemMap": {
+          "jobTitle": "role",
+          "company": "company",
+          "startDate": "start",
+          "endDate": "end",
+          "bullets": "details"
+        }
+      },
+      "education": {
+        "targetPath": "education",
+        "itemMap": {
+          "degree": "degree",
+          "institution": "institution",
+          "startDate": "start",
+          "endDate": "end",
+          "description": "description"
+        }
+      },
+      "references": {
+        "targetPath": "references",
+        "itemMap": {
+          "name": "name",
+          "title": "role",
+          "phone": "phone",
+          "email": "email"
+        }
+      }
+    },
+    "clear": [
+      "contact.mapEmbedUrl",
+      "profile.eyebrow"
+    ],
+    "clearIfBlank": {
+      "socialLinks": [
+        "footer.socials"
+      ]
+    }
+  },
+  "style9": {
+    "_note": "structurally identical to style1.",
+    "scalar": {
+      "fullName": "name",
+      "jobTitle": "title",
+      "summary": "about",
+      "profileImage": "profile.image",
+      "contact.email": "contact.email",
+      "contact.phone": "contact.phone",
+      "contact.location": "contact.address"
+    },
+    "arrays": {
+      "skills": {
+        "targetPath": "skills",
+        "itemMap": {
+          "name": "name",
+          "level": "level"
+        }
+      },
+      "languages": {
+        "targetPath": "languages",
+        "itemMap": {
+          "name": "name",
+          "level": "level"
+        }
+      },
+      "socialLinks": {
+        "targetPath": "footer.socials",
+        "itemMap": {
+          "platform": "name",
+          "url": "url"
+        },
+        "inheritIconFrom": "footer.socials"
+      },
+      "experience": {
+        "targetPath": "experience",
+        "itemMap": {
+          "jobTitle": "role",
+          "company": "company",
+          "startDate": "start",
+          "endDate": "end",
+          "bullets": "details"
+        }
+      },
+      "education": {
+        "targetPath": "education",
+        "itemMap": {
+          "degree": "degree",
+          "institution": "institution",
+          "startDate": "start",
+          "endDate": "end",
+          "description": "description"
+        }
+      },
+      "references": {
+        "targetPath": "references",
+        "itemMap": {
+          "name": "name",
+          "title": "role",
+          "phone": "phone",
+          "email": "email"
+        }
+      }
+    },
+    "clear": [
+      "profile.eyebrow"
+    ],
+    "clearIfBlank": {
+      "profileImage": [
+        "profile.image"
+      ],
+      "socialLinks": [
+        "footer.socials"
+      ]
+    }
+  },
+  "style10": {
+    "_note": "structurally identical to style1.",
+    "scalar": {
+      "fullName": "name",
+      "jobTitle": "title",
+      "summary": "about",
+      "profileImage": "profile.image",
+      "contact.email": "contact.email",
+      "contact.phone": "contact.phone",
+      "contact.location": "contact.address"
+    },
+    "arrays": {
+      "skills": {
+        "targetPath": "skills",
+        "itemMap": {
+          "name": "name",
+          "level": "level"
+        }
+      },
+      "languages": {
+        "targetPath": "languages",
+        "itemMap": {
+          "name": "name",
+          "level": "level"
+        }
+      },
+      "socialLinks": {
+        "targetPath": "footer.socials",
+        "itemMap": {
+          "platform": "name",
+          "url": "url"
+        },
+        "inheritIconFrom": "footer.socials"
+      },
+      "experience": {
+        "targetPath": "experience",
+        "itemMap": {
+          "jobTitle": "role",
+          "company": "company",
+          "startDate": "start",
+          "endDate": "end",
+          "bullets": "details"
+        }
+      },
+      "education": {
+        "targetPath": "education",
+        "itemMap": {
+          "degree": "degree",
+          "institution": "institution",
+          "startDate": "start",
+          "endDate": "end",
+          "description": "description"
+        }
+      },
+      "references": {
+        "targetPath": "references",
+        "itemMap": {
+          "name": "name",
+          "title": "role",
+          "phone": "phone",
+          "email": "email"
+        }
+      }
+    },
+    "clear": [
+      "profile.eyebrow"
+    ],
+    "clearIfBlank": {
+      "socialLinks": [
+        "footer.socials"
+      ]
+    }
+  },
+  "style12": {
+    "_note": "Skills/languages are plain string arrays. KNOWN LIMITATION: footer.socials normally has an 'icon' field per entry — the master form doesn't collect icons, so mapped socials will show without one (may affect visual display depending on the template's icon handling).",
+    "scalar": {
+      "fullName": "name",
+      "jobTitle": "title",
+      "summary": "about",
+      "profileImage": "profile.image",
+      "contact.email": "contact.email",
+      "contact.phone": "contact.phone",
+      "contact.location": "contact.address"
+    },
+    "arrays": {
+      "skills": {
+        "targetPath": "skills",
+        "scalarFromItem": "name"
+      },
+      "languages": {
+        "targetPath": "languages",
+        "scalarFromItem": "name"
+      },
+      "experience": {
+        "targetPath": "experience",
+        "itemMap": {
+          "jobTitle": "role",
+          "company": "company",
+          "startDate": "start",
+          "endDate": "end",
+          "bullets": "details"
+        }
+      },
+      "education": {
+        "targetPath": "education",
+        "itemMap": {
+          "degree": "degree",
+          "institution": "institution",
+          "startDate": "start",
+          "endDate": "end"
+        }
+      },
+      "references": {
+        "targetPath": "references",
+        "itemMap": {
+          "name": "name",
+          "title": "role",
+          "phone": "phone",
+          "email": "email"
+        }
+      },
+      "socialLinks": {
+        "targetPath": "footer.socials",
+        "itemMap": {
+          "platform": "name",
+          "url": "url"
+        }
+      }
+    },
+    "clearIfBlank": {
+      "socialLinks": [
+        "footer.socials"
+      ]
+    }
+  },
+  "style13": {
+    "_note": "Uses combined date-range strings ('years', 'period') instead of separate start/end fields — see joinFields. Experience has a single 'description' string, not a bullets array. Education uses 'university' instead of 'institution'. Socials live under contact.social, not footer.socials.",
+    "scalar": {
+      "fullName": "name",
+      "jobTitle": "title",
+      "summary": "about",
+      "profileImage": "profile.image",
+      "contact.email": "contact.email",
+      "contact.phone": "contact.phone",
+      "contact.location": "contact.address",
+      "contact.website": "contact.website"
+    },
+    "arrays": {
+      "skills": {
+        "targetPath": "skills",
+        "itemMap": {
+          "name": "name",
+          "level": "level"
+        }
+      },
+      "languages": {
+        "targetPath": "languages",
+        "itemMap": {
+          "name": "name",
+          "level": "level"
+        }
+      },
+      "experience": {
+        "targetPath": "experience",
+        "itemMap": {
+          "jobTitle": "title",
+          "company": "company",
+          "bullets": "description",
+          "joinBulletsAs": "paragraph"
+        },
+        "joinFields": [
+          {
+            "sourceFields": [
+              "startDate",
+              "endDate"
+            ],
+            "targetField": "period",
+            "separator": " – "
+          }
+        ]
+      },
+      "education": {
+        "targetPath": "education",
+        "itemMap": {
+          "degree": "degree",
+          "institution": "university"
+        },
+        "joinFields": [
+          {
+            "sourceFields": [
+              "startDate",
+              "endDate"
+            ],
+            "targetField": "years",
+            "separator": " – "
+          }
+        ]
+      },
+      "socialLinks": {
+        "targetPath": "contact.social",
+        "itemMap": {
+          "platform": "name",
+          "url": "url"
+        },
+        "inheritIconFrom": "contact.social"
+      }
+    },
+    "clearIfBlank": {
+      "socialLinks": [
+        "contact.social"
+      ]
+    }
+  },
+  "style14": {
+    "_note": "Skills are grouped by category ([{category,items:[...]}]) — the master form's optional 'category' field becomes a column (via groupedArrays groupBy); skills without one fall into a single 'Skills' group. Languages always get their own 'Languages' group. about.description is an array of paragraphs, not a single string — the one summary field is wrapped in a single-element array (via scalar's wrapInArray). about.stats cards come from the master 'stats' repeatable (value/label). The design's hero photo (hero.image) is replaced only when the master 'heroImage' is supplied; otherwise the template's own artwork stays. hero.title here is the person's TAGLINE/job title, not their name (profile.name holds the actual name). KNOWN LIMITATIONS: awards is a template-only bonus section not collected by the master form, left untouched. about.personal_info.availability (a status message) is also left as the template's own default, since only its sibling email/location fields are touched.",
+    "scalar": {
+      "fullName": "profile.name",
+      "jobTitle": "hero.title",
+      "summary": {
+        "path": "about.description",
+        "wrapInArray": true
+      },
+      "profileImage": "profile.image",
+      "heroImage": {
+        "path": "hero.image",
+        "keepWhenBlank": true
+      },
+      "contact.email": "contact.email",
+      "contact.phone": "contact.phone",
+      "contact.location": "contact.location"
+    },
+    "compose": {
+      "title": {
+        "template": "{fullName} | {jobTitle}"
+      },
+      "footer.copyright": {
+        "template": "© {year} {fullName}. All rights reserved."
+      }
+    },
+    "arrays": {
+      "experience": {
+        "targetPath": "experience",
+        "itemMap": {
+          "jobTitle": "title",
+          "company": "company",
+          "bullets": "responsibilities"
+        },
+        "joinFields": [
+          {
+            "sourceFields": [
+              "startDate",
+              "endDate"
+            ],
+            "targetField": "date",
+            "separator": " – "
+          }
+        ]
+      },
+      "education": {
+        "targetPath": "education",
+        "itemMap": {
+          "degree": "title",
+          "institution": "institution",
+          "description": "description"
+        },
+        "joinFields": [
+          {
+            "sourceFields": [
+              "startDate",
+              "endDate"
+            ],
+            "targetField": "date",
+            "separator": " – "
+          }
+        ]
+      },
+      "socialLinks": {
+        "targetPath": "profile.social_links",
+        "itemMap": {
+          "platform": "platform",
+          "url": "url"
+        },
+        "inheritIconFrom": "profile.social_links"
+      },
+      "stats": {
+        "targetPath": "about.stats",
+        "itemMap": {
+          "value": "value",
+          "label": "label"
+        }
+      }
+    },
+    "groupedArrays": {
+      "skillsAndLanguages": {
+        "targetPath": "skills",
+        "groupField": "category",
+        "itemsField": "items",
+        "groups": [
+          {
+            "sourcePath": "skills",
+            "groupValue": "Skills",
+            "groupBy": "category",
+            "itemMap": {
+              "name": "name",
+              "level": "progress"
+            }
+          },
+          {
+            "sourcePath": "languages",
+            "groupValue": "Languages",
+            "itemMap": {
+              "name": "name",
+              "level": "progress"
+            }
+          }
+        ]
+      }
+    },
+    "clear": [
+      "awards"
+    ],
+    "clearIfBlank": {}
+  },
+  "style15": {
+    "_note": "Skills/languages are plain string arrays, like style2/5/6.",
+    "scalar": {
+      "fullName": "name",
+      "jobTitle": "title",
+      "summary": "about",
+      "profileImage": "profile.image",
+      "contact.email": "contact.email",
+      "contact.phone": "contact.phone",
+      "contact.location": "contact.address"
+    },
+    "arrays": {
+      "skills": {
+        "targetPath": "skills",
+        "scalarFromItem": "name"
+      },
+      "languages": {
+        "targetPath": "languages",
+        "scalarFromItem": "name"
+      },
+      "socialLinks": {
+        "targetPath": "footer.socials",
+        "itemMap": {
+          "platform": "name",
+          "url": "url"
+        },
+        "inheritIconFrom": "footer.socials"
+      },
+      "experience": {
+        "targetPath": "experience",
+        "itemMap": {
+          "jobTitle": "role",
+          "company": "company",
+          "startDate": "start",
+          "endDate": "end",
+          "bullets": "details"
+        }
+      },
+      "education": {
+        "targetPath": "education",
+        "itemMap": {
+          "degree": "degree",
+          "institution": "institution",
+          "startDate": "start",
+          "endDate": "end"
+        }
+      },
+      "references": {
+        "targetPath": "references",
+        "itemMap": {
+          "name": "name",
+          "title": "role",
+          "phone": "phone",
+          "email": "email"
+        }
+      }
+    },
+    "clearIfBlank": {
+      "socialLinks": [
+        "footer.socials"
+      ]
+    }
+  },
+  "style16": {
+    "_note": "Summary field is 'aboutMe' not 'about'. Education uses 'university' + combined 'years' string (grade field is template-default only, dropped for user data). Experience uses combined 'years' string + 'responsibilities' array. Socials live at top-level 'social_links', not nested. KNOWN LIMITATION: per-entry 'icon' fields (education grade, social icons) aren't collected by the master form and will be dropped.",
+    "scalar": {
+      "fullName": "name",
+      "jobTitle": "title",
+      "summary": "aboutMe",
+      "profileImage": "profile.image",
+      "contact.email": "contact.email",
+      "contact.phone": "contact.phone",
+      "contact.location": "contact.address"
+    },
+    "arrays": {
+      "skills": {
+        "targetPath": "skills",
+        "scalarFromItem": "name"
+      },
+      "languages": {
+        "targetPath": "languages",
+        "scalarFromItem": "name"
+      },
+      "experience": {
+        "targetPath": "experience",
+        "itemMap": {
+          "jobTitle": "title",
+          "company": "company",
+          "bullets": "responsibilities"
+        },
+        "joinFields": [
+          {
+            "sourceFields": [
+              "startDate",
+              "endDate"
+            ],
+            "targetField": "years",
+            "separator": "–"
+          }
+        ]
+      },
+      "education": {
+        "targetPath": "education",
+        "itemMap": {
+          "degree": "degree",
+          "institution": "university"
+        },
+        "joinFields": [
+          {
+            "sourceFields": [
+              "startDate",
+              "endDate"
+            ],
+            "targetField": "years",
+            "separator": "–"
+          }
+        ]
+      },
+      "socialLinks": {
+        "targetPath": "social_links",
+        "itemMap": {
+          "platform": "platform",
+          "url": "url"
+        },
+        "iconFallback": "fab fa-{slug}"
+      }
+    },
+    "clearIfBlank": {
+      "socialLinks": [
+        "social_links"
+      ]
+    }
+  },
+  "style11": {
+    "_note": "Name is split via splitName below, not scalar mapping. Photo field was added to this template (previously had none).",
+    "scalar": {
+      "jobTitle": "personalInfo.jobTitle",
+      "summary": "about",
+      "profileImage": "personalInfo.profileImage",
+      "contact.email": "personalInfo.email",
+      "contact.phone": "personalInfo.phone",
+      "contact.location": "personalInfo.location"
+    },
+    "splitName": {
+      "sourcePath": "fullName",
+      "firstNameTarget": "personalInfo.firstName",
+      "lastNameTarget": "personalInfo.lastName"
+    },
+    "arrays": {
+      "skills": {
+        "targetPath": "skills",
+        "itemMap": {
+          "name": "name",
+          "level": "level"
+        }
+      },
+      "languages": {
+        "targetPath": "languages",
+        "itemMap": {
+          "name": "name",
+          "level": "level"
+        }
+      },
+      "experience": {
+        "targetPath": "experience",
+        "itemMap": {
+          "jobTitle": "position",
+          "company": "company",
+          "startDate": "startDate",
+          "endDate": "endDate",
+          "bullets": "details"
+        }
+      },
+      "education": {
+        "targetPath": "education",
+        "itemMap": {
+          "degree": "degree",
+          "institution": "institution",
+          "endDate": "year"
+        }
+      },
+      "projects": {
+        "targetPath": "projects",
+        "itemMap": {
+          "name": "name",
+          "description": "description",
+          "liveUrl": "liveUrl",
+          "codeUrl": "codeUrl"
+        }
+      },
+      "socialLinks": {
+        "targetPath": "socialLinks",
+        "itemMap": {
+          "platform": "name",
+          "url": "url"
+        }
+      }
+    },
+    "clearIfBlank": {
+      "socialLinks": [
+        "socialLinks"
+      ]
+    }
+  },
+  "style17": {
+    "scalar": {
+      "fullName": "name",
+      "jobTitle": "title",
+      "summary": "summary",
+      "profileImage": "profile_image",
+      "contact.email": "email",
+      "contact.phone": "phone",
+      "contact.location": "location"
+    },
+    "arrays": {
+      "skills": {
+        "targetPath": "skills",
+        "itemMap": {
+          "name": "name",
+          "level": "level"
+        }
+      },
+      "languages": {
+        "targetPath": "languages",
+        "scalarFromItem": "name"
+      },
+      "socialLinks": {
+        "targetPath": "footer.social_links",
+        "itemMap": {
+          "platform": "name",
+          "url": "url"
+        },
+        "inheritIconFrom": "footer.social_links",
+        "iconFallback": "fab fa-{slug}"
+      },
+      "experience": {
+        "targetPath": "experience",
+        "itemMap": {
+          "jobTitle": "role",
+          "company": "company",
+          "bullets": "description",
+          "joinBulletsAs": "paragraph"
+        },
+        "_note": "this template's experience has a single 'description' string, not bullets — bullets get joined into one paragraph"
+      },
+      "education": {
+        "targetPath": "education",
+        "itemMap": {
+          "degree": "degree",
+          "institution": "institution",
+          "endDate": "year"
+        }
+      }
+    },
+    "clearIfBlank": {
+      "socialLinks": [
+        "footer.social_links"
+      ]
+    }
+  },
+  "style19": {
+    "_note": "Unusually irregular: contact info, footer, and page title are each a single combined display STRING rather than separate fields — built here via 'compose' (a template string with {master.field.path} placeholders, plus a special {year} token). Skills/languages are plain string arrays. Uses 'duration'/'year' single strings for dates (built via joinFields) and 'position'/'description' instead of 'role'/'details'.",
+    "scalar": {
+      "fullName": "header",
+      "summary": "about",
+      "profileImage": "profilePhoto"
+    },
+    "compose": {
+      "contact": {
+        "template": "Email: {contact.email} | Phone: {contact.phone} | Location: {contact.location}"
+      },
+      "footer": {
+        "template": "© {year} {fullName}. All rights reserved."
+      },
+      "htmlTitle": {
+        "template": "{fullName} — {jobTitle}"
+      }
+    },
+    "arrays": {
+      "skills": {
+        "targetPath": "skills",
+        "scalarFromItem": "name"
+      },
+      "languages": {
+        "targetPath": "languages",
+        "scalarFromItem": "name"
+      },
+      "socialLinks": {
+        "targetPath": "socialLinks",
+        "itemMap": {
+          "platform": "name",
+          "url": "url"
+        }
+      },
+      "experience": {
+        "targetPath": "experience",
+        "itemMap": {
+          "jobTitle": "position",
+          "company": "company",
+          "bullets": "description",
+          "joinBulletsAs": "paragraph"
+        },
+        "joinFields": [
+          {
+            "sourceFields": [
+              "startDate",
+              "endDate"
+            ],
+            "targetField": "duration",
+            "separator": " – "
+          }
+        ]
+      },
+      "education": {
+        "targetPath": "education",
+        "itemMap": {
+          "degree": "degree",
+          "institution": "institution"
+        },
+        "joinFields": [
+          {
+            "sourceFields": [
+              "startDate",
+              "endDate"
+            ],
+            "targetField": "year",
+            "separator": " – "
+          }
+        ]
+      },
+      "references": {
+        "targetPath": "references",
+        "itemMap": {
+          "name": "name",
+          "title": "relationship"
+        },
+        "joinFields": [
+          {
+            "sourceFields": [
+              "phone",
+              "email"
+            ],
+            "targetField": "contact",
+            "separator": " | "
+          }
+        ]
+      }
+    },
+    "clearIfBlank": {
+      "socialLinks": [
+        "socialLinks"
+      ]
+    }
+  },
+  "style18": {
+    "_note": "The most irregular template covered so far. Navigation menu, logo initials, and downloadCvLink are page CHROME, not resume content — deliberately left untouched. about.personalInfo is a generic [{label,value}] list (built via labelValueArray). contact.items is a generic [{icon,text,link}] list (built via contactItemsArray). KNOWN LIMITATIONS: language levels here are descriptive words ('Native'/'Fluent') but the master form collects a 0-100 number — the number will display as-is rather than a word. Reference photos/quotes and per-skill icons aren't collected by the master form and will be dropped. Social link icons default to whatever the template's own itemMap leaves (none provided).",
+    "scalar": {
+      "fullName": "hero.title",
+      "jobTitle": "hero.subtitle",
+      "summary": "about.text",
+      "profileImage": "hero.profilePhoto"
+    },
+    "compose": {
+      "pageTitle": {
+        "template": "{fullName} — {jobTitle}"
+      },
+      "footer.copyright": {
+        "template": "© {year} {fullName}. All rights reserved."
+      }
+    },
+    "labelValueArray": {
+      "about.personalInfo": {
+        "targetPath": "about.personalInfo",
+        "items": [
+          {
+            "label": "Name",
+            "sourcePath": "fullName"
+          },
+          {
+            "label": "Title",
+            "sourcePath": "jobTitle"
+          },
+          {
+            "label": "Email",
+            "sourcePath": "contact.email"
+          },
+          {
+            "label": "Location",
+            "sourcePath": "contact.location"
+          }
+        ]
+      }
+    },
+    "contactItemsArray": {
+      "contact.items": {
+        "targetPath": "contact.items",
+        "items": [
+          {
+            "sourcePath": "contact.email",
+            "icon": "fas fa-envelope",
+            "linkTemplate": "mailto:{value}"
+          },
+          {
+            "sourcePath": "contact.phone",
+            "icon": "fas fa-phone",
+            "linkTemplate": "tel:{value}"
+          }
+        ]
+      }
+    },
+    "arrays": {
+      "skills": {
+        "targetPath": "skills",
+        "itemMap": {
+          "name": "name",
+          "level": "level"
+        }
+      },
+      "languages": {
+        "targetPath": "languages",
+        "itemMap": {
+          "name": "name",
+          "level": "level"
+        }
+      },
+      "experience": {
+        "targetPath": "experience",
+        "itemMap": {
+          "jobTitle": "title",
+          "company": "company",
+          "bullets": "description",
+          "joinBulletsAs": "paragraph"
+        },
+        "joinFields": [
+          {
+            "sourceFields": [
+              "startDate",
+              "endDate"
+            ],
+            "targetField": "date",
+            "separator": " – "
+          }
+        ]
+      },
+      "education": {
+        "targetPath": "education",
+        "itemMap": {
+          "degree": "degree",
+          "institution": "institution",
+          "description": "description"
+        },
+        "joinFields": [
+          {
+            "sourceFields": [
+              "startDate",
+              "endDate"
+            ],
+            "targetField": "date",
+            "separator": " – "
+          }
+        ]
+      },
+      "references": {
+        "targetPath": "references",
+        "itemMap": {
+          "name": "name",
+          "title": "position"
+        },
+        "joinFields": [
+          {
+            "sourceFields": [
+              "phone",
+              "email"
+            ],
+            "targetField": "contact",
+            "separator": " | "
+          }
+        ]
+      },
+      "socialLinks": {
+        "targetPath": "footer.socialLinks",
+        "itemMap": {
+          "platform": "name",
+          "url": "url"
+        },
+        "iconFallback": "fab fa-{slug}"
+      }
+    },
+    "clear": [
+      "contact.mapEmbedUrl"
+    ],
+    "clearIfBlank": {
+      "socialLinks": [
+        "footer.socialLinks"
+      ]
+    }
+  },
+  "style20": {
+    "scalar": {
+      "fullName": "profile.name",
+      "jobTitle": "profile.title",
+      "summary": "about",
+      "profileImage": "profile.photo",
+      "contact.email": "contact.Email",
+      "contact.phone": "contact.Phone"
+    },
+    "arrays": {
+      "skills": {
+        "targetPath": "skills",
+        "scalarFromItem": "name"
+      },
+      "languages": {
+        "targetPath": "languages",
+        "scalarFromItem": "name"
+      },
+      "experience": {
+        "targetPath": "experience",
+        "itemMap": {
+          "jobTitle": "position",
+          "company": "company",
+          "startDate": "date",
+          "bullets": "description",
+          "joinBulletsAs": "paragraph"
+        }
+      },
+      "education": {
+        "targetPath": "education",
+        "itemMap": {
+          "degree": "degree",
+          "institution": "institution",
+          "startDate": "date"
+        }
+      },
+      "references": {
+        "targetPath": "references",
+        "itemMap": {
+          "name": "name",
+          "title": "position",
+          "company": "company",
+          "email": "contact"
+        }
+      }
+    },
+    "objectMap": {
+      "socialLinks": {
+        "targetPath": "socials",
+        "keyFrom": "platform",
+        "valueFrom": "url"
+      }
+    },
+    "clearIfBlank": {
+      "socialLinks": [
+        "socials"
+      ]
+    }
+  },
+  "style21": {
+    "_note": "Name is split via splitName below, not scalar mapping. Photo field was added to this template (previously had none).",
+    "scalar": {
+      "jobTitle": "personalInfo.jobTitle",
+      "summary": "about",
+      "profileImage": "personalInfo.profileImage",
+      "contact.email": "personalInfo.email",
+      "contact.phone": "personalInfo.phone",
+      "contact.location": "personalInfo.location"
+    },
+    "splitName": {
+      "sourcePath": "fullName",
+      "firstNameTarget": "personalInfo.firstName",
+      "lastNameTarget": "personalInfo.lastName"
+    },
+    "arrays": {
+      "skills": {
+        "targetPath": "skills",
+        "itemMap": {
+          "name": "name",
+          "level": "level"
+        }
+      },
+      "languages": {
+        "targetPath": "languages",
+        "itemMap": {
+          "name": "name",
+          "level": "level"
+        }
+      },
+      "experience": {
+        "targetPath": "experience",
+        "itemMap": {
+          "jobTitle": "position",
+          "company": "company",
+          "startDate": "startDate",
+          "endDate": "endDate",
+          "bullets": "details"
+        }
+      },
+      "education": {
+        "targetPath": "education",
+        "itemMap": {
+          "degree": "degree",
+          "institution": "institution",
+          "endDate": "year"
+        }
+      },
+      "projects": {
+        "targetPath": "projects",
+        "itemMap": {
+          "name": "name",
+          "description": "description",
+          "liveUrl": "liveUrl",
+          "codeUrl": "codeUrl"
+        }
+      },
+      "socialLinks": {
+        "targetPath": "socialLinks",
+        "itemMap": {
+          "platform": "name",
+          "url": "url"
+        }
+      }
+    },
+    "clearIfBlank": {
+      "socialLinks": [
+        "socialLinks"
+      ]
+    }
+  },
+  "style22": {
+    "_note": "Name is split via splitName below, not scalar mapping. Photo field was added to this template (previously had none).",
+    "scalar": {
+      "jobTitle": "personalInfo.jobTitle",
+      "summary": "about",
+      "profileImage": "personalInfo.profileImage",
+      "contact.email": "personalInfo.email",
+      "contact.phone": "personalInfo.phone",
+      "contact.location": "personalInfo.location"
+    },
+    "splitName": {
+      "sourcePath": "fullName",
+      "firstNameTarget": "personalInfo.firstName",
+      "lastNameTarget": "personalInfo.lastName"
+    },
+    "arrays": {
+      "skills": {
+        "targetPath": "skills",
+        "itemMap": {
+          "name": "name",
+          "level": "level"
+        }
+      },
+      "languages": {
+        "targetPath": "languages",
+        "itemMap": {
+          "name": "name",
+          "level": "level"
+        }
+      },
+      "experience": {
+        "targetPath": "experience",
+        "itemMap": {
+          "jobTitle": "position",
+          "company": "company",
+          "startDate": "startDate",
+          "endDate": "endDate",
+          "bullets": "details"
+        }
+      },
+      "education": {
+        "targetPath": "education",
+        "itemMap": {
+          "degree": "degree",
+          "institution": "institution",
+          "endDate": "year"
+        }
+      },
+      "projects": {
+        "targetPath": "projects",
+        "itemMap": {
+          "name": "name",
+          "description": "description",
+          "liveUrl": "liveUrl",
+          "codeUrl": "codeUrl"
+        }
+      },
+      "socialLinks": {
+        "targetPath": "socialLinks",
+        "itemMap": {
+          "platform": "name",
+          "url": "url"
+        }
+      }
+    },
+    "clearIfBlank": {
+      "socialLinks": [
+        "socialLinks"
+      ]
+    }
+  }
+}
