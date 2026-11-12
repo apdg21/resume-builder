@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── CSS variable overrides from theme ── */
+    :root {
+      --g1: #2563eb;
+      --g2: #7c3aed;
+      --ac: #10b981;
+    }
+
+    /* ── Offline-only: hidden by default ── */
+    .offline-only { display: none; }
+
+    /* ── Upload Overlay ── */
+    #upload-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+    #upload-overlay.show { display: flex; }
+    .upload-box {
+      background: white;
+      border-radius: 14px;
+      padding: 2.5rem;
+      text-align: center;
+      max-width: 460px;
+      width: 90%;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+    }
+    .upload-box h2 { margin-bottom: 0.75rem; color: var(--dark); font-size: 1.4rem; }
+    .upload-box p  { color: #555; margin-bottom: 1.5rem; font-size: 0.95rem; line-height: 1.5; }
+    .upload-box a  { color: var(--primary); text-decoration: underline; }
+    .upload-box-btn {
+      padding: 0.65rem 1.5rem;
+      background: linear-gradient(135deg, var(--g1), var(--g2));
+      color: white;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .upload-box-btn:hover { opacity: 0.9; }
+
+    /* ── Theme-driven header gradient ── */
+    header { background: linear-gradient(135deg, var(--g1), var(--g2)) !important; }
+
+    /* ── Profile eyebrow ── */
+    .profile-eyebrow {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ac);
+      background: rgba(255,255,255,0.12);
+      padding: 0.2rem 0.75rem;
+      border-radius: 50px;
+      margin-bottom: 0.6rem;
+    }
+
+    /* ── Offline Load JSON button in header ── */
+    .header-load-btn {
+      padding: 0.5rem 1.1rem;
+      background: var(--ac);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.88rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.25s;
+      text-decoration: none;
+    }
+    .header-load-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    /* ── References grid ── */
+    .references-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .reference-card {
+      background: var(--light);
+      padding: 1.25rem;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-sm);
+      border-left: 4px solid var(--ac);
+    }
+    .reference-card h4 { font-size: 0.95rem; color: var(--primary); margin-bottom: 0.2rem; }
+    .reference-card .ref-role { font-size: 0.82rem; color: var(--gray); margin-bottom: 0.5rem; }
+    .reference-card .ref-contact { font-size: 0.85rem; color: var(--dark); }
+    .reference-card .ref-contact div { margin-bottom: 0.2rem; }
+    .reference-card .ref-contact i { width: 16px; margin-right: 6px; color: var(--ac); }
+
+    /* ── Language bars ── */
+    .lang-bar-item { margin-bottom: 0.75rem; }
+    .lang-bar-row { display: flex; justify-content: space-between; font-size: 0.88rem; margin-bottom: 0.25rem; }
+    .lang-bar-track {
+      height: 6px;
+      background: var(--gray);
+      border-radius: 3px;
+      overflow: hidden;
+      opacity: 0.35;
+    }
+    .lang-bar-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 3px;
+      transition: width 1s ease-out;
+    }
+
+    /* ── Skills pill accent on hover ── */
+    #skills-list li:hover { background: var(--primary) !important; }
+
+    /* ── Active nav link ── */
+    #nav-links li a.active { border-bottom: 2px solid white; }
+
+    /* ── Contact section layout ── */
+    .contact-chips { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+    .contact-chip {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--light); padding: 0.5rem 1rem;
+      border-radius: 50px; font-size: 0.9rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .contact-chip i { color: var(--ac); }
+
+    @media (max-width: 600px) {
+      .references-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Upload Overlay -->
+  <div id="upload-overlay">
+    <div class="upload-box">
+      <h2><i class="fas fa-file-import" style="color:#2563eb;margin-right:0.4rem"></i>Load Resume Data</h2>
+      <p>No <code>data.json</code> found. Upload your file or <a href="form.html">create one in the editor</a>.</p>
+      <button class="upload-box-btn" id="overlayUploadBtn"><i class="fas fa-upload"></i> Select data.json</button>
+      <input type="file" id="overlayFileInput" accept=".json" style="display:none">
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <div>
+          <h1 id="header-title">Resume</h1>
+        </div>
+        <nav>
+          <button class="hamburger" id="hamburger" aria-label="Menu">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+          </button>
+          <ul id="nav-links">
+            <li><a href="#about">About</a></li>
+            <li><a href="#experience">Experience</a></li>
+            <li><a href="#education">Education</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#languages">Languages</a></li>
+            <li><a href="#references">References</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li class="offline-only" style="display:none"><a href="form.html" id="editLink" class="header-load-btn" style="margin-left:0.5rem"><i class="fas fa-edit"></i> Edit</a></li>
+          </ul>
+        </nav>
+        <!-- Offline-only Load JSON -->
+        <div class="offline-only" style="display:none" id="offlineLoadWrap">
+          <input type="file" id="offlineLoadInput" accept=".json" style="display:none">
+          <button class="header-load-btn" onclick="document.getElementById('offlineLoadInput').click()">
+            <i class="fas fa-folder-open"></i> Load JSON
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="container">
+
+    <section id="about">
+      <h2>About</h2>
+      <div class="about-content">
+        <img src="assets/profile.jpg" alt="Profile Photo" id="profile-photo">
+        <div>
+          <p class="profile-eyebrow" id="profile-eyebrow"></p>
+          <p id="about-text"></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="experience">
+      <h2>Experience</h2>
+      <div id="experience-list"></div>
+    </section>
+
+    <section id="education">
+      <h2>Education</h2>
+      <div id="education-list"></div>
+    </section>
+
+    <section id="skills">
+      <h2>Skills</h2>
+      <ul id="skills-list"></ul>
+    </section>
+
+    <section id="languages">
+      <h2>Languages</h2>
+      <div id="languages-list"></div>
+    </section>
+
+    <section id="references">
+      <h2>References</h2>
+      <div class="references-grid" id="references-list"></div>
+    </section>
+
+    <section id="contact">
+      <h2>Contact</h2>
+      <div class="contact-chips" id="contact-info"></div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="social-icons" id="social-icons"></div>
+      <p id="footer-text"></p>
+    </div>
+  </footer>
+
+  <script>
+  // ── Utilities ──────────────────────────────────────────────────────────────
+  function hexAlpha(hex, a) {
+    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${a})`;
+  }
+
+  // Themes recolour only the page frame: header/nav, hero and footer.
+  // The rest of the page keeps its original design.
+  function rpIsDarkHex(hex) {
+    if (!hex || hex.charAt(0) !== '#') return false;
+    var c = hex.substring(1);
+    if (c.length === 3) c = c.split('').map(function (x) { return x + x; }).join('');
+    if (c.length !== 6) return false;
+    var r = parseInt(c.substring(0, 2), 16) / 255;
+    var g = parseInt(c.substring(2, 4), 16) / 255;
+    var b = parseInt(c.substring(4, 6), 16) / 255;
+    return (0.2126 * r + 0.7152 * g + 0.0722 * b) < 0.55;
+  }
+
+  function rpApplyFrameTheme(theme, regions) {
+    var MARK = 'data-rp-frame-themed';
+    var marked = document.querySelectorAll('[' + MARK + ']');
+    for (var i = 0; i < marked.length; i++) {
+      marked[i].removeAttribute(MARK);
+      marked[i].style.removeProperty('background');
+      marked[i].style.removeProperty('background-color');
+      marked[i].style.removeProperty('background-image');
+    }
+    var styleEl = document.getElementById('rpFrameThemeStyle');
+    if (styleEl) styleEl.parentNode.removeChild(styleEl);
+    if (!theme || !theme.gradientStart) return;
+
+    var g1 = theme.gradientStart;
+    var g2 = theme.gradientEnd || g1;
+    var dark = rpIsDarkHex(g1);
+    var tc = theme.textColor || (dark ? '#f1f5f9' : '#1e293b');
+    var hc = theme.headingColor || (dark ? '#ffffff' : '#0f172a');
+
+    var found = document.querySelectorAll(regions.join(','));
+    var picked = [];
+    for (var j = 0; j < found.length; j++) {
+      var nested = false;
+      for (var k = 0; k < picked.length; k++) {
+        if (picked[k] !== found[j] && picked[k].contains(found[j])) { nested = true; break; }
+      }
+      if (!nested) picked.push(found[j]);
+    }
+    for (var m = 0; m < picked.length; m++) {
+      picked[m].setAttribute(MARK, '1');
+      picked[m].style.setProperty('background', 'linear-gradient(135deg, ' + g1 + ' 0%, ' + g2 + ' 100%)', 'important');
+    }
+
+    styleEl = document.createElement('style');
+    styleEl.id = 'rpFrameThemeStyle';
+    styleEl.textContent =
+      '[' + MARK + '] { color: ' + tc + ' !important; }' +
+      '[' + MARK + '] h1, [' + MARK + '] h2, [' + MARK + '] h3, [' + MARK + '] h4, [' + MARK + '] h5, [' + MARK + '] h6 { color: ' + hc + ' !important; }' +
+      '[' + MARK + '] p, [' + MARK + '] span, [' + MARK + '] li, [' + MARK + '] a, [' + MARK + '] strong, [' + MARK + '] em, [' + MARK + '] small, [' + MARK + '] blockquote, [' + MARK + '] figcaption, [' + MARK + '] time { color: ' + tc + ' !important; }';
+    document.head.appendChild(styleEl);
+  }
+
+  function applyTheme(theme) {
+    rpApplyFrameTheme(theme, ['header', 'footer']);
+  }
+  window.applyTheme = applyTheme;
+
+  const SOCIAL_ICONS = {
+    facebook:  { cls: 'fab fa-facebook-f',  bg: '#3b5998' },
+    twitter:   { cls: 'fab fa-x-twitter',   bg: '#1da1f2' },
+    linkedin:  { cls: 'fab fa-linkedin-in', bg: '#0077b5' },
+    instagram: { cls: 'fab fa-instagram',   bg: 'radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)' },
+    github:    { cls: 'fab fa-github',      bg: '#333' },
+    email:     { cls: 'fas fa-envelope',    bg: '#EA4335' },
+  };
+
+  // ── Render ─────────────────────────────────────────────────────────────────
+  function render(data) {
+    applyTheme(data.theme);
+    document.title = data.name ? `${data.name} - Resume` : 'Resume';
+
+    // Header name
+    document.getElementById('header-title').textContent = data.name || '';
+
+    // About
+    document.getElementById('profile-eyebrow').textContent = data.profile?.eyebrow || '';
+    if (data.profile?.image) {
+      const img = document.getElementById('profile-photo');
+      img.src = data.profile.image;
+      img.alt = `Profile photo of ${data.name}`;
+    }
+    document.getElementById('about-text').textContent =
+      Array.isArray(data.about) ? data.about.join(' ') : (data.about || '');
+
+    // Experience
+    const expList = document.getElementById('experience-list');
+    expList.innerHTML = (data.experience || []).map(e => {
+      const period = [e.start, e.end].filter(Boolean).join(' – ');
+      const details = Array.isArray(e.details)
+        ? `<ul style="margin:0.5rem 0 0 1.2rem">${e.details.map(d=>`<li style="margin-bottom:0.2rem">${d}</li>`).join('')}</ul>`
+        : `<p class="description">${e.description||''}</p>`;
+      return `
+        <div class="experience-item">
+          <h3>${e.role||e.position||''}</h3>
+          <p class="company">${e.company||''} – <span class="duration">${period||e.duration||''}</span></p>
+          ${details}
+        </div>`;
+    }).join('');
+
+    // Education
+    const eduList = document.getElementById('education-list');
+    eduList.innerHTML = (data.education || []).map(e => {
+      const period = [e.start, e.end].filter(Boolean).join(' – ');
+      return `
+        <div class="education-item">
+          <h3>${e.degree||''}</h3>
+          <p class="institution">${e.institution||''} – <span class="year">${period||e.year||''}</span></p>
+          ${e.description ? `<p style="margin-top:0.4rem;color:var(--gray);font-size:0.9rem">${e.description}</p>` : ''}
+        </div>`;
+    }).join('');
+
+    // Skills — support object { name, level } or plain string
+    const skillsList = document.getElementById('skills-list');
+    skillsList.innerHTML = (data.skills || []).map(s => {
+      const name = typeof s === 'string' ? s : s.name;
+      return `<li>${name}</li>`;
+    }).join('');
+
+    // Languages — support { name, level } with bars, or plain strings
+    const langList = document.getElementById('languages-list');
+    const firstLang = (data.languages || [])[0];
+    if (firstLang && typeof firstLang === 'object' && firstLang.level !== undefined) {
+      langList.innerHTML = (data.languages || []).map(l => `
+        <div class="lang-bar-item">
+          <div class="lang-bar-row"><span>${l.name}</span><span>${l.level}%</span></div>
+          <div class="lang-bar-track" style="opacity:1;background:#e2e8f0">
+            <div class="lang-bar-fill" style="width:0" data-w="${l.level}%"></div>
+          </div>
+        </div>`).join('');
+      // animate
+      requestAnimationFrame(() => {
+        document.querySelectorAll('.lang-bar-fill').forEach(el => {
+          el.style.width = el.dataset.w;
+        });
+      });
+    } else {
+      // Fallback pill list
+      langList.innerHTML = `<ul id="languages-list-pills" style="display:flex;flex-wrap:wrap;gap:0.8rem;list-style:none">${
+        (data.languages||[]).map(l=>`<li style="background:var(--light);padding:0.5rem 1rem;border-radius:50px;font-size:0.9rem;box-shadow:var(--shadow-sm)">${typeof l==='string'?l:l.name}</li>`).join('')
+      }</ul>`;
+    }
+
+    // References
+    const refList = document.getElementById('references-list');
+    refList.innerHTML = (data.references || []).map(r => `
+      <div class="reference-card">
+        <h4>${r.name||''}</h4>
+        <p class="ref-role">${r.role||r.relationship||''}</p>
+        <div class="ref-contact">
+          ${r.phone ? `<div><i class="fas fa-phone"></i>${r.phone}</div>` : ''}
+          ${r.email ? `<div><i class="fas fa-envelope"></i>${r.email}</div>` : ''}
+          ${r.contact && !r.email && !r.phone ? `<div><i class="fas fa-address-card"></i>${r.contact}</div>` : ''}
+        </div>
+      </div>`).join('');
+
+    // Contact chips
+    const contactEl = document.getElementById('contact-info');
+    const c = data.contact || {};
+    if (typeof c === 'object') {
+      const chips = [];
+      if (c.phone) chips.push(`<span class="contact-chip"><i class="fas fa-phone"></i>${c.phone}</span>`);
+      if (c.email) chips.push(`<span class="contact-chip"><i class="fas fa-envelope"></i>${c.email}</span>`);
+      if (c.address) chips.push(`<span class="contact-chip"><i class="fas fa-map-marker-alt"></i>${c.address}</span>`);
+      contactEl.innerHTML = chips.join('');
+    } else {
+      contactEl.textContent = c;
+    }
+
+    // Footer
+    const ft = data.footer || {};
+    const footerText = (ft.text || ft.copyright || '').replace('{year}', new Date().getFullYear());
+    document.getElementById('footer-text').textContent = footerText;
+
+    const socialContainer = document.getElementById('social-icons');
+    socialContainer.innerHTML = '';
+    (ft.socials || data.socialLinks || []).forEach(link => {
+      const key = (link.name || '').toLowerCase();
+      const meta = SOCIAL_ICONS[key] || { cls: 'fas fa-link', bg: '#555' };
+      const a = document.createElement('a');
+      a.href = link.url || '#';
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.setAttribute('aria-label', link.name || 'Social');
+      a.style.background = meta.bg;
+      a.innerHTML = `<i class="${meta.cls}"></i>`;
+      socialContainer.appendChild(a);
+    });
+  }
+
+  // ── Data loading ───────────────────────────────────────────────────────────
+  async function loadData() {
+    try {
+      const res = await fetch('data.json');
+      if (!res.ok) throw new Error('fetch failed');
+      render(await res.json());
+    } catch(_) {
+      // Try #data= hash
+      try {
+        const hash = location.hash;
+        if (hash.startsWith('#data=')) {
+          render(JSON.parse(decodeURIComponent(hash.slice(6))));
+          return;
+        }
+      } catch(__) {}
+      document.getElementById('upload-overlay').classList.add('show');
+    }
+  }
+
+  // ── Offline-only reveal ────────────────────────────────────────────────────
+  if (location.protocol === 'file:') {
+    document.querySelectorAll('.offline-only').forEach(el => el.style.display = '');
+  }
+
+  // ── Overlay upload ─────────────────────────────────────────────────────────
+  document.getElementById('overlayUploadBtn').addEventListener('click', () =>
+    document.getElementById('overlayFileInput').click());
+  document.getElementById('overlayFileInput').addEventListener('change', function(e) {
+    const file = e.target.files[0]; if (!file) return;
+    const r = new FileReader();
+    r.onload = ev => {
+      try {
+        render(JSON.parse(ev.target.result));
+        document.getElementById('upload-overlay').classList.remove('show');
+      } catch(_) { alert('Invalid JSON file.'); }
+    };
+    r.readAsText(file);
+  });
+
+  // ── Offline sidebar Load JSON ──────────────────────────────────────────────
+  const offlineInput = document.getElementById('offlineLoadInput');
+  offlineInput && offlineInput.addEventListener('change', function(e) {
+    const file = e.target.files[0]; if (!file) return;
+    const r = new FileReader();
+    r.onload = ev => { try { render(JSON.parse(ev.target.result)); } catch(_) { alert('Invalid JSON.'); } };
+    r.readAsText(file);
+  });
+
+  // ── Hamburger ─────────────────────────────────────────────────────────────
+  const hamburger = document.getElementById('hamburger');
+  const navLinks  = document.getElementById('nav-links');
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('active');
+    navLinks.classList.toggle('active');
+  });
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      hamburger.classList.remove('active');
+      navLinks.classList.remove('active');
+    });
+  });
+  document.addEventListener('click', e => {
+    if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+      hamburger.classList.remove('active');
+      navLinks.classList.remove('active');
+    }
+  });
+
+  // ── Active nav on scroll ───────────────────────────────────────────────────
+  window.addEventListener('scroll', () => {
+    const links = document.querySelectorAll('#nav-links a');
+    document.querySelectorAll('main section').forEach(sec => {
+      const top = sec.offsetTop - 120, bot = top + sec.clientHeight;
+      if (window.scrollY >= top && window.scrollY < bot) {
+        links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === `#${sec.id}`));
+      }
+    });
+  });
+
+  loadData();
+  </script>
+
+<script src="assets/jspdf.umd.min.js"></script>
+<script src="assets/rp-pdf.js"></script>
+</body>
+</html>

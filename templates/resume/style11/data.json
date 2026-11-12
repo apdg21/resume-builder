@@ -1,0 +1,143 @@
+{
+  "personalInfo": {
+    "firstName": "Sofia",
+    "lastName": "Reyes",
+    "jobTitle": "Senior UX / Product Designer",
+    "email": "sofia.reyes@designfolio.io",
+    "phone": "+63 917 845 3021",
+    "location": "Manila, Philippines",
+    "profileImage": "assets/profile.jpg"
+  },
+  "about": "Product designer with 8 years of experience crafting digital experiences that sit at the intersection of user empathy and business clarity. I lead design systems, conduct in-depth research, and translate complex problems into interfaces that feel effortless. I believe the best design is the kind users never notice — because everything just works.",
+  "skills": [
+    {
+      "name": "Figma & Prototyping",
+      "level": 95
+    },
+    {
+      "name": "UX Research & Testing",
+      "level": 90
+    },
+    {
+      "name": "Design Systems",
+      "level": 88
+    },
+    {
+      "name": "Product Strategy",
+      "level": 80
+    },
+    {
+      "name": "HTML / CSS",
+      "level": 72
+    },
+    {
+      "name": "Motion & Interaction",
+      "level": 78
+    },
+    {
+      "name": "Brand Identity",
+      "level": 85
+    }
+  ],
+  "experience": [
+    {
+      "position": "Lead Product Designer",
+      "company": "Kumu Technologies",
+      "startDate": "Mar 2022",
+      "endDate": "Present",
+      "description": "Spearheading design across Kumu's live-streaming and social commerce platform, serving 4M+ active users.",
+      "details": [
+        "Built and maintained a cross-platform design system adopted by 12 engineers and 3 designers",
+        "Redesigned the creator monetization flow, increasing average creator revenue by 34%",
+        "Established a user research practice, running 60+ moderated sessions per quarter",
+        "Collaborated with the CPO on a 12-month product roadmap defining 3 new revenue streams"
+      ]
+    },
+    {
+      "position": "Senior UX Designer",
+      "company": "UnionBank of the Philippines",
+      "startDate": "Aug 2019",
+      "endDate": "Feb 2022",
+      "description": "Owned end-to-end design for the consumer mobile banking app and internal tooling.",
+      "details": [
+        "Led redesign of the onboarding flow, reducing drop-off by 41% within 2 months of launch",
+        "Designed an accessible transaction dashboard used by 2.1M monthly active users",
+        "Partnered with compliance and engineering to ship biometric login across iOS and Android",
+        "Mentored 2 junior designers through weekly design critiques and structured growth plans"
+      ]
+    },
+    {
+      "position": "UX / UI Designer",
+      "company": "Pointwest Technologies",
+      "startDate": "Jun 2017",
+      "endDate": "Jul 2019",
+      "description": "Delivered design for enterprise SaaS clients across logistics, healthcare, and retail.",
+      "details": [
+        "Designed a supply-chain dashboard that reduced dispatch errors by 22%",
+        "Conducted contextual inquiry research with warehouse staff to inform data hierarchy",
+        "Produced high-fidelity prototypes for client presentations and stakeholder sign-off"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "Bachelor of Fine Arts — Multimedia Arts",
+      "institution": "De La Salle–College of Saint Benilde",
+      "location": "Manila, Philippines",
+      "year": "2013 – 2017"
+    },
+    {
+      "degree": "Google UX Design Professional Certificate",
+      "institution": "Coursera / Google",
+      "year": "2020"
+    }
+  ],
+  "languages": [
+    {
+      "name": "Filipino",
+      "level": 100
+    },
+    {
+      "name": "English",
+      "level": 95
+    },
+    {
+      "name": "Spanish",
+      "level": 55
+    }
+  ],
+  "projects": [
+    {
+      "name": "Haraya Design System",
+      "description": "An open-source Figma + React component library built for Southeast Asian product teams, with WCAG 2.1 AA compliance baked in from day one.",
+      "liveUrl": "https://haraya.design",
+      "codeUrl": "https://github.com/sofiareyes/haraya"
+    },
+    {
+      "name": "Lakbay — Accessible Travel App",
+      "description": "A concept travel app designed specifically for Filipinos with mobility challenges. Won 2nd place at the 2023 UX Philippines Design Challenge.",
+      "liveUrl": "https://lakbay.app",
+      "codeUrl": ""
+    },
+    {
+      "name": "Palengke Price Tracker",
+      "description": "Community-driven web tool that tracks wet market prices across Metro Manila. Designed the full UX and visual identity; built with a volunteer dev team.",
+      "liveUrl": "https://palengke.ph",
+      "codeUrl": "https://github.com/sofiareyes/palengke"
+    }
+  ],
+  "socialLinks": [
+    {
+      "name": "LinkedIn",
+      "url": "https://linkedin.com/in/sofiareyes"
+    },
+    {
+      "name": "GitHub",
+      "url": "https://github.com/sofiareyes"
+    },
+    {
+      "name": "Twitter",
+      "url": "https://twitter.com/sofiareyes_ux"
+    }
+  ]
+}

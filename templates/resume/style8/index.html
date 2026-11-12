@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color:   #3498db;
+      --secondary-color: #2c3e50;
+      --accent-color:    #e74c3c;
+      --light-color:     #ecf0f1;
+      --dark-color:      #2c3e50;
+      --text-color:      #333;
+      --text-light:      #7f8c8d;
+      --white:           #fff;
+      --shadow:          0 4px 6px rgba(0,0,0,0.1);
+      --transition:      all 0.3s ease;
+      --g1: #1a2a3a;
+      --g2: #2c3e50;
+      --ac: #3498db;
+    }
+
+    .offline-only { display: none; }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      line-height: 1.6;
+      color: var(--text-color);
+      background-color: var(--white);
+      overflow-x: hidden;
+    }
+
+    .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    a { text-decoration: none; color: inherit; }
+
+    .btn {
+      display: inline-block; padding: 10px 20px; border-radius: 5px;
+      font-weight: 500; transition: var(--transition); text-align: center; cursor: pointer;
+    }
+    .btn-primary { background-color: var(--primary-color); color: var(--white); border: 2px solid var(--primary-color); }
+    .btn-primary:hover { background-color: transparent; color: var(--primary-color); }
+
+    .section { padding: 80px 0; }
+    .section-title {
+      font-size: 2.5rem; margin-bottom: 50px; text-align: center;
+      color: var(--secondary-color); position: relative;
+    }
+    .section-title::after {
+      content: ''; display: block; width: 80px; height: 4px;
+      background-color: var(--primary-color); margin: 15px auto;
+    }
+
+    /* ── Upload Overlay ─────────────────────────────────── */
+    .upload-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
+      z-index: 3000; align-items: center; justify-content: center;
+    }
+    .upload-overlay.show { display: flex; }
+    .upload-box {
+      background: var(--white); border-radius: 10px; padding: 40px;
+      text-align: center; max-width: 460px; width: 90%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    }
+    .upload-box h2 { color: var(--secondary-color); margin-bottom: 12px; }
+    .upload-box p  { color: var(--text-light); margin-bottom: 20px; font-size: 0.95rem; }
+    .upload-box .btn-upload {
+      background: var(--primary-color); color: white; border: none;
+      padding: 12px 28px; border-radius: 6px; cursor: pointer;
+      font-size: 1rem; font-family: inherit; margin: 6px; transition: opacity 0.2s;
+    }
+    .upload-box .btn-upload:hover { opacity: 0.85; }
+    .upload-box a { color: var(--primary-color); }
+
+    /* ── Header ─────────────────────────────────────────── */
+    .header {
+      position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+      background-color: var(--white); box-shadow: var(--shadow);
+    }
+    .header-content {
+      display: flex; justify-content: space-between;
+      align-items: center; padding: 20px 0;
+    }
+    .logo { font-size: 1.8rem; font-weight: 700; color: var(--primary-color); }
+
+    .nav-list { display: flex; list-style: none; }
+    .nav-list li { margin-left: 30px; }
+    .nav-list a { font-weight: 500; transition: var(--transition); position: relative; }
+    .nav-list a::after {
+      content: ''; position: absolute; bottom: -5px; left: 0;
+      width: 0; height: 2px; background-color: var(--primary-color); transition: var(--transition);
+    }
+    .nav-list a:hover::after, .nav-list a.active::after { width: 100%; }
+    .nav-list a:hover, .nav-list a.active { color: var(--primary-color); }
+
+    .nav-right { display: flex; align-items: center; gap: 8px; }
+
+    .nav-edit-pill {
+      font-size: 0.82rem; color: var(--primary-color); text-decoration: none;
+      font-weight: 500; border: 1px solid var(--primary-color);
+      padding: 4px 12px; border-radius: 20px; transition: all 0.2s; white-space: nowrap;
+    }
+    .nav-edit-pill:hover { background: var(--primary-color); color: white; }
+
+    .hamburger {
+      display: none; background: none; border: none;
+      font-size: 1.5rem; cursor: pointer; color: var(--secondary-color);
+    }
+
+    /* ── Hero ───────────────────────────────────────────── */
+    .hero {
+      padding: 150px 0 100px;
+      background: linear-gradient(135deg, rgba(52,152,219,0.1) 0%, rgba(231,76,60,0.1) 100%);
+    }
+    .hero-content {
+      display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap;
+    }
+    .hero-text { flex: 1; min-width: 300px; padding-right: 30px; }
+    .hero-image { flex: 1; min-width: 300px; text-align: center; }
+    .hero-image img { max-width: 100%; border-radius: 10px; box-shadow: var(--shadow); }
+
+    .hero h1 { font-size: 3rem; margin-bottom: 15px; color: var(--secondary-color); }
+    .hero h2 { font-size: 1.8rem; margin-bottom: 20px; color: var(--primary-color); font-weight: 400; }
+    .hero p  { font-size: 1.1rem; margin-bottom: 30px; color: var(--text-light); }
+
+    .profile-eyebrow {
+      font-size: 0.78rem; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 2px; color: var(--text-light); margin-bottom: 6px;
+    }
+    .hero-buttons { margin-top: 30px; }
+
+    /* ── About ──────────────────────────────────────────── */
+    .about-content { display: flex; flex-wrap: wrap; gap: 40px; }
+    .about-text { flex: 1; min-width: 300px; }
+    .about-text p { margin-bottom: 20px; font-size: 1.1rem; line-height: 1.8; }
+    .about-info { flex: 1; min-width: 300px; }
+    .info-list { list-style: none; }
+    .info-list li { margin-bottom: 15px; display: flex; align-items: center; }
+    .info-list strong { min-width: 120px; font-weight: 600; color: var(--secondary-color); }
+
+    /* ── Timeline ───────────────────────────────────────── */
+    .timeline { position: relative; max-width: 800px; margin: 0 auto; padding: 20px 0; }
+    .timeline::before {
+      content: ''; position: absolute; width: 2px;
+      background-color: var(--primary-color); top: 0; bottom: 0; left: 50%; margin-left: -1px;
+    }
+    .timeline-item { padding: 20px 40px; position: relative; width: 50%; }
+    .timeline-item:nth-child(odd)  { left: 0; }
+    .timeline-item:nth-child(even) { left: 50%; }
+    .timeline-item::after {
+      content: ''; position: absolute; width: 20px; height: 20px;
+      background-color: var(--white); border: 4px solid var(--primary-color);
+      border-radius: 50%; top: 30px; z-index: 1;
+    }
+    .timeline-item:nth-child(odd)::after  { right: -10px; }
+    .timeline-item:nth-child(even)::after { left: -10px; }
+    .timeline-content {
+      padding: 20px; background-color: var(--white);
+      border-radius: 5px; box-shadow: var(--shadow);
+    }
+    .timeline-date  { color: var(--primary-color); font-weight: 500; margin-bottom: 10px; }
+    .timeline-title { font-size: 1.3rem; margin-bottom: 10px; color: var(--secondary-color); }
+    .timeline-subtitle { font-size: 1rem; color: var(--text-light); margin-bottom: 10px; font-style: italic; }
+    .timeline-description { margin-top: 10px; }
+    .timeline-description ul { margin: 8px 0 0 18px; }
+    .timeline-description li { font-size: 0.95rem; margin-bottom: 4px; }
+
+    /* ── Skills ─────────────────────────────────────────── */
+    .skills-container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+    .skill-item {
+      flex: 1; min-width: 200px; max-width: 300px;
+      background-color: var(--white); padding: 20px;
+      border-radius: 5px; box-shadow: var(--shadow); text-align: center; transition: var(--transition);
+    }
+    .skill-item:hover { transform: translateY(-5px); }
+    .skill-icon  { font-size: 2.5rem; color: var(--primary-color); margin-bottom: 15px; }
+    .skill-name  { font-size: 1.2rem; margin-bottom: 10px; color: var(--secondary-color); }
+    .skill-level { height: 8px; background-color: var(--light-color); border-radius: 4px; overflow: hidden; margin-bottom: 10px; }
+    .skill-level-bar { height: 100%; background-color: var(--primary-color); border-radius: 4px; }
+
+    /* ── Languages ──────────────────────────────────────── */
+    .languages-container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+    .language-item {
+      flex: 1; min-width: 150px; max-width: 200px;
+      background-color: var(--white); padding: 20px;
+      border-radius: 5px; box-shadow: var(--shadow); text-align: center;
+    }
+    .language-name  { font-size: 1.2rem; margin-bottom: 10px; color: var(--secondary-color); }
+    .language-bar   { height: 6px; background: var(--light-color); border-radius: 4px; overflow: hidden; margin: 8px 0 6px; }
+    .language-bar-fill { height: 100%; background: var(--primary-color); border-radius: 4px; }
+    .language-pct   { font-size: 0.85rem; color: var(--text-light); }
+
+    /* ── References ─────────────────────────────────────── */
+    .references-container { display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; }
+    .reference-item {
+      flex: 1; min-width: 250px; max-width: 350px;
+      background-color: var(--white); padding: 30px;
+      border-radius: 5px; box-shadow: var(--shadow); text-align: center;
+    }
+    .reference-photo {
+      width: 80px; height: 80px; border-radius: 50%; object-fit: cover;
+      margin: 0 auto 20px; border: 3px solid var(--primary-color); display: block;
+    }
+    .reference-name     { font-size: 1.3rem; margin-bottom: 5px; color: var(--secondary-color); }
+    .reference-position { color: var(--primary-color); margin-bottom: 15px; font-size: 0.9rem; }
+    .reference-quote    { font-style: italic; color: var(--text-light); margin-bottom: 15px; }
+    .reference-contact  { color: var(--text-color); font-size: 0.9rem; }
+
+    /* ── Contact ────────────────────────────────────────── */
+    .contact-content { display: flex; flex-wrap: wrap; gap: 40px; }
+    .contact-info  { flex: 1; min-width: 300px; }
+    .contact-item  { display: flex; align-items: center; margin-bottom: 20px; }
+    .contact-icon  {
+      width: 50px; height: 50px; background-color: var(--primary-color);
+      color: var(--white); border-radius: 50%; display: flex;
+      align-items: center; justify-content: center; font-size: 1.2rem;
+      margin-right: 15px; flex-shrink: 0;
+    }
+    .contact-text { font-size: 1.1rem; }
+    .contact-text a:hover { color: var(--primary-color); }
+    .contact-map {
+      flex: 1; min-width: 300px; height: 400px;
+      border-radius: 10px; overflow: hidden; box-shadow: var(--shadow);
+    }
+    .contact-map iframe { width: 100%; height: 100%; border: 0; }
+
+    /* ── Footer ─────────────────────────────────────────── */
+    .footer {
+      background-color: var(--secondary-color); color: var(--white);
+      padding: 30px 0; text-align: center;
+    }
+    .footer-content { display: flex; flex-direction: column; align-items: center; }
+    .social-links { display: flex; margin-bottom: 20px; }
+    .social-link {
+      width: 40px; height: 40px; border-radius: 50%;
+      background-color: rgba(255,255,255,0.1);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 10px; transition: var(--transition);
+    }
+    .social-link:hover { background-color: var(--primary-color); transform: translateY(-3px); }
+    .copyright { margin-top: 20px; font-size: 0.9rem; color: inherit; opacity: 0.7; }
+
+    /* ── Fade-in ────────────────────────────────────────── */
+    .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Responsive ─────────────────────────────────────── */
+    @media (max-width: 992px) {
+      .timeline::before { left: 40px; }
+      .timeline-item { width: 100%; padding-left: 70px; padding-right: 0; }
+      .timeline-item:nth-child(even) { left: 0; }
+      .timeline-item::after { left: 30px !important; }
+    }
+    @media (max-width: 768px) {
+      .nav-list {
+        position: fixed; top: 80px; left: -100%;
+        width: 100%; height: calc(100vh - 80px);
+        background-color: var(--white); flex-direction: column;
+        align-items: center; padding: 40px 0; transition: var(--transition); z-index: 999;
+      }
+      .nav-list.active { left: 0; }
+      .nav-list li { margin: 15px 0; }
+      .hamburger { display: block; }
+      .hero-content { flex-direction: column-reverse; }
+      .hero-text { padding-right: 0; margin-top: 30px; text-align: center; }
+      .section { padding: 60px 0; }
+    }
+    @media (max-width: 576px) {
+      .hero h1 { font-size: 2.2rem; }
+      .hero h2 { font-size: 1.4rem; }
+      .section-title { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Upload Overlay -->
+  <div class="upload-overlay" id="uploadOverlay">
+    <div class="upload-box">
+      <h2>Load Resume Data</h2>
+      <p>No data found. Upload your <code>data.json</code> or use the form builder to create one.</p>
+      <input type="file" id="jsonFileUpload" accept=".json" style="display:none">
+      <button class="btn-upload" onclick="document.getElementById('jsonFileUpload').click()">
+        <i class="fas fa-upload"></i> Select JSON File
+      </button>
+      <br><br>
+      <a href="form.html"><i class="fas fa-pencil-alt"></i> Create with Form Builder</a>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo" id="logo-text">JD</div>
+        <nav>
+          <ul class="nav-list" id="nav-list">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#experience">Experience</a></li>
+            <li><a href="#education">Education</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#languages">Languages</a></li>
+            <li><a href="#references">References</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </nav>
+        <div class="nav-right">
+          <a href="form.html" class="nav-edit-pill offline-only" style="display:none">
+            <i class="fas fa-pen"></i> Edit
+          </a>
+          <button class="hamburger" id="hamburger"><i class="fas fa-bars"></i></button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero section" id="home">
+      <div class="container">
+        <div class="hero-content">
+          <div class="hero-text">
+            <p class="profile-eyebrow" id="profileEyebrow"></p>
+            <h1 id="hero-name">Your Name</h1>
+            <h2 id="hero-title">Your Profession</h2>
+            <p id="hero-description">Brief introduction</p>
+            <div class="hero-buttons">
+              <a href="#contact" class="btn btn-primary">Contact Me</a>
+            </div>
+          </div>
+          <div class="hero-image">
+            <img id="hero-img" src="assets/profile.jpg" alt="Profile Photo">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section class="section about fade-in" id="about">
+      <div class="container">
+        <h2 class="section-title">About Me</h2>
+        <div class="about-content">
+          <div class="about-text"><p id="about-text"></p></div>
+          <div class="about-info"><ul class="info-list" id="personal-info"></ul></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Experience -->
+    <section class="section experience fade-in" id="experience">
+      <div class="container">
+        <h2 class="section-title">Experience</h2>
+        <div class="timeline" id="experience-timeline"></div>
+      </div>
+    </section>
+
+    <!-- Education -->
+    <section class="section education fade-in" id="education">
+      <div class="container">
+        <h2 class="section-title">Education</h2>
+        <div class="timeline" id="education-timeline"></div>
+      </div>
+    </section>
+
+    <!-- Skills -->
+    <section class="section skills fade-in" id="skills">
+      <div class="container">
+        <h2 class="section-title">Skills</h2>
+        <div class="skills-container" id="skills-container"></div>
+      </div>
+    </section>
+
+    <!-- Languages -->
+    <section class="section languages fade-in" id="languages">
+      <div class="container">
+        <h2 class="section-title">Languages</h2>
+        <div class="languages-container" id="languages-container"></div>
+      </div>
+    </section>
+
+    <!-- References -->
+    <section class="section references fade-in" id="references">
+      <div class="container">
+        <h2 class="section-title">References</h2>
+        <div class="references-container" id="references-container"></div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="section contact fade-in" id="contact">
+      <div class="container">
+        <h2 class="section-title">Contact</h2>
+        <div class="contact-content">
+          <div class="contact-info" id="contact-info"></div>
+          <div class="contact-map">
+            <iframe id="map-iframe" src="" frameborder="0" style="border:0" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content" id="footer-content"></div>
+    </div>
+  </footer>
+
+  <script>
+  // ── Helpers ──────────────────────────────────────────────────────────────
+  function hexAlpha(hex, alpha) {
+    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+
+  // Themes recolour only the page frame: header/nav, hero and footer.
+  // The rest of the page keeps its original design.
+  function rpIsDarkHex(hex) {
+    if (!hex || hex.charAt(0) !== '#') return false;
+    var c = hex.substring(1);
+    if (c.length === 3) c = c.split('').map(function (x) { return x + x; }).join('');
+    if (c.length !== 6) return false;
+    var r = parseInt(c.substring(0, 2), 16) / 255;
+    var g = parseInt(c.substring(2, 4), 16) / 255;
+    var b = parseInt(c.substring(4, 6), 16) / 255;
+    return (0.2126 * r + 0.7152 * g + 0.0722 * b) < 0.55;
+  }
+
+  function rpApplyFrameTheme(theme, regions) {
+    var MARK = 'data-rp-frame-themed';
+    var marked = document.querySelectorAll('[' + MARK + ']');
+    for (var i = 0; i < marked.length; i++) {
+      marked[i].removeAttribute(MARK);
+      marked[i].style.removeProperty('background');
+      marked[i].style.removeProperty('background-color');
+      marked[i].style.removeProperty('background-image');
+    }
+    var styleEl = document.getElementById('rpFrameThemeStyle');
+    if (styleEl) styleEl.parentNode.removeChild(styleEl);
+    if (!theme || !theme.gradientStart) return;
+
+    var g1 = theme.gradientStart;
+    var g2 = theme.gradientEnd || g1;
+    var dark = rpIsDarkHex(g1);
+    var tc = theme.textColor || (dark ? '#f1f5f9' : '#1e293b');
+    var hc = theme.headingColor || (dark ? '#ffffff' : '#0f172a');
+
+    var found = document.querySelectorAll(regions.join(','));
+    var picked = [];
+    for (var j = 0; j < found.length; j++) {
+      var nested = false;
+      for (var k = 0; k < picked.length; k++) {
+        if (picked[k] !== found[j] && picked[k].contains(found[j])) { nested = true; break; }
+      }
+      if (!nested) picked.push(found[j]);
+    }
+    for (var m = 0; m < picked.length; m++) {
+      picked[m].setAttribute(MARK, '1');
+      picked[m].style.setProperty('background', 'linear-gradient(135deg, ' + g1 + ' 0%, ' + g2 + ' 100%)', 'important');
+    }
+
+    styleEl = document.createElement('style');
+    styleEl.id = 'rpFrameThemeStyle';
+    styleEl.textContent =
+      '[' + MARK + '] { color: ' + tc + ' !important; }' +
+      '[' + MARK + '] h1, [' + MARK + '] h2, [' + MARK + '] h3, [' + MARK + '] h4, [' + MARK + '] h5, [' + MARK + '] h6 { color: ' + hc + ' !important; }' +
+      '[' + MARK + '] p, [' + MARK + '] span, [' + MARK + '] li, [' + MARK + '] a, [' + MARK + '] strong, [' + MARK + '] em, [' + MARK + '] small, [' + MARK + '] blockquote, [' + MARK + '] figcaption, [' + MARK + '] time { color: ' + tc + ' !important; }';
+    document.head.appendChild(styleEl);
+  }
+
+  function applyTheme(theme) {
+    rpApplyFrameTheme(theme, ['header.header', 'section.hero', 'footer.footer']);
+  }
+  window.applyTheme = applyTheme;
+
+  // ── Render ────────────────────────────────────────────────────────────────
+  function render(data) {
+    applyTheme(data.theme);
+
+    // Name/title: universal top-level or legacy hero.title/subtitle
+    const name  = data.name  || data.hero?.title    || '';
+    const title = data.title || data.hero?.subtitle  || '';
+
+    document.title = name || 'Resume';
+    document.getElementById('logo-text').textContent       = name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() || 'JD';
+    document.getElementById('hero-name').textContent       = name;
+    document.getElementById('hero-title').textContent      = title;
+    document.getElementById('profileEyebrow').textContent  = data.profile?.eyebrow || '';
+
+    // Hero image: profile.image > hero.image > hero.profilePhoto
+    document.getElementById('hero-img').src = data.profile?.image || data.hero?.image || data.hero?.profilePhoto || 'assets/profile.jpg';
+
+    // Hero description
+    document.getElementById('hero-description').textContent = data.hero?.description || '';
+
+    // About text: universal string or legacy about.text
+    const aboutText = (typeof data.about === 'string') ? data.about : (data.about?.text || '');
+    document.getElementById('about-text').textContent = Array.isArray(aboutText) ? aboutText.join('\n\n') : aboutText;
+
+    // Personal info list
+    const infoList = document.getElementById('personal-info');
+    infoList.innerHTML = '';
+    const addInfo = (label, value) => {
+      if (!value) return;
+      const li = document.createElement('li');
+      li.innerHTML = `<strong>${label}:</strong>&nbsp;${value}`;
+      infoList.appendChild(li);
+    };
+    if (data.about?.personalInfo?.length) {
+      data.about.personalInfo.forEach(i => addInfo(i.label, i.value));
+    } else {
+      addInfo('Name',     name);
+      addInfo('Title',    title);
+      addInfo('Email',    data.contact?.email);
+      addInfo('Phone',    data.contact?.phone);
+      addInfo('Location', data.contact?.address);
+    }
+
+    // Experience: universal (role/start/end/details[]) + legacy (title/date/description string)
+    document.getElementById('experience-timeline').innerHTML = (data.experience || []).map(exp => {
+      const role   = exp.role || exp.title || '';
+      const period = exp.period || (exp.start && exp.end ? `${exp.start} – ${exp.end}` : exp.start || '');
+      const date   = exp.date || period;
+      const bullets = Array.isArray(exp.details) ? exp.details : [];
+      const desc    = exp.description || '';
+      return `<div class="timeline-item">
+        <div class="timeline-content">
+          <div class="timeline-date">${date}</div>
+          <h3 class="timeline-title">${role}</h3>
+          <div class="timeline-subtitle">${exp.company || ''}</div>
+          <div class="timeline-description">
+            ${bullets.length ? `<ul>${bullets.map(b=>`<li>${b}</li>`).join('')}</ul>` : `<p>${desc}</p>`}
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+
+    // Education: universal (degree/institution/start/end) + legacy (date)
+    document.getElementById('education-timeline').innerHTML = (data.education || []).map(edu => {
+      const period = edu.date || (edu.start && edu.end ? `${edu.start} – ${edu.end}` : edu.start || '');
+      return `<div class="timeline-item">
+        <div class="timeline-content">
+          <div class="timeline-date">${period}</div>
+          <h3 class="timeline-title">${edu.degree || ''}</h3>
+          <div class="timeline-subtitle">${edu.institution || ''}</div>
+          <div class="timeline-description"><p>${edu.description || ''}</p></div>
+        </div>
+      </div>`;
+    }).join('');
+
+    // Skills: universal { name, level:number, icon } + legacy { level: string }
+    document.getElementById('skills-container').innerHTML = (data.skills || []).map(skill => {
+      const lvl  = parseInt(skill.level) || 0;
+      const icon = skill.icon ? `<div class="skill-icon"><i class="${skill.icon}"></i></div>` : '';
+      return `<div class="skill-item">
+        ${icon}
+        <h3 class="skill-name">${skill.name}</h3>
+        <div class="skill-level"><div class="skill-level-bar" style="width:${lvl}%"></div></div>
+      </div>`;
+    }).join('');
+
+    // Languages: universal { name, level:number } + legacy { level: text label }
+    document.getElementById('languages-container').innerHTML = (data.languages || []).map(lang => {
+      const lvlNum = parseInt(lang.level);
+      const isNum  = !isNaN(lvlNum);
+      return `<div class="language-item">
+        <h3 class="language-name">${lang.name}</h3>
+        ${isNum
+          ? `<div class="language-bar"><div class="language-bar-fill" style="width:${lvlNum}%"></div></div>
+             <p class="language-pct">${lvlNum}%</p>`
+          : `<p class="language-pct">${lang.level || ''}</p>`}
+      </div>`;
+    }).join('');
+
+    // References: universal { name, role, email, phone, photo?, quote? } + legacy { position, contact, text }
+    document.getElementById('references-container').innerHTML = (data.references || []).map(ref => {
+      const role    = ref.role  || ref.position || '';
+      const contact = ref.email || ref.contact  || '';
+      const quote   = ref.quote || ref.text     || '';
+      const photo   = ref.photo ? `<img class="reference-photo" src="${ref.photo}" alt="${ref.name}">` : '';
+      return `<div class="reference-item">
+        ${photo}
+        <h3 class="reference-name">${ref.name}</h3>
+        <p class="reference-position">${role}</p>
+        ${quote   ? `<p class="reference-quote">"${quote}"</p>` : ''}
+        ${contact ? `<p class="reference-contact">${contact}</p>` : ''}
+      </div>`;
+    }).join('');
+
+    // Contact: universal phone/email/address + legacy contact.items[]
+    const contactEl = document.getElementById('contact-info');
+    contactEl.innerHTML = '';
+    const makeContactItem = (icon, text, link) => {
+      const div = document.createElement('div');
+      div.className = 'contact-item';
+      div.innerHTML = `<div class="contact-icon"><i class="${icon}"></i></div>
+        <div class="contact-text">${link ? `<a href="${link}">${text}</a>` : text}</div>`;
+      contactEl.appendChild(div);
+    };
+    if (data.contact?.items?.length) {
+      data.contact.items.forEach(i => makeContactItem(i.icon, i.text, i.link || ''));
+    } else {
+      if (data.contact?.email)   makeContactItem('fas fa-envelope',      data.contact.email,   `mailto:${data.contact.email}`);
+      if (data.contact?.phone)   makeContactItem('fas fa-phone',          data.contact.phone,   `tel:${data.contact.phone.replace(/\D/g,'')}`);
+      if (data.contact?.address) makeContactItem('fas fa-map-marker-alt', data.contact.address, '');
+    }
+    // Map: derived from the resume location; a supplied embed URL is the fallback.
+    const mapFrame = document.getElementById('map-iframe');
+    const mapWrap = mapFrame ? mapFrame.closest('.contact-map') : null;
+    const personalInfo = Array.isArray(data.about?.personalInfo) ? data.about.personalInfo : [];
+    const locationEntry = personalInfo.find(
+      entry => /^(location|address)$/i.test(String(entry.label || '').trim())
+    );
+    const mapLocation = (typeof data.contact?.address === 'string' ? data.contact.address.trim() : '')
+      || (locationEntry && typeof locationEntry.value === 'string' ? locationEntry.value.trim() : '');
+    const mapSrc = mapLocation
+      ? 'https://www.google.com/maps?q=' + encodeURIComponent(mapLocation) + '&z=12&output=embed'
+      : (data.contact?.mapEmbedUrl || '');
+    if (mapFrame && mapWrap) {
+      if (mapSrc) {
+        mapFrame.src = mapSrc;
+        mapFrame.title = mapLocation ? 'Map of ' + mapLocation : 'Location map';
+        mapWrap.style.display = '';
+      } else {
+        mapFrame.removeAttribute('src');
+        mapWrap.style.display = 'none';
+      }
+    }
+
+    // Footer: footer.socials (universal) + legacy footer.socialLinks / footer.copyright
+    const year    = new Date().getFullYear();
+    const ftxt    = (data.footer?.text || data.footer?.copyright || `© {year} ${name}. All rights reserved.`).replace('{year}', year);
+    const socials = data.footer?.socials || data.footer?.socialLinks || [];
+    document.getElementById('footer-content').innerHTML = `
+      <div class="social-links">
+        ${socials.map(s => `<a class="social-link" href="${s.url}" target="_blank" rel="noopener" title="${s.name||''}"><i class="${s.icon}"></i></a>`).join('')}
+      </div>
+      <div class="copyright">${ftxt}</div>`;
+
+    initFadeIn();
+    setupNavHighlight();
+  }
+
+  // ── Offline-only ──────────────────────────────────────────────────────────
+  if (location.protocol === 'file:') {
+    document.querySelectorAll('.offline-only').forEach(el => el.style.display = '');
+  }
+
+  // ── Load Data ─────────────────────────────────────────────────────────────
+  async function loadData() {
+    try {
+      const res = await fetch('data.json');
+      if (!res.ok) throw new Error('fetch failed');
+      render(await res.json());
+    } catch {
+      if (location.hash && location.hash.startsWith('#data=')) {
+        try { render(JSON.parse(decodeURIComponent(location.hash.substring(6)))); return; } catch { /* fall */ }
+      }
+      document.getElementById('uploadOverlay').classList.add('show');
+    }
+  }
+
+  document.getElementById('jsonFileUpload').addEventListener('change', function(e) {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try { render(JSON.parse(ev.target.result)); document.getElementById('uploadOverlay').classList.remove('show'); }
+      catch { alert('Invalid JSON file. Please check the format.'); }
+    };
+    reader.readAsText(file);
+  });
+
+  // ── Hamburger ─────────────────────────────────────────────────────────────
+  const hamburger = document.getElementById('hamburger');
+  const navList   = document.getElementById('nav-list');
+
+  hamburger.addEventListener('click', () => {
+    const open = navList.classList.toggle('active');
+    hamburger.innerHTML = open ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+  });
+
+  document.addEventListener('click', e => {
+    if (!navList.contains(e.target) && !hamburger.contains(e.target)) {
+      navList.classList.remove('active');
+      hamburger.innerHTML = '<i class="fas fa-bars"></i>';
+    }
+  });
+
+  navList.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    navList.classList.remove('active');
+    hamburger.innerHTML = '<i class="fas fa-bars"></i>';
+  }));
+
+  // ── Nav Highlight ─────────────────────────────────────────────────────────
+  function setupNavHighlight() {
+    const sections = document.querySelectorAll('section[id]');
+    const links    = document.querySelectorAll('.nav-list a');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(sec => { if (window.scrollY >= sec.offsetTop - 90) current = sec.id; });
+      links.forEach(a => {
+        a.classList.remove('active');
+        if (a.getAttribute('href') === `#${current}`) a.classList.add('active');
+      });
+    });
+  }
+
+  // ── Fade-in ───────────────────────────────────────────────────────────────
+  function initFadeIn() {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+  }
+
+  loadData();
+  </script>
+
+<script src="assets/jspdf.umd.min.js"></script>
+<script src="assets/rp-pdf.js"></script>
+</body>
+</html>

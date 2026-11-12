@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #1e7150;
+      --primary-light: #2d8d66;
+      --secondary: #333;
+      --light: #f8f9fa;
+      --gray: #e9ecef;
+      --dark-gray: #6c757d;
+      --g1: #1e7150;
+      --g2: #145238;
+      --ac: #2d8d66;
+      --ac-dim: rgba(45,141,102,0.18);
+      --ac-glow: rgba(45,141,102,0.45);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: var(--light);
+    }
+
+    /* ── Offline-only: hidden by default, JS reveals on file:// ── */
+    .offline-only { display: none; }
+
+    /* ── Navigation ── */
+    #navbar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      background: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+    }
+    #navbar ul {
+      display: flex;
+      justify-content: center;
+      list-style: none;
+      padding: 1rem;
+      margin: 0;
+    }
+    #navbar li { margin: 0 1rem; }
+    #navbar a {
+      color: var(--secondary);
+      text-decoration: none;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+    }
+    #navbar a:hover, #navbar a.active {
+      background: var(--primary);
+      color: white;
+    }
+    #navbar .nav-brand {
+      font-weight: 700;
+      color: var(--primary);
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+    }
+    #navbar .nav-brand:hover { background: none; color: var(--primary); }
+
+    /* hamburger */
+    .menu-toggle {
+      position: fixed;
+      top: 1rem; right: 1rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.5rem 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+      z-index: 1100;
+      display: none;
+      font-size: 1.1rem;
+    }
+    .menu-toggle.active { background: var(--primary-light); }
+
+    /* ── Container Layout ── */
+    .container {
+      display: flex;
+      max-width: 1200px;
+      background: white;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 6rem auto 2rem;
+      padding-bottom: 0;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      background-color: var(--primary);
+      color: white;
+      padding: 2rem;
+      width: 35%;
+    }
+    .profile-container { text-align: center; margin-bottom: 2rem; }
+    .profile-eyebrow {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.85;
+      margin-bottom: 0.5rem;
+    }
+    .profile-img {
+      width: 150px; height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid white;
+      margin-bottom: 1rem;
+    }
+    .sidebar h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    .sidebar h2 { font-size: 1.2rem; font-weight: 400; margin-bottom: 1rem; }
+    .sidebar h3 {
+      font-size: 1.1rem;
+      margin: 1.5rem 0 1rem;
+      position: relative;
+      padding-bottom: 0.5rem;
+    }
+    .sidebar h3::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 50px; height: 2px;
+      background: white;
+    }
+    .contact p { display: flex; align-items: center; margin-bottom: 0.8rem; }
+    .contact i { margin-right: 0.8rem; width: 20px; text-align: center; }
+    .sidebar ul { list-style: none; }
+    .sidebar li {
+      margin-bottom: 0.5rem;
+      position: relative;
+      padding-left: 1.5rem;
+    }
+    .sidebar li::before { content: '•'; position: absolute; left: 0; color: white; }
+
+    /* Language bars in sidebar */
+    .lang-item { margin-bottom: 0.8rem; padding-left: 0 !important; }
+    .lang-item::before { display: none; }
+    .lang-name { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 0.25rem; }
+    .lang-bar { height: 5px; background: rgba(255,255,255,0.25); border-radius: 3px; overflow: hidden; }
+    .lang-bar-fill { height: 100%; background: white; border-radius: 3px; }
+
+    /* References section */
+    .references-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+    .reference-card {
+      background: white;
+      border-radius: 6px;
+      padding: 1rem;
+      border-left: 4px solid var(--primary);
+    }
+    .reference-card h4 { font-size: 0.95rem; margin-bottom: 0.2rem; color: #222; }
+    .reference-card .ref-role { font-size: 0.82rem; color: var(--dark-gray); margin-bottom: 0.4rem; }
+    .reference-card .ref-contact { font-size: 0.82rem; color: #555; }
+    .reference-card .ref-contact i { width: 14px; margin-right: 4px; color: var(--primary); }
+
+    /* ── Main Content ── */
+    .content { padding: 2rem; width: 65%; }
+    .section-title {
+      background-color: var(--primary);
+      color: white;
+      padding: 0.8rem 1.2rem;
+      margin: 2rem 0 1.5rem;
+      border-radius: 4px;
+      font-size: 1.2rem;
+    }
+    #experience > div, #education > div {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--gray);
+    }
+    #experience > div:last-child, #education > div:last-child { border-bottom: none; }
+
+    .job h4, .edu-block h4 { font-size: 1.05rem; margin-bottom: 0.2rem; }
+    .company, .institution { color: var(--dark-gray); font-size: 0.9rem; }
+    .period, .year { font-style: italic; font-size: 0.88rem; color: #888; margin: 0.2rem 0 0.5rem; }
+    .job-details { list-style: none; margin-top: 0.4rem; }
+    .job-details li { position: relative; padding-left: 1.2rem; margin-bottom: 0.3rem; font-size: 0.95rem; }
+    .job-details li::before { content: '▸'; position: absolute; left: 0; color: var(--primary); }
+
+    .skill-bar { display: flex; align-items: center; margin-bottom: 1rem; }
+    .skill-bar span { width: 150px; font-weight: 500; }
+    .skill-bar .bar {
+      flex: 1; height: 8px;
+      background: var(--gray);
+      border-radius: 4px;
+      margin-left: 1rem;
+      overflow: hidden;
+    }
+    .skill-bar .bar div {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 4px;
+      width: 0;
+      transition: width 1s ease-out;
+    }
+
+    /* ── Upload overlay ── */
+    #upload-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+    #upload-overlay.show { display: flex; }
+    .upload-box {
+      background: white;
+      border-radius: 10px;
+      padding: 2.5rem;
+      text-align: center;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    }
+    .upload-box h2 { margin-bottom: 1rem; color: #222; }
+    .upload-box p { color: #555; margin-bottom: 1.5rem; font-size: 0.95rem; }
+    .upload-box a { color: var(--primary); text-decoration: underline; }
+    .upload-btn-row { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .upload-btn {
+      padding: 0.6rem 1.4rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      background: var(--primary);
+      color: white;
+    }
+    .upload-btn:hover { opacity: 0.88; }
+
+    /* ── Footer ── */
+    #main-footer {
+      background: var(--primary);
+      color: white;
+      padding: 2rem 0;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    .footer-container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+    #main-footer p { margin-bottom: 1rem; font-size: 1.05rem; }
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .social-links a {
+      color: white;
+      font-size: 1.4rem;
+      transition: transform 0.3s ease;
+      display: inline-block;
+    }
+    .social-links a:hover { transform: translateY(-3px); opacity: 0.85; }
+
+    /* ── Fade-in animations ── */
+    .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Responsive ── */
+    @media (max-width: 992px) {
+      .container { flex-direction: column; margin-top: 3.5rem; }
+      .sidebar, .content { width: 100%; }
+      .references-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .menu-toggle { display: block; }
+      #navbar ul { flex-direction: column; padding: 0; }
+      #navbar { transform: translateY(-100%); transition: transform 0.3s ease; display: block; }
+      #navbar.open { transform: translateY(0); }
+      #navbar li { margin: 0; border-bottom: 1px solid var(--gray); }
+      #navbar a { display: block; padding: 1rem; }
+      .profile-img { width: 120px; height: 120px; }
+      .skill-bar { flex-direction: column; align-items: flex-start; }
+      .skill-bar .bar { width: 100%; margin: 0.5rem 0 0; }
+      .skill-bar span { width: auto; }
+    }
+    @media (max-width: 768px) {
+      .container { margin-top: 5rem !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Upload Overlay (shown when data.json cannot be loaded) -->
+  <div id="upload-overlay">
+    <div class="upload-box">
+      <h2>Load Resume Data</h2>
+      <p>No <code>data.json</code> found. Upload your file or <a href="form.html">create one in the editor</a>.</p>
+      <div class="upload-btn-row">
+        <button class="upload-btn" id="overlayUploadBtn"><i class="fas fa-upload"></i> Select data.json</button>
+      </div>
+      <input type="file" id="overlayFileInput" accept=".json" style="display:none">
+    </div>
+  </div>
+
+  <!-- Mobile Hamburger -->
+  <button class="menu-toggle" aria-label="Toggle menu" id="menuToggle">☰</button>
+
+  <!-- Navigation -->
+  <nav id="navbar">
+    <ul>
+      <li><a href="#" class="nav-brand" id="navBrand">Resume</a></li>
+      <li><a href="#about-section">About</a></li>
+      <li><a href="#experience-section">Experience</a></li>
+      <li><a href="#education-section">Education</a></li>
+      <li><a href="#skills-section">Skills</a></li>
+      <li><a href="#references-section">References</a></li>
+      <!-- offline-only nav items -->
+      <li class="offline-only" style="display:none"><a href="form.html" id="editLink"><i class="fas fa-edit"></i> Edit</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="profile-container">
+        <img src="assets/profile.jpg" alt="Profile photo" class="profile-img" id="profileImage">
+        <p class="profile-eyebrow" id="profileEyebrow"></p>
+        <h1 id="heroName"></h1>
+        <h2 id="heroTitle"></h2>
+      </div>
+
+      <div class="section" id="about-section">
+        <h3>About Me</h3>
+        <p id="about"></p>
+      </div>
+
+      <div class="contact">
+        <p><i class="fas fa-phone"></i> <span id="contactPhone"></span></p>
+        <p><i class="fas fa-envelope"></i> <span id="contactEmail"></span></p>
+        <p><i class="fas fa-map-marker-alt"></i> <span id="contactAddress"></span></p>
+      </div>
+
+      <div class="section">
+        <h3>Languages</h3>
+        <ul id="languages"></ul>
+      </div>
+
+      <div class="section">
+        <h3>Expertise</h3>
+        <ul id="expertise"></ul>
+      </div>
+
+      <!-- offline-only Load JSON button -->
+      <div class="offline-only" style="display:none" id="loadJsonWrapper" style="margin-top:1.5rem">
+        <input type="file" id="loadJsonInput" accept=".json" style="display:none">
+        <button onclick="document.getElementById('loadJsonInput').click()" style="background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.5);padding:0.4rem 0.9rem;border-radius:4px;cursor:pointer;font-size:0.88rem;margin-top:1rem">
+          <i class="fas fa-folder-open"></i> Load JSON
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content">
+      <section id="summary-section" class="fade-in">
+        <h3 class="section-title">Professional Summary</h3>
+        <p id="summary"></p>
+      </section>
+
+      <section id="experience-section" class="fade-in">
+        <h3 class="section-title">Experience</h3>
+        <div id="experience"></div>
+      </section>
+
+      <section id="education-section" class="fade-in">
+        <h3 class="section-title">Education</h3>
+        <div id="education"></div>
+      </section>
+
+      <section id="skills-section" class="fade-in">
+        <h3 class="section-title">Skills Summary</h3>
+        <div id="skills"></div>
+      </section>
+
+      <section id="references-section" class="fade-in">
+        <h3 class="section-title">References</h3>
+        <div class="references-grid" id="references"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer id="main-footer">
+    <div class="footer-container">
+      <p id="copyright-text"></p>
+      <div class="social-links" id="social-links"></div>
+    </div>
+  </footer>
+
+  <script>
+  // ── Utility ────────────────────────────────────────────────────────────────
+  function hexAlpha(hex, alpha) {
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+
+  // Themes recolour only the page frame: header/nav, hero and footer.
+  // The rest of the page keeps its original design.
+  function rpIsDarkHex(hex) {
+    if (!hex || hex.charAt(0) !== '#') return false;
+    var c = hex.substring(1);
+    if (c.length === 3) c = c.split('').map(function (x) { return x + x; }).join('');
+    if (c.length !== 6) return false;
+    var r = parseInt(c.substring(0, 2), 16) / 255;
+    var g = parseInt(c.substring(2, 4), 16) / 255;
+    var b = parseInt(c.substring(4, 6), 16) / 255;
+    return (0.2126 * r + 0.7152 * g + 0.0722 * b) < 0.55;
+  }
+
+  function rpHexToRgb(hex) {
+    var c = String(hex).replace('#', '');
+    if (c.length === 3) c = c.split('').map(function (x) { return x + x; }).join('');
+    return [parseInt(c.substring(0, 2), 16), parseInt(c.substring(2, 4), 16), parseInt(c.substring(4, 6), 16)];
+  }
+
+  // ratio = how much of `target` to mix in (0 = hex, 1 = target).
+  function rpMixHex(hex, target, ratio) {
+    var a = rpHexToRgb(hex);
+    var b = rpHexToRgb(target);
+    var out = '#';
+    for (var i = 0; i < 3; i++) {
+      var v = Math.round(a[i] * (1 - ratio) + b[i] * ratio);
+      out += ('0' + v.toString(16)).slice(-2);
+    }
+    return out;
+  }
+
+  function rpApplyFrameTheme(theme, regions) {
+    var MARK = 'data-rp-frame-themed';
+    var marked = document.querySelectorAll('[' + MARK + ']');
+    for (var i = 0; i < marked.length; i++) {
+      marked[i].removeAttribute(MARK);
+      marked[i].style.removeProperty('background');
+      marked[i].style.removeProperty('background-color');
+      marked[i].style.removeProperty('background-image');
+    }
+    var styleEl = document.getElementById('rpFrameThemeStyle');
+    if (styleEl) styleEl.parentNode.removeChild(styleEl);
+    if (!theme || !theme.gradientStart) return;
+
+    var g1 = theme.gradientStart;
+    var g2 = theme.gradientEnd || g1;
+    var dark = rpIsDarkHex(g1);
+    var tc = theme.textColor || (dark ? '#f1f5f9' : '#1e293b');
+    var hc = theme.headingColor || (dark ? '#ffffff' : '#0f172a');
+
+    var found = document.querySelectorAll(regions.join(','));
+    var picked = [];
+    for (var j = 0; j < found.length; j++) {
+      var nested = false;
+      for (var k = 0; k < picked.length; k++) {
+        if (picked[k] !== found[j] && picked[k].contains(found[j])) { nested = true; break; }
+      }
+      if (!nested) picked.push(found[j]);
+    }
+    for (var m = 0; m < picked.length; m++) {
+      picked[m].setAttribute(MARK, '1');
+      picked[m].style.setProperty('background', 'linear-gradient(135deg, ' + g1 + ' 0%, ' + g2 + ' 100%)', 'important');
+    }
+
+    styleEl = document.createElement('style');
+    styleEl.id = 'rpFrameThemeStyle';
+    // Section titles and the active nav pill sit outside the themed frame, so
+    // they get their own theme-derived colours. Light themes are darkened so
+    // the white label text still stands out against the page.
+    var bandBg = dark ? g1 : rpMixHex(g1, '#000000', 0.55);
+    var navActiveBg = dark ? rpMixHex(g1, '#ffffff', 0.22) : bandBg;
+    var toggleActiveBg = rpMixHex(bandBg, '#ffffff', 0.15);
+    styleEl.textContent =
+      '[' + MARK + '] { color: ' + tc + ' !important; }' +
+      '[' + MARK + '] h1, [' + MARK + '] h2, [' + MARK + '] h3, [' + MARK + '] h4, [' + MARK + '] h5, [' + MARK + '] h6 { color: ' + hc + ' !important; }' +
+      '[' + MARK + '] p, [' + MARK + '] span, [' + MARK + '] li, [' + MARK + '] a, [' + MARK + '] strong, [' + MARK + '] em, [' + MARK + '] small, [' + MARK + '] blockquote, [' + MARK + '] figcaption, [' + MARK + '] time { color: ' + tc + ' !important; }' +
+      '[' + MARK + '] a:not(.nav-brand):hover, [' + MARK + '] a.active { background: ' + navActiveBg + ' !important; color: #ffffff !important; }' +
+      'h3.section-title { background-color: ' + bandBg + ' !important; color: #ffffff !important; }' +
+      '.menu-toggle { background: ' + bandBg + ' !important; color: #ffffff !important; }' +
+      '.menu-toggle.active { background: ' + toggleActiveBg + ' !important; }';
+    document.head.appendChild(styleEl);
+  }
+
+  function applyTheme(theme) {
+    rpApplyFrameTheme(theme, ['#navbar', 'aside.sidebar', '#main-footer']);
+  }
+  window.applyTheme = applyTheme;
+
+  // ── Social icon mapping ────────────────────────────────────────────────────
+  const socialIconMap = {
+    linkedin: 'fab fa-linkedin',
+    github: 'fab fa-github',
+    twitter: 'fab fa-twitter',
+    facebook: 'fab fa-facebook',
+    instagram: 'fab fa-instagram',
+    email: 'fas fa-envelope',
+    website: 'fas fa-globe'
+  };
+  function socialIcon(name) {
+    return socialIconMap[(name||'').toLowerCase()] || 'fas fa-link';
+  }
+
+  // ── Render ─────────────────────────────────────────────────────────────────
+  function render(data) {
+    applyTheme(data.theme);
+    document.title = data.name || 'Resume';
+
+    // Profile
+    if (data.profile && data.profile.image) {
+      document.getElementById('profileImage').src = data.profile.image;
+      document.getElementById('profileImage').alt = `Profile photo of ${data.name}`;
+    }
+    document.getElementById('profileEyebrow').textContent = (data.profile && data.profile.eyebrow) || '';
+    document.getElementById('heroName').textContent = data.name || '';
+    document.getElementById('heroTitle').textContent = data.title || '';
+    document.getElementById('navBrand').textContent = data.name || 'Resume';
+
+    // About / Summary
+    const about = Array.isArray(data.about) ? data.about.join(' ') : (data.about || '');
+    document.getElementById('about').textContent = about;
+    document.getElementById('summary').textContent = about;
+
+    // Contact
+    const c = data.contact || {};
+    document.getElementById('contactPhone').textContent = c.phone || '';
+    document.getElementById('contactEmail').textContent = c.email || '';
+    document.getElementById('contactAddress').textContent = c.address || '';
+
+    // Languages (with level bars)
+    const langList = document.getElementById('languages');
+    langList.innerHTML = '';
+    (data.languages || []).forEach(lang => {
+      const li = document.createElement('li');
+      li.className = 'lang-item';
+      const name = typeof lang === 'string' ? lang : lang.name;
+      const level = typeof lang === 'object' ? lang.level : null;
+      if (level !== null) {
+        li.innerHTML = `
+          <div class="lang-name"><span>${name}</span><span>${level}%</span></div>
+          <div class="lang-bar"><div class="lang-bar-fill" style="width:${level}%"></div></div>`;
+      } else {
+        li.textContent = name;
+      }
+      langList.appendChild(li);
+    });
+
+    // Expertise
+    const expList = document.getElementById('expertise');
+    expList.innerHTML = (data.expertise || []).map(e => `<li>${e}</li>`).join('');
+
+    // Experience
+    const expDiv = document.getElementById('experience');
+    expDiv.innerHTML = (data.experience || []).map(job => {
+      const period = [job.start, job.end].filter(Boolean).join(' – ');
+      const details = Array.isArray(job.details)
+        ? `<ul class="job-details">${job.details.map(d=>`<li>${d}</li>`).join('')}</ul>`
+        : `<p>${job.description || job.details || ''}</p>`;
+      return `
+        <div class="job">
+          <h4>${job.role || ''}</h4>
+          <p class="company">${job.company || ''}</p>
+          <p class="period"><em>${period || job.period || ''}</em></p>
+          ${details}
+        </div>`;
+    }).join('');
+
+    // Education
+    const eduDiv = document.getElementById('education');
+    eduDiv.innerHTML = (data.education || []).map(edu => {
+      const period = [edu.start, edu.end].filter(Boolean).join(' – ');
+      return `
+        <div class="edu-block">
+          <h4>${edu.institution || ''}</h4>
+          <p class="institution">${edu.degree || ''}</p>
+          <p class="year"><em>${period || edu.year || ''}</em></p>
+          ${edu.description ? `<p>${edu.description}</p>` : ''}
+        </div>`;
+    }).join('');
+
+    // Skills
+    const skillsDiv = document.getElementById('skills');
+    skillsDiv.innerHTML = (data.skills || []).map(skill => `
+      <div class="skill-bar">
+        <span>${skill.name}</span>
+        <div class="bar"><div data-level="${skill.level}"></div></div>
+      </div>`).join('');
+    // Animate bars
+    requestAnimationFrame(() => {
+      document.querySelectorAll('.skill-bar .bar div').forEach(el => {
+        el.style.width = el.dataset.level + '%';
+      });
+    });
+
+    // References
+    const refGrid = document.getElementById('references');
+    refGrid.innerHTML = (data.references || []).map(ref => `
+      <div class="reference-card">
+        <h4>${ref.name}</h4>
+        <p class="ref-role">${ref.role}</p>
+        <div class="ref-contact">
+          ${ref.phone ? `<div><i class="fas fa-phone"></i>${ref.phone}</div>` : ''}
+          ${ref.email ? `<div><i class="fas fa-envelope"></i>${ref.email}</div>` : ''}
+        </div>
+      </div>`).join('');
+
+    // Footer
+    const footer = data.footer || {};
+    const footerText = (footer.text || '').replace('{year}', new Date().getFullYear());
+    document.getElementById('copyright-text').textContent = footerText;
+    const socialLinks = document.getElementById('social-links');
+    socialLinks.innerHTML = (footer.socials || []).map(s => `
+      <a href="${s.url || '#'}" target="_blank" rel="noopener noreferrer" aria-label="${s.name}">
+        <i class="${socialIcon(s.name)}"></i>
+      </a>`).join('');
+  }
+
+  // ── Data Loading ───────────────────────────────────────────────────────────
+  async function loadData() {
+    try {
+      const res = await fetch('data.json');
+      if (!res.ok) throw new Error('fetch failed');
+      const data = await res.json();
+      render(data);
+    } catch (e) {
+      // Try #data= hash fallback
+      try {
+        const hash = location.hash;
+        if (hash.startsWith('#data=')) {
+          const data = JSON.parse(decodeURIComponent(hash.slice(6)));
+          render(data);
+          return;
+        }
+      } catch (_) {}
+      // Show upload overlay
+      document.getElementById('upload-overlay').classList.add('show');
+    }
+  }
+
+  // ── Offline-only reveal ────────────────────────────────────────────────────
+  if (location.protocol === 'file:') {
+    document.querySelectorAll('.offline-only').forEach(el => el.style.display = '');
+  }
+
+  // ── Overlay file upload ────────────────────────────────────────────────────
+  document.getElementById('overlayUploadBtn').addEventListener('click', () => {
+    document.getElementById('overlayFileInput').click();
+  });
+  document.getElementById('overlayFileInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        document.getElementById('upload-overlay').classList.remove('show');
+        render(data);
+      } catch(_) { alert('Invalid JSON file.'); }
+    };
+    reader.readAsText(file);
+  });
+
+  // ── Sidebar Load JSON (offline-only) ──────────────────────────────────────
+  const loadJsonInput = document.getElementById('loadJsonInput');
+  if (loadJsonInput) {
+    loadJsonInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        try { render(JSON.parse(ev.target.result)); } catch(_) { alert('Invalid JSON.'); }
+      };
+      reader.readAsText(file);
+    });
+  }
+
+  // ── Hamburger ─────────────────────────────────────────────────────────────
+  const menuToggle = document.getElementById('menuToggle');
+  const navbar = document.getElementById('navbar');
+  menuToggle.addEventListener('click', () => {
+    const open = navbar.classList.toggle('open');
+    menuToggle.classList.toggle('active', open);
+    menuToggle.textContent = open ? '✕' : '☰';
+  });
+  document.querySelectorAll('#navbar a').forEach(link => {
+    link.addEventListener('click', () => {
+      navbar.classList.remove('open');
+      menuToggle.classList.remove('active');
+      menuToggle.textContent = '☰';
+    });
+  });
+  document.addEventListener('click', e => {
+    if (!navbar.contains(e.target) && !menuToggle.contains(e.target)) {
+      navbar.classList.remove('open');
+      menuToggle.classList.remove('active');
+      menuToggle.textContent = '☰';
+    }
+  });
+
+  // ── Active nav on scroll ───────────────────────────────────────────────────
+  window.addEventListener('scroll', () => {
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('#navbar a:not(.nav-brand)');
+    sections.forEach(section => {
+      const top = section.offsetTop - 120;
+      const bottom = top + section.clientHeight;
+      if (window.scrollY >= top && window.scrollY < bottom) {
+        navLinks.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === `#${section.id}`);
+        });
+      }
+    });
+  });
+
+  // ── Fade-in on scroll ─────────────────────────────────────────────────────
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // ── Boot ──────────────────────────────────────────────────────────────────
+  loadData();
+  </script>
+
+<script src="assets/jspdf.umd.min.js"></script>
+<script src="assets/rp-pdf.js"></script>
+</body>
+</html>

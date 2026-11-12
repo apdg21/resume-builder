@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* ── CSS Variables ──────────────────────────────────── */
+    :root {
+      --nav-bg:     #2c2c2c;
+      --hero-start: #333333;
+      --hero-end:   #555555;
+      --accent:     #007bff;
+      --accent-dk:  #0056b3;
+      --bg:         #f8f9fa;
+      --white:      #ffffff;
+      --text:       #343a40;
+      --muted:      #6c757d;
+      --border:     #dee2e6;
+      --card-bg:    #f0f2f5;
+      --g1:         #2c2c2c;
+      --g2:         #555555;
+      --ac:         #007bff;
+    }
+
+    /* Offline-only hidden by default */
+    .offline-only { display: none; }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0; padding: 0;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+    /* ── Upload Overlay ─────────────────────────────────── */
+    .upload-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
+      z-index: 3000; align-items: center; justify-content: center;
+    }
+    .upload-overlay.show { display: flex; }
+    .upload-box {
+      background: var(--white); border-radius: 10px; padding: 40px;
+      text-align: center; max-width: 460px; width: 90%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    }
+    .upload-box h2 { color: var(--text); margin-bottom: 12px; font-size: 1.4rem; }
+    .upload-box p  { color: var(--muted); margin-bottom: 20px; font-size: 0.95rem; }
+    .upload-box .btn-upload {
+      background: var(--ac); color: white; border: none;
+      padding: 12px 28px; border-radius: 6px; cursor: pointer;
+      font-size: 1rem; font-family: inherit; margin: 6px; transition: opacity 0.2s;
+    }
+    .upload-box .btn-upload:hover { opacity: 0.85; }
+    .upload-box a { color: var(--ac); }
+
+    /* ── Navbar ─────────────────────────────────────────── */
+    .navbar {
+      background-color: var(--nav-bg);
+      color: #fff; padding: 15px 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      position: sticky; top: 0; z-index: 1000;
+    }
+    .navbar .container {
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .site-title {
+      color: #fff; text-decoration: none;
+      font-size: 1.8em; font-weight: 700;
+      border-radius: 5px; padding: 5px 10px;
+      transition: background-color 0.3s ease; min-width: 150px;
+    }
+    .site-title:hover { background-color: rgba(255,255,255,0.1); }
+
+    .nav-right { display: flex; align-items: center; gap: 1rem; }
+
+    /* offline-only edit link in nav */
+    .nav-edit-pill {
+      color: #fff; text-decoration: none; font-size: 0.82rem;
+      border: 1px solid rgba(255,255,255,0.5); padding: 4px 12px;
+      border-radius: 20px; transition: background 0.2s; white-space: nowrap;
+    }
+    .nav-edit-pill:hover { background: rgba(255,255,255,0.15); }
+
+    .nav-list {
+      list-style: none; margin: 0; padding: 0; display: flex;
+    }
+    .nav-list li { margin-left: 0px; }
+    .nav-list a {
+      color: #fff; text-decoration: none; font-weight: 500;
+      font-size: 1.1em; padding: 8px 12px; border-radius: 8px;
+      transition: background-color 0.3s ease;
+    }
+    .nav-list a:hover,
+    .nav-list a.active { background-color: rgba(255,255,255,0.2); }
+
+    .menu-toggle {
+      display: none; flex-direction: column;
+      justify-content: space-between;
+      width: 30px; height: 21px; cursor: pointer; background: none; border: none; padding: 0;
+    }
+    .menu-toggle .bar {
+      height: 3px; width: 100%; background-color: #fff;
+      border-radius: 5px; transition: all 0.3s ease; display: block;
+    }
+    .menu-toggle.active .bar:nth-child(1) { transform: translateY(9px) rotate(45deg); }
+    .menu-toggle.active .bar:nth-child(2) { opacity: 0; }
+    .menu-toggle.active .bar:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
+
+    /* ── Hero ───────────────────────────────────────────── */
+    .hero-section {
+      background: linear-gradient(135deg, var(--g1) 0%, var(--g2) 100%);
+      color: #fff; text-align: center;
+      padding: 100px 20px;
+      display: flex; justify-content: center; align-items: center;
+      min-height: 80vh; position: relative; overflow: hidden;
+      box-shadow: inset 0 -10px 20px rgba(0,0,0,0.1);
+    }
+    .hero-content { z-index: 1; }
+    .profile-card {
+      background-color: rgba(0,0,0,0.3); padding: 40px;
+      border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      display: inline-block;
+    }
+    .profile-pic {
+      width: 200px; height: 200px; border-radius: 50%; object-fit: cover;
+      border: 6px solid rgba(255,255,255,0.3); margin-bottom: 20px;
+      box-shadow: 0 0 0 5px rgba(255,255,255,0.1);
+    }
+    .profile-eyebrow {
+      font-size: 0.75rem; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 2px; color: rgba(255,255,255,0.6); margin-bottom: 6px;
+    }
+    .name-on-card { font-size: 3.5em; font-weight: 700; margin-bottom: 5px; line-height: 1.2; }
+    .title-on-card { font-size: 1.8em; font-weight: 400; color: #e0e0e0; margin: 0; }
+
+    /* ── Section Blocks ─────────────────────────────────── */
+    .section-block {
+      padding: 80px 20px; background-color: var(--white);
+      margin-bottom: 20px; border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .section-block:last-of-type { margin-bottom: 0; }
+    .section-block:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+
+    .section-title-container {
+      display: flex; align-items: center;
+      margin-bottom: 40px; border-bottom: 2px solid #e9ecef; padding-bottom: 15px;
+    }
+    .section-icon { font-size: 2em; margin-right: 20px; color: #495057; }
+    .section-block h2 { font-size: 2.2em; font-weight: 700; color: #212529; margin: 0; }
+
+    /* ── About ──────────────────────────────────────────── */
+    .about-me-section p {
+      font-size: 1.1em; line-height: 1.8; color: #495057;
+      max-width: 800px; margin: 0 auto; text-align: center;
+    }
+
+    /* ── Timeline (Education & Experience) ──────────────── */
+    .education-item, .experience-item {
+      margin-bottom: 40px; position: relative; padding-left: 50px;
+    }
+    .education-item:last-child, .experience-item:last-child { margin-bottom: 0; }
+
+    .timeline-dot {
+      position: absolute; left: 10px; top: 5px;
+      width: 15px; height: 15px;
+      background-color: var(--ac); border-radius: 50%;
+      z-index: 1; border: 3px solid #fff; box-shadow: 0 0 0 2px var(--ac);
+    }
+    .timeline-line {
+      position: absolute; left: 17px; top: 20px; bottom: -20px;
+      width: 2px; background-color: var(--border); z-index: 0;
+    }
+    .education-item:last-child .timeline-line,
+    .experience-item:last-child .timeline-line { display: none; }
+
+    .education-item h3, .experience-item h3 {
+      font-size: 1.5em; font-weight: 600; margin: 0 0 5px; color: #212529;
+    }
+    .education-item p, .experience-item p { margin: 0; font-size: 1em; color: var(--muted); }
+    .experience-item ul { list-style: none; padding: 0; margin-top: 15px; }
+    .experience-item li {
+      margin-bottom: 8px; font-size: 0.95em; color: var(--muted);
+      position: relative; padding-left: 20px;
+    }
+    .experience-item li::before {
+      content: '\2022'; color: var(--ac); position: absolute; left: 0; top: 0;
+    }
+
+    /* ── Skills & Languages Grids ───────────────────────── */
+    .skills-grid, .language-grid {
+      list-style: none; padding: 0; margin: 0;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;
+    }
+    .skills-grid li, .language-grid li {
+      background-color: var(--card-bg); padding: 15px; border-radius: 8px;
+      text-align: center; font-size: 1.1em; font-weight: 500; color: #495057;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+    .skills-grid li:hover, .language-grid li:hover {
+      transform: translateY(-3px); background-color: #e9ecef;
+    }
+
+    /* ── References ─────────────────────────────────────── */
+    .references-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;
+    }
+    .reference-card {
+      background: var(--card-bg); border-radius: 8px; padding: 20px;
+      border-left: 4px solid var(--ac);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .reference-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
+    .ref-name  { font-weight: 700; font-size: 1.05rem; color: #212529; margin-bottom: 4px; }
+    .ref-role  { font-size: 0.9rem; color: var(--ac); margin-bottom: 8px; }
+    .ref-contact { font-size: 0.9rem; color: var(--muted); }
+    .ref-contact p { margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
+
+    /* ── Contact ────────────────────────────────────────── */
+    .contact-info-list {
+      list-style: none; padding: 0; margin: 0;
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 30px;
+    }
+    .contact-info-list li {
+      display: flex; align-items: center;
+      font-size: 1.1em; color: #495057; min-width: 280px;
+    }
+    .contact-icon { margin-right: 15px; color: var(--ac); font-size: 1.5em; }
+
+    /* ── Footer ─────────────────────────────────────────── */
+    .footer {
+      background-color: var(--nav-bg); color: #ccc;
+      text-align: center; padding: 30px 20px;
+      margin-top: 50px; border-top-left-radius: 10px; border-top-right-radius: 10px;
+    }
+    .footer-socials { display: flex; justify-content: center; gap: 16px; margin-bottom: 14px; }
+    .footer-socials a {
+      color: #ccc; font-size: 1.4rem; transition: color 0.2s;
+    }
+    .footer-socials a:hover { color: var(--ac); }
+    .footer p { margin: 0; font-size: 0.9em; }
+
+    /* ── Fade-in ────────────────────────────────────────── */
+    .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Responsive ─────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .navbar .container { flex-wrap: wrap; }
+      .site-title { flex-grow: 1; min-width: 120px; }
+      .menu-toggle { display: flex; }
+      .nav-list {
+        display: none; flex-direction: column; width: 100%;
+        text-align: center; margin-top: 15px;
+      }
+      .nav-list.active { display: flex; }
+      .nav-list li { margin: 10px 0; }
+      .hero-section { padding: 80px 20px; min-height: 70vh; }
+      .profile-card { padding: 30px; }
+      .profile-pic { width: 150px; height: 150px; margin-bottom: 15px; }
+      .name-on-card { font-size: 2.5em; }
+      .title-on-card { font-size: 1.4em; }
+      .section-block { padding: 50px 15px; margin-bottom: 15px; }
+      .section-title-container { margin-bottom: 30px; flex-direction: column; align-items: flex-start; }
+      .section-icon { margin-bottom: 10px; margin-right: 0; }
+      .section-block h2 { font-size: 1.8em; }
+      .education-item, .experience-item { padding-left: 40px; margin-bottom: 30px; }
+      .timeline-dot { left: 5px; }
+      .timeline-line { left: 12px; }
+      .education-item h3, .experience-item h3 { font-size: 1.3em; }
+      .skills-grid, .language-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+      .contact-info-list { flex-direction: column; align-items: flex-start; gap: 15px; }
+      .contact-info-list li { min-width: unset; }
+      .references-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .site-title { font-size: 1.5em; min-width: 100px; }
+      .hero-section { padding: 60px 15px; min-height: 60vh; }
+      .profile-card { padding: 25px; }
+      .profile-pic { width: 120px; height: 120px; }
+      .name-on-card { font-size: 2em; }
+      .title-on-card { font-size: 1.2em; }
+      .section-block { padding: 30px 10px; }
+      .section-block h2 { font-size: 1.6em; }
+      .education-item, .experience-item { padding-left: 30px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Upload Overlay -->
+  <div class="upload-overlay" id="uploadOverlay">
+    <div class="upload-box">
+      <h2>Load Resume Data</h2>
+      <p>No data found. Upload your <code>data.json</code> or use the form builder to create one.</p>
+      <input type="file" id="jsonFileUpload" accept=".json" style="display:none">
+      <button class="btn-upload" onclick="document.getElementById('jsonFileUpload').click()">
+        <i class="fas fa-upload"></i> Select JSON File
+      </button>
+      <br><br>
+      <a href="form.html"><i class="fas fa-pencil-alt"></i> Create with Form Builder</a>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <nav class="container">
+      <a href="#home" id="site-title" class="site-title"></a>
+      <div class="nav-right">
+        <ul class="nav-list" id="nav-list">
+          <li><a href="#about">About Me</a></li>
+          <li><a href="#education">Education</a></li>
+          <li><a href="#experience">Experience</a></li>
+          <li><a href="#skills">Skills</a></li>
+          <li><a href="#languages">Languages</a></li>
+          <li><a href="#references">References</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <!-- offline-only edit link -->
+        <a href="form.html" class="nav-edit-pill offline-only" style="display:none">
+          <i class="fas fa-pen"></i> Edit
+        </a>
+        <button class="menu-toggle" id="mobile-menu" aria-label="Toggle menu">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section id="home" class="hero-section">
+      <div class="container hero-content">
+        <div class="profile-card">
+          <img src="assets/profile.jpg" alt="Profile Picture" class="profile-pic" id="profileImage">
+          <p class="profile-eyebrow" id="profileEyebrow"></p>
+          <h1 id="user-name" class="name-on-card"></h1>
+          <p id="user-title" class="title-on-card"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="about-me-section section-block container fade-in">
+      <div class="section-title-container">
+        <i class="fas fa-user-circle section-icon"></i>
+        <h2>About Me</h2>
+      </div>
+      <p id="about-me-text"></p>
+    </section>
+
+    <!-- Education -->
+    <section id="education" class="education-section section-block container fade-in">
+      <div class="section-title-container">
+        <i class="fas fa-graduation-cap section-icon"></i>
+        <h2>Education</h2>
+      </div>
+      <div id="education-items"></div>
+    </section>
+
+    <!-- Experience -->
+    <section id="experience" class="experience-section section-block container fade-in">
+      <div class="section-title-container">
+        <i class="fas fa-briefcase section-icon"></i>
+        <h2>Experience</h2>
+      </div>
+      <div id="experience-items"></div>
+    </section>
+
+    <!-- Skills -->
+    <section id="skills" class="skills-section section-block container fade-in">
+      <div class="section-title-container">
+        <i class="fas fa-cog section-icon"></i>
+        <h2>Skills</h2>
+      </div>
+      <ul id="skills-list" class="skills-grid"></ul>
+    </section>
+
+    <!-- Languages -->
+    <section id="languages" class="language-section section-block container fade-in">
+      <div class="section-title-container">
+        <i class="fas fa-globe section-icon"></i>
+        <h2>Languages</h2>
+      </div>
+      <ul id="language-list" class="language-grid"></ul>
+    </section>
+
+    <!-- References -->
+    <section id="references" class="section-block container fade-in">
+      <div class="section-title-container">
+        <i class="fas fa-address-card section-icon"></i>
+        <h2>References</h2>
+      </div>
+      <div class="references-grid" id="references-list"></div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="contact-section section-block container fade-in">
+      <div class="section-title-container">
+        <i class="fas fa-address-book section-icon"></i>
+        <h2>Contact</h2>
+      </div>
+      <ul class="contact-info-list" id="contact-list">
+        <li><i class="fas fa-phone-alt contact-icon"></i> <span id="contact-phone"></span></li>
+        <li><i class="fas fa-envelope contact-icon"></i>  <span id="contact-email"></span></li>
+        <li><i class="fas fa-map-marker-alt contact-icon"></i> <span id="contact-address"></span></li>
+      </ul>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-socials" id="footer-socials"></div>
+      <p id="footer-copy"></p>
+    </div>
+  </footer>
+
+  <script>
+  // ── Helpers ──────────────────────────────────────────────────────────────
+  function hexAlpha(hex, alpha) {
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+
+  // Themes recolour only the page frame: header/nav, hero and footer.
+  // The rest of the page keeps its original design.
+  function rpIsDarkHex(hex) {
+    if (!hex || hex.charAt(0) !== '#') return false;
+    var c = hex.substring(1);
+    if (c.length === 3) c = c.split('').map(function (x) { return x + x; }).join('');
+    if (c.length !== 6) return false;
+    var r = parseInt(c.substring(0, 2), 16) / 255;
+    var g = parseInt(c.substring(2, 4), 16) / 255;
+    var b = parseInt(c.substring(4, 6), 16) / 255;
+    return (0.2126 * r + 0.7152 * g + 0.0722 * b) < 0.55;
+  }
+
+  function rpApplyFrameTheme(theme, regions) {
+    var MARK = 'data-rp-frame-themed';
+    var marked = document.querySelectorAll('[' + MARK + ']');
+    for (var i = 0; i < marked.length; i++) {
+      marked[i].removeAttribute(MARK);
+      marked[i].style.removeProperty('background');
+      marked[i].style.removeProperty('background-color');
+      marked[i].style.removeProperty('background-image');
+    }
+    var styleEl = document.getElementById('rpFrameThemeStyle');
+    if (styleEl) styleEl.parentNode.removeChild(styleEl);
+    if (!theme || !theme.gradientStart) return;
+
+    var g1 = theme.gradientStart;
+    var g2 = theme.gradientEnd || g1;
+    var dark = rpIsDarkHex(g1);
+    var tc = theme.textColor || (dark ? '#f1f5f9' : '#1e293b');
+    var hc = theme.headingColor || (dark ? '#ffffff' : '#0f172a');
+
+    var found = document.querySelectorAll(regions.join(','));
+    var picked = [];
+    for (var j = 0; j < found.length; j++) {
+      var nested = false;
+      for (var k = 0; k < picked.length; k++) {
+        if (picked[k] !== found[j] && picked[k].contains(found[j])) { nested = true; break; }
+      }
+      if (!nested) picked.push(found[j]);
+    }
+    for (var m = 0; m < picked.length; m++) {
+      picked[m].setAttribute(MARK, '1');
+      picked[m].style.setProperty('background', 'linear-gradient(135deg, ' + g1 + ' 0%, ' + g2 + ' 100%)', 'important');
+    }
+
+    styleEl = document.createElement('style');
+    styleEl.id = 'rpFrameThemeStyle';
+    styleEl.textContent =
+      '[' + MARK + '] { color: ' + tc + ' !important; }' +
+      '[' + MARK + '] h1, [' + MARK + '] h2, [' + MARK + '] h3, [' + MARK + '] h4, [' + MARK + '] h5, [' + MARK + '] h6 { color: ' + hc + ' !important; }' +
+      '[' + MARK + '] p, [' + MARK + '] span, [' + MARK + '] li, [' + MARK + '] a, [' + MARK + '] strong, [' + MARK + '] em, [' + MARK + '] small, [' + MARK + '] blockquote, [' + MARK + '] figcaption, [' + MARK + '] time { color: ' + tc + ' !important; }';
+    document.head.appendChild(styleEl);
+  }
+
+  function applyTheme(theme) {
+    rpApplyFrameTheme(theme, ['header.navbar', 'section.hero-section', 'footer.footer']);
+  }
+  window.applyTheme = applyTheme;
+
+  // ── Render ────────────────────────────────────────────────────────────────
+  function render(data) {
+    applyTheme(data.theme);
+
+    const name = data.name || '';
+    document.title = name;
+    document.getElementById('site-title').textContent = name;
+    document.getElementById('user-name').textContent  = name;
+    document.getElementById('user-title').textContent = data.title || '';
+
+    // Profile eyebrow & image
+    document.getElementById('profileEyebrow').textContent = data.profile?.eyebrow || '';
+    if (data.profile?.image) document.getElementById('profileImage').src = data.profile.image;
+
+    // About — support both "about" (universal) and "aboutMe" (legacy)
+    const aboutText = data.about || data.aboutMe || '';
+    document.getElementById('about-me-text').textContent =
+      Array.isArray(aboutText) ? aboutText.join('\n\n') : aboutText;
+
+    // Education — support universal (institution, start, end, description) and legacy (university, years, grade)
+    const eduEl = document.getElementById('education-items');
+    eduEl.innerHTML = '';
+    (data.education || []).forEach((edu, i, arr) => {
+      const institution = edu.institution || edu.university || '';
+      const years = edu.years || (edu.start && edu.end ? `${edu.start}–${edu.end}` : edu.start || '');
+      const note  = edu.description || edu.grade || '';
+      const div = document.createElement('div');
+      div.className = 'education-item';
+      div.innerHTML = `
+        <p class="text-sm" style="color:var(--muted)">(${years})</p>
+        <h3>${edu.degree || ''}</h3>
+        <p>${institution}</p>
+        ${note ? `<p>${note}</p>` : ''}
+        <div class="timeline-dot"></div>
+        ${i < arr.length - 1 ? '<div class="timeline-line"></div>' : ''}`;
+      eduEl.appendChild(div);
+    });
+
+    // Experience — support universal (role, start, end, details) and legacy (title, years, responsibilities)
+    const expEl = document.getElementById('experience-items');
+    expEl.innerHTML = '';
+    (data.experience || []).forEach((exp, i, arr) => {
+      const role    = exp.role  || exp.title || '';
+      const years   = exp.years || (exp.start && exp.end ? `${exp.start}–${exp.end}` : exp.start || '');
+      const bullets = exp.details || exp.responsibilities || [];
+      const div = document.createElement('div');
+      div.className = 'experience-item';
+      div.innerHTML = `
+        <p style="color:var(--muted)">(${years})</p>
+        <h3>${role}</h3>
+        <p>${exp.company || ''}</p>
+        <ul>${bullets.map(b => `<li>${b}</li>`).join('')}</ul>
+        <div class="timeline-dot"></div>
+        ${i < arr.length - 1 ? '<div class="timeline-line"></div>' : ''}`;
+      expEl.appendChild(div);
+    });
+
+    // Skills — string or object array
+    document.getElementById('skills-list').innerHTML =
+      (data.skills || []).map(s => `<li>${typeof s === 'string' ? s : s.name}</li>`).join('');
+
+    // Languages — string or object array
+    document.getElementById('language-list').innerHTML =
+      (data.languages || []).map(l => `<li>${typeof l === 'string' ? l : l.name}</li>`).join('');
+
+    // References
+    document.getElementById('references-list').innerHTML =
+      (data.references || []).map(ref => `
+        <div class="reference-card">
+          <p class="ref-name">${ref.name}</p>
+          <p class="ref-role">${ref.role}</p>
+          <div class="ref-contact">
+            ${ref.phone ? `<p><i class="fas fa-phone"></i> ${ref.phone}</p>` : ''}
+            ${ref.email ? `<p><i class="fas fa-envelope"></i> ${ref.email}</p>` : ''}
+          </div>
+        </div>`).join('');
+
+    // Contact
+    document.getElementById('contact-phone').textContent   = data.contact?.phone   || '';
+    document.getElementById('contact-email').textContent   = data.contact?.email   || '';
+    document.getElementById('contact-address').textContent = data.contact?.address || '';
+
+    // Footer — support footer.socials (universal) and legacy social_links
+    const year = new Date().getFullYear();
+    const ftxt = (data.footer?.text || `© {year} ${name}. All rights reserved.`).replace('{year}', year);
+    document.getElementById('footer-copy').textContent = ftxt;
+
+    const socials = data.footer?.socials || data.social_links || [];
+    const footerSocials = document.getElementById('footer-socials');
+    footerSocials.innerHTML = '';
+    socials.forEach(s => {
+      const a = document.createElement('a');
+      a.href = s.url; a.target = '_blank'; a.rel = 'noopener';
+      a.setAttribute('aria-label', s.name || s.platform || '');
+      const iconClass = s.icon || `fab fa-${(s.name || s.platform || '').toLowerCase()}`;
+      a.innerHTML = `<i class="${iconClass}"></i>`;
+      footerSocials.appendChild(a);
+    });
+
+    initFadeIn();
+    setupNavHighlight();
+  }
+
+  // ── Offline-only ──────────────────────────────────────────────────────────
+  if (location.protocol === 'file:') {
+    document.querySelectorAll('.offline-only').forEach(el => el.style.display = '');
+  }
+
+  // ── Load Data ─────────────────────────────────────────────────────────────
+  async function loadData() {
+    try {
+      const res = await fetch('data.json');
+      if (!res.ok) throw new Error('fetch failed');
+      render(await res.json());
+    } catch {
+      if (location.hash && location.hash.startsWith('#data=')) {
+        try { render(JSON.parse(decodeURIComponent(location.hash.substring(6)))); return; } catch { /* fall */ }
+      }
+      document.getElementById('uploadOverlay').classList.add('show');
+    }
+  }
+
+  document.getElementById('jsonFileUpload').addEventListener('change', function(e) {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        render(JSON.parse(ev.target.result));
+        document.getElementById('uploadOverlay').classList.remove('show');
+      } catch { alert('Invalid JSON file. Please check the format.'); }
+    };
+    reader.readAsText(file);
+  });
+
+  // ── Hamburger ─────────────────────────────────────────────────────────────
+  const mobileMenu = document.getElementById('mobile-menu');
+  const navList    = document.getElementById('nav-list');
+
+  mobileMenu.addEventListener('click', () => {
+    const open = navList.classList.toggle('active');
+    mobileMenu.classList.toggle('active', open);
+  });
+
+  document.addEventListener('click', e => {
+    if (!navList.contains(e.target) && !mobileMenu.contains(e.target)) {
+      navList.classList.remove('active');
+      mobileMenu.classList.remove('active');
+    }
+  });
+
+  navList.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    navList.classList.remove('active');
+    mobileMenu.classList.remove('active');
+  }));
+
+  // ── Nav Highlight ─────────────────────────────────────────────────────────
+  function setupNavHighlight() {
+    const sections = document.querySelectorAll('main section[id]');
+    const links    = document.querySelectorAll('.nav-list a');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(sec => { if (window.scrollY >= sec.offsetTop - 90) current = sec.id; });
+      links.forEach(a => {
+        a.classList.remove('active');
+        if (a.getAttribute('href') === `#${current}`) a.classList.add('active');
+      });
+    });
+  }
+
+  // ── Fade-in ───────────────────────────────────────────────────────────────
+  function initFadeIn() {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+  }
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  loadData();
+  </script>
+
+<script src="assets/jspdf.umd.min.js"></script>
+<script src="assets/rp-pdf.js"></script>
+</body>
+</html>

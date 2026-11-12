@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* ── CSS Variables (theme-driven) ─────────────────────── */
+    :root {
+      --accent: #4a90e2;
+      --accent-dark: #2c3e50;
+      --g1: #f0f4f8;
+      --g2: #d9e6f2;
+      --ac: #4a90e2;
+      --text: #333;
+      --muted: #7f8c8d;
+      --white: #fff;
+      --card-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      --radius: 10px;
+    }
+
+    /* Offline-only hidden by default */
+    .offline-only { display: none; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Helvetica', 'Arial', sans-serif;
+      background: linear-gradient(135deg, var(--g1), var(--g2));
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Navbar ──────────────────────────────────────────── */
+    .navbar {
+      background: var(--ac);
+      padding: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .logo {
+      color: var(--white);
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 2rem;
+    }
+
+    .nav-links a {
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active { color: rgba(255,255,255,0.75); }
+
+    /* Offline-only edit link in nav */
+    .nav-edit {
+      color: var(--white);
+      text-decoration: none;
+      font-size: 0.85rem;
+      border: 1px solid rgba(255,255,255,0.6);
+      padding: 4px 12px;
+      border-radius: 20px;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .nav-edit:hover { background: rgba(255,255,255,0.15); }
+
+    /* Menu toggle (mobile) */
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+      gap: 5px;
+      background: none;
+      border: none;
+      padding: 6px;
+    }
+    .menu-toggle .bar {
+      width: 25px; height: 3px;
+      background: var(--white);
+      border-radius: 2px;
+      transition: 0.3s;
+      display: block;
+    }
+    .menu-toggle.active .bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+    .menu-toggle.active .bar:nth-child(2) { opacity: 0; }
+    .menu-toggle.active .bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+    /* ── Upload Overlay ──────────────────────────────────── */
+    .upload-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+    .upload-overlay.show { display: flex; }
+    .upload-box {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 40px;
+      text-align: center;
+      max-width: 460px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    }
+    .upload-box h2 { color: var(--accent-dark); margin-bottom: 12px; font-size: 1.4rem; }
+    .upload-box p  { color: var(--muted); margin-bottom: 20px; font-size: 0.95rem; }
+    .upload-box .btn-upload {
+      background: var(--ac);
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-family: inherit;
+      margin: 6px;
+      transition: opacity 0.2s;
+    }
+    .upload-box .btn-upload:hover { opacity: 0.85; }
+    .upload-box a { color: var(--ac); }
+
+    /* ── Container ───────────────────────────────────────── */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* ── Header / Hero ───────────────────────────────────── */
+    header {
+      text-align: center;
+      padding: 3rem 2rem;
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--card-shadow);
+      margin-bottom: 2rem;
+    }
+
+    #profile-pic {
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      border: 6px solid var(--ac);
+      margin-bottom: 1.5rem;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      object-fit: cover;
+    }
+
+    .profile-eyebrow {
+      font-size: 0.78rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    h1 {
+      font-size: 2.8em;
+      color: var(--accent-dark);
+      margin: 0.5rem 0;
+      font-weight: 700;
+    }
+
+    header h2 {
+      font-size: 1.4em;
+      color: var(--muted);
+      font-weight: 400;
+      border: none;
+      padding: 0;
+      margin-bottom: 1rem;
+    }
+
+    header p { font-size: 1.05rem; color: var(--text); max-width: 680px; margin: 0 auto; }
+
+    /* ── Sections ────────────────────────────────────────── */
+    .section {
+      padding: 2rem;
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--card-shadow);
+      margin-bottom: 2rem;
+    }
+
+    .section h2 {
+      font-size: 2em;
+      color: var(--accent-dark);
+      border-bottom: 2px solid var(--ac);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.2rem;
+    }
+
+    /* ── Skills & Languages ──────────────────────────────── */
+    ul { list-style: none; padding: 0; margin: 1rem 0; }
+
+    #skills-list li, #languages-list li {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      font-size: 1.1em;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    #skills-list li:last-child,
+    #languages-list li:last-child { border-bottom: none; }
+
+    #skills-list li span,
+    #languages-list li span { color: var(--muted); font-weight: 500; }
+
+    /* ── Education two-column ────────────────────────────── */
+    .education-item {
+      display: flex;
+      margin-bottom: 15px;
+      align-items: flex-start;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #eee;
+    }
+    .education-item:last-child { border-bottom: none; }
+    .education-column { padding: 0 10px; }
+    .date-column {
+      flex: 0 0 130px;
+      font-weight: bold;
+      color: #555;
+      text-align: right;
+      padding-right: 20px;
+    }
+    .details-column { flex: 1; line-height: 1.5; }
+    .details-column strong { display: block; font-size: 1.1em; margin-bottom: 5px; }
+
+    /* ── Experience two-column ───────────────────────────── */
+    .experience-item {
+      display: flex;
+      margin-bottom: 15px;
+      align-items: flex-start;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #eee;
+    }
+    .experience-item:last-child { border-bottom: none; margin-bottom: 0; }
+    .experience-column { padding: 0 10px; }
+    .period-column {
+      flex: 0 0 130px;
+      font-weight: bold;
+      color: #555;
+      text-align: right;
+      padding-right: 20px;
+    }
+    .experience-item .details-column ul {
+      margin: 0.4em 0 0 1.1em;
+      list-style: disc;
+      padding: 0;
+    }
+    .experience-item .details-column ul li {
+      display: list-item;
+      font-size: 0.97rem;
+      padding: 2px 0;
+      border: none;
+      color: var(--text);
+    }
+
+    /* ── References ──────────────────────────────────────── */
+    .references-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 0.5rem;
+    }
+    .reference-card {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 16px;
+      border-left: 3px solid var(--ac);
+    }
+    .ref-name  { font-weight: 700; color: var(--accent-dark); margin-bottom: 3px; }
+    .ref-role  { font-size: 0.88rem; color: var(--ac); margin-bottom: 8px; }
+    .ref-contact { font-size: 0.88rem; color: var(--muted); }
+    .ref-contact p { margin-bottom: 2px; display: flex; align-items: center; gap: 5px; }
+
+    /* ── Footer / Contact ────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--card-shadow);
+      margin-top: 2rem;
+    }
+
+    footer h2 {
+      font-size: 2em;
+      color: var(--accent-dark);
+      border-bottom: 2px solid var(--ac);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .contact-info { margin-bottom: 1.5rem; }
+    .contact-info a {
+      color: var(--ac);
+      text-decoration: none;
+      margin: 0 0.5rem;
+      display: inline-block;
+      padding: 0.4rem;
+    }
+    .contact-info a:hover { text-decoration: underline; }
+
+    .social-links {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .social-links a {
+      display: inline-flex;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--ac);
+      color: white;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+    .social-links a:hover { background: var(--accent-dark); transform: translateY(-3px); }
+    .social-links i { font-size: 1.2rem; line-height: 1; }
+
+    .copyright { margin-top: 2rem; color: var(--muted); font-size: 0.9rem; }
+
+    /* ── Fade-in ──────────────────────────────────────────── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Responsive ──────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .menu-toggle { display: flex; }
+
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 60px; left: 0;
+        width: 100%;
+        background: var(--ac);
+        padding: 1rem 0;
+        text-align: center;
+        gap: 0;
+      }
+      .nav-links.open {
+        display: flex;
+        padding: 20px;
+      }
+      .nav-links li { margin: 0.5rem 0; }
+      .nav-links a  { font-size: 1.1rem; }
+
+      .container { padding: 1rem; }
+      header { padding: 2rem 1rem; }
+
+      #profile-pic { width: 150px; height: 150px; }
+      h1 { font-size: 2.2em; }
+      .section h2, footer h2 { font-size: 1.5em; }
+      .section { padding: 1.5rem; margin-bottom: 1.5rem; }
+
+      .education-item, .experience-item { flex-direction: column; }
+      .date-column, .period-column {
+        text-align: left;
+        padding-right: 10px;
+        margin-bottom: 5px;
+        flex: 0 0 auto;
+      }
+
+      .references-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Upload Overlay -->
+  <div class="upload-overlay" id="uploadOverlay">
+    <div class="upload-box">
+      <h2>Load Portfolio Data</h2>
+      <p>No data found. Upload your <code>data.json</code> or use the form builder to create one.</p>
+      <input type="file" id="jsonFileUpload" accept=".json" style="display:none">
+      <button class="btn-upload" onclick="document.getElementById('jsonFileUpload').click()">
+        <i class="fas fa-upload"></i> Select JSON File
+      </button>
+      <br><br>
+      <a href="form.html"><i class="fas fa-pencil-alt"></i> Create with Form Builder</a>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo" id="nav-logo">Portfolio</div>
+    <div class="nav-right">
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#education">Education</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#languages">Languages</a></li>
+        <li><a href="#references">References</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <!-- offline-only edit link -->
+      <a href="form.html" class="nav-edit offline-only" style="display:none">
+        <i class="fas fa-pen"></i> Edit
+      </a>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <!-- Header -->
+    <header id="about" class="fade-in">
+      <img id="profile-pic" src="assets/profile.jpg" alt="Profile Picture">
+      <p class="profile-eyebrow" id="profileEyebrow"></p>
+      <h1 id="name"></h1>
+      <h2 id="job-title"></h2>
+      <p id="about-text"></p>
+    </header>
+
+    <!-- Skills -->
+    <section id="skills" class="section fade-in">
+      <h2>Skills</h2>
+      <ul id="skills-list"></ul>
+    </section>
+
+    <!-- Education -->
+    <section id="education" class="section fade-in">
+      <h2>Education</h2>
+      <ul id="education-list"></ul>
+    </section>
+
+    <!-- Experience -->
+    <section id="experience" class="section fade-in">
+      <h2>Professional Experience</h2>
+      <ul id="experience-list"></ul>
+    </section>
+
+    <!-- Languages -->
+    <section id="languages" class="section fade-in">
+      <h2>Languages</h2>
+      <ul id="languages-list"></ul>
+    </section>
+
+    <!-- References -->
+    <section id="references" class="section fade-in">
+      <h2>References</h2>
+      <div class="references-grid" id="references-list"></div>
+    </section>
+
+    <!-- Footer / Contact -->
+    <footer id="contact" class="fade-in">
+      <h2>Contact</h2>
+      <div id="contact-text" class="contact-info"></div>
+      <div id="social-links" class="social-links"></div>
+      <div class="copyright" id="copyright"></div>
+    </footer>
+
+  </div><!-- /.container -->
+
+  <script>
+  // ── Helpers ──────────────────────────────────────────────────────────────
+  function hexAlpha(hex, alpha) {
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+
+  // Themes recolour only the page frame: header/nav, hero and footer.
+  // The rest of the page keeps its original design.
+  function rpIsDarkHex(hex) {
+    if (!hex || hex.charAt(0) !== '#') return false;
+    var c = hex.substring(1);
+    if (c.length === 3) c = c.split('').map(function (x) { return x + x; }).join('');
+    if (c.length !== 6) return false;
+    var r = parseInt(c.substring(0, 2), 16) / 255;
+    var g = parseInt(c.substring(2, 4), 16) / 255;
+    var b = parseInt(c.substring(4, 6), 16) / 255;
+    return (0.2126 * r + 0.7152 * g + 0.0722 * b) < 0.55;
+  }
+
+  function rpHexToRgb(hex) {
+    var c = String(hex || '').replace('#', '');
+    if (c.length === 3) c = c.split('').map(function (x) { return x + x; }).join('');
+    if (c.length !== 6) return { r: 0, g: 0, b: 0 };
+    return {
+      r: parseInt(c.substring(0, 2), 16),
+      g: parseInt(c.substring(2, 4), 16),
+      b: parseInt(c.substring(4, 6), 16)
+    };
+  }
+
+  function rpMixHex(hex, target, ratio) {
+    var a = rpHexToRgb(hex);
+    var b = rpHexToRgb(target);
+    var r = Math.round(a.r + (b.r - a.r) * ratio);
+    var g = Math.round(a.g + (b.g - a.g) * ratio);
+    var bl = Math.round(a.b + (b.b - a.b) * ratio);
+    var h = function (n) { return ('0' + n.toString(16)).slice(-2); };
+    return '#' + h(r) + h(g) + h(bl);
+  }
+
+  function rpApplyFrameTheme(theme, regions) {
+    var MARK = 'data-rp-frame-themed';
+    var marked = document.querySelectorAll('[' + MARK + ']');
+    for (var i = 0; i < marked.length; i++) {
+      marked[i].removeAttribute(MARK);
+      marked[i].style.removeProperty('background');
+      marked[i].style.removeProperty('background-color');
+      marked[i].style.removeProperty('background-image');
+    }
+    var styleEl = document.getElementById('rpFrameThemeStyle');
+    if (styleEl) styleEl.parentNode.removeChild(styleEl);
+    if (!theme || !theme.gradientStart) return;
+
+    var g1 = theme.gradientStart;
+    var g2 = theme.gradientEnd || g1;
+    var dark = rpIsDarkHex(g1);
+    var tc = theme.textColor || (dark ? '#f1f5f9' : '#1e293b');
+    var hc = theme.headingColor || (dark ? '#ffffff' : '#0f172a');
+
+    var found = document.querySelectorAll(regions.join(','));
+    var picked = [];
+    for (var j = 0; j < found.length; j++) {
+      var nested = false;
+      for (var k = 0; k < picked.length; k++) {
+        if (picked[k] !== found[j] && picked[k].contains(found[j])) { nested = true; break; }
+      }
+      if (!nested) picked.push(found[j]);
+    }
+    for (var m = 0; m < picked.length; m++) {
+      picked[m].setAttribute(MARK, '1');
+      picked[m].style.setProperty('background', 'linear-gradient(135deg, ' + g1 + ' 0%, ' + g2 + ' 100%)', 'important');
+    }
+
+    styleEl = document.createElement('style');
+    styleEl.id = 'rpFrameThemeStyle';
+    // The hamburger and its open dropdown sit outside the desktop nav flow,
+    // so they need their own theme-derived colours.
+    var barBg = dark ? tc : hc;
+    var menuBg = dark ? g1 : rpMixHex(g1, '#000000', 0.10);
+    styleEl.textContent =
+      '[' + MARK + '] { color: ' + tc + ' !important; }' +
+      '[' + MARK + '] h1, [' + MARK + '] h2, [' + MARK + '] h3, [' + MARK + '] h4, [' + MARK + '] h5, [' + MARK + '] h6 { color: ' + hc + ' !important; }' +
+      '[' + MARK + '] p, [' + MARK + '] span, [' + MARK + '] li, [' + MARK + '] a, [' + MARK + '] strong, [' + MARK + '] em, [' + MARK + '] small, [' + MARK + '] blockquote, [' + MARK + '] figcaption, [' + MARK + '] time { color: ' + tc + ' !important; }' +
+      '[' + MARK + '] .logo { color: ' + hc + ' !important; }' +
+      '[' + MARK + '] .menu-toggle .bar { background: ' + barBg + ' !important; }' +
+      '[' + MARK + '] .nav-links a:hover, [' + MARK + '] .nav-links a.active { color: ' + hc + ' !important; }' +
+      '@media (max-width: 768px) { [' + MARK + '] .nav-links { background: ' + menuBg + ' !important; box-shadow: 0 12px 24px rgba(0,0,0,0.18) !important; } }';
+    document.head.appendChild(styleEl);
+  }
+
+  function applyTheme(theme) {
+    rpApplyFrameTheme(theme, ['nav.navbar', 'header#about', 'footer#contact']);
+  }
+  window.applyTheme = applyTheme;
+
+  // ── Render ────────────────────────────────────────────────────────────────
+  function render(data) {
+    applyTheme(data.theme);
+
+    // Title & identity
+    document.title = `${data.name} - Portfolio`;
+    document.getElementById('nav-logo').textContent   = data.name;
+    document.getElementById('name').textContent       = data.name;
+    document.getElementById('job-title').textContent  = data.title;
+    document.getElementById('about-text').textContent =
+      Array.isArray(data.about) ? data.about.join('\n\n') : (data.about || '');
+
+    // Profile eyebrow & image
+    document.getElementById('profileEyebrow').textContent = data.profile?.eyebrow || '';
+    if (data.profile?.image) document.getElementById('profile-pic').src = data.profile.image;
+
+    // Skills
+    document.getElementById('skills-list').innerHTML =
+      (data.skills || []).map(s => `<li>${s.name} <span>${s.level}%</span></li>`).join('');
+
+    // Education — universal schema (array, start/end/institution) with fallback for legacy fields
+    const eduList = document.getElementById('education-list');
+    eduList.innerHTML = '';
+    const eduArr = Array.isArray(data.education) ? data.education : (data.education ? [data.education] : []);
+    eduArr.forEach(edu => {
+      // support both universal (institution, start, end) and legacy (university, years)
+      const institution = edu.institution || edu.university || '';
+      const years = edu.years || (edu.start && edu.end ? `${edu.start} – ${edu.end}` : edu.start || '');
+      const location = edu.description || edu.address || '';
+      const li = document.createElement('li');
+      li.className = 'education-item';
+      li.innerHTML = `
+        <div class="education-column date-column"><span>${years}</span></div>
+        <div class="education-column details-column">
+          <strong>${edu.degree}</strong>
+          ${institution}<br>
+          ${location ? `<span style="color:#999;font-size:0.9em">${location}</span>` : ''}
+        </div>`;
+      eduList.appendChild(li);
+    });
+
+    // Experience — universal schema (role, start, end, details[]) with legacy fallback
+    const expList = document.getElementById('experience-list');
+    expList.innerHTML = '';
+    (data.experience || []).forEach(exp => {
+      const role   = exp.role || exp.title || '';
+      const period = exp.period || (exp.start && exp.end ? `${exp.start} – ${exp.end}` : exp.start || '');
+      // details can be an array (universal) or a single string (legacy)
+      let detailsHTML = '';
+      if (Array.isArray(exp.details) && exp.details.length) {
+        detailsHTML = `<ul>${exp.details.map(d => `<li>${d}</li>`).join('')}</ul>`;
+      } else if (exp.description) {
+        detailsHTML = `<p style="margin-top:6px;font-size:0.97rem">${exp.description}</p>`;
+      }
+      const li = document.createElement('li');
+      li.className = 'experience-item';
+      li.innerHTML = `
+        <div class="experience-column period-column"><span>${period}</span></div>
+        <div class="experience-column details-column">
+          <strong>${role}</strong>
+          ${exp.company}
+          ${detailsHTML}
+        </div>`;
+      expList.appendChild(li);
+    });
+
+    // Languages
+    document.getElementById('languages-list').innerHTML =
+      (data.languages || []).map(l => `<li>${l.name} <span>${l.level}%</span></li>`).join('');
+
+    // References
+    const refList = document.getElementById('references-list');
+    refList.innerHTML = (data.references || []).map(ref => `
+      <div class="reference-card">
+        <p class="ref-name">${ref.name}</p>
+        <p class="ref-role">${ref.role}</p>
+        <div class="ref-contact">
+          ${ref.phone ? `<p><i class="fas fa-phone"></i> ${ref.phone}</p>` : ''}
+          ${ref.email ? `<p><i class="fas fa-envelope"></i> ${ref.email}</p>` : ''}
+        </div>
+      </div>`).join('');
+
+    // Contact
+    const c = data.contact;
+    document.getElementById('contact-text').innerHTML = `
+      ${c.phone   ? `<a href="tel:${c.phone}">${c.phone}</a>` : ''}
+      ${c.email   ? `<a href="mailto:${c.email}">${c.email}</a>` : ''}
+      ${c.website ? `<a href="${c.website.startsWith('http') ? c.website : 'https://'+c.website}" target="_blank">${c.website}</a>` : ''}
+      ${c.address ? `<span style="display:inline-block;padding:0.4rem;color:#555">${c.address}</span>` : ''}`;
+
+    // Social links — support both footer.socials and legacy contact.social
+    const socials = data.footer?.socials || data.contact?.social || [];
+    document.getElementById('social-links').innerHTML = socials.map(s =>
+      `<a href="${s.url}" target="_blank" rel="noopener" title="${s.name}">
+        <i class="fab fa-${s.icon || s.name.toLowerCase()}"></i>
+      </a>`).join('');
+
+    // Copyright / footer text
+    const year = new Date().getFullYear();
+    const footerText = (data.footer?.text || `© {year} ${data.name}. All rights reserved.`).replace('{year}', year);
+    document.getElementById('copyright').textContent = footerText;
+
+    initFadeIn();
+    setupNavHighlight();
+  }
+
+  // ── Offline-only ──────────────────────────────────────────────────────────
+  if (location.protocol === 'file:') {
+    document.querySelectorAll('.offline-only').forEach(el => el.style.display = '');
+  }
+
+  // ── Load Data ─────────────────────────────────────────────────────────────
+  async function loadData() {
+    try {
+      const res = await fetch('data.json');
+      if (!res.ok) throw new Error('fetch failed');
+      render(await res.json());
+    } catch {
+      // #data= hash fallback
+      if (location.hash && location.hash.startsWith('#data=')) {
+        try {
+          render(JSON.parse(decodeURIComponent(location.hash.substring(6))));
+          return;
+        } catch { /* fall through */ }
+      }
+      document.getElementById('uploadOverlay').classList.add('show');
+    }
+  }
+
+  document.getElementById('jsonFileUpload').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        render(JSON.parse(ev.target.result));
+        document.getElementById('uploadOverlay').classList.remove('show');
+      } catch { alert('Invalid JSON file. Please check the format.'); }
+    };
+    reader.readAsText(file);
+  });
+
+  // ── Hamburger ─────────────────────────────────────────────────────────────
+  const menuToggle = document.getElementById('menu-toggle');
+  const navLinks   = document.getElementById('nav-links');
+
+  menuToggle.addEventListener('click', () => {
+    const open = navLinks.classList.toggle('open');
+    menuToggle.classList.toggle('active', open);
+  });
+
+  document.addEventListener('click', e => {
+    if (!navLinks.contains(e.target) && !menuToggle.contains(e.target)) {
+      navLinks.classList.remove('open');
+      menuToggle.classList.remove('active');
+    }
+  });
+
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    navLinks.classList.remove('open');
+    menuToggle.classList.remove('active');
+  }));
+
+  // ── Nav Highlight ─────────────────────────────────────────────────────────
+  function setupNavHighlight() {
+    const sections = document.querySelectorAll('[id]');
+    const links    = document.querySelectorAll('.nav-links a');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(sec => {
+        if (window.scrollY >= sec.offsetTop - 90) current = sec.id;
+      });
+      links.forEach(a => {
+        a.classList.remove('active');
+        if (a.getAttribute('href') === `#${current}`) a.classList.add('active');
+      });
+    });
+  }
+
+  // ── Fade-in ───────────────────────────────────────────────────────────────
+  function initFadeIn() {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+  }
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  loadData();
+  </script>
+
+<script src="assets/jspdf.umd.min.js"></script>
+<script src="assets/rp-pdf.js"></script>
+</body>
+</html>

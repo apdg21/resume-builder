@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Loading...</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* ── CSS Variables ──────────────────────────────────── */
+    :root {
+      --primary:    #a9b8c7;
+      --accent:     #3d4a5a;
+      --bg:         #f8f9fb;
+      --white:      #fff;
+      --pill-bg:    #e7ecf2;
+      --pill-text:  #3d4a5a;
+      --nav-bg:     #f4f6fa;
+      --footer-bg:  #e7ecf2;
+      --footer-text:#6d7a8a;
+      --g1:         #d6e4ef;
+      --g2:         #c2d6e8;
+      --ac:         #3d4a5a;
+    }
+
+    /* Offline-only hidden by default */
+    .offline-only { display: none; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: var(--accent);
+      margin: 0; padding: 0;
+      line-height: 1.7;
+    }
+
+    /* ── Upload Overlay ─────────────────────────────────── */
+    .upload-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      align-items: center; justify-content: center;
+    }
+    .upload-overlay.show { display: flex; }
+    .upload-box {
+      background: var(--white);
+      border-radius: 10px; padding: 40px;
+      text-align: center; max-width: 460px; width: 90%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .upload-box h2 { color: var(--accent); margin-bottom: 12px; font-size: 1.4rem; }
+    .upload-box p  { color: var(--footer-text); margin-bottom: 20px; font-size: 0.95rem; }
+    .upload-box .btn-upload {
+      background: var(--ac); color: white;
+      border: none; padding: 12px 28px; border-radius: 6px;
+      cursor: pointer; font-size: 1rem; font-family: inherit;
+      margin: 6px; transition: opacity 0.2s;
+    }
+    .upload-box .btn-upload:hover { opacity: 0.85; }
+    .upload-box a { color: var(--ac); }
+
+    /* ── Navbar ─────────────────────────────────────────── */
+    .navbar {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--nav-bg);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem;
+      border-bottom: 1px solid #e7ecf2;
+      height: 64px;
+    }
+
+    .nav-brand {
+      font-weight: 700; font-size: 1.2rem;
+      letter-spacing: 1px; color: var(--accent);
+    }
+
+    .nav-right { display: flex; align-items: center; gap: 1rem; }
+
+    .nav-links {
+      display: flex; gap: 2rem;
+      list-style: none; margin: 0; padding: 0;
+    }
+    .nav-links li a {
+      color: var(--accent); text-decoration: none;
+      font-weight: 500; font-size: 1rem; transition: color 0.2s;
+    }
+    .nav-links li a:hover,
+    .nav-links li a.active { color: #2d7de4; }
+
+    /* offline-only edit pill in nav */
+    .nav-edit-btn {
+      font-size: 0.84rem; color: var(--ac);
+      text-decoration: none; font-weight: 500;
+      border: 1px solid var(--ac); padding: 4px 12px;
+      border-radius: 20px; transition: all 0.2s; white-space: nowrap;
+    }
+    .nav-edit-btn:hover { background: var(--ac); color: white; }
+
+    .nav-toggle {
+      display: none; background: none; border: none;
+      flex-direction: column; gap: 5px;
+      cursor: pointer; padding: 10px;
+    }
+    .nav-toggle span {
+      display: block; width: 24px; height: 3px;
+      background: var(--accent); border-radius: 2px;
+      transition: all 0.3s;
+    }
+    .nav-toggle.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+    .nav-toggle.active span:nth-child(2) { opacity: 0; }
+    .nav-toggle.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+    /* ── Hero ───────────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, var(--g1), var(--g2));
+      padding: 3rem 0 2rem;
+      display: flex; justify-content: center; align-items: center;
+    }
+    .hero-content {
+      display: flex; align-items: center;
+      gap: 2.5rem; max-width: 900px; width: 100%;
+    }
+    .profile-photo img {
+      width: 130px; height: 130px;
+      border-radius: 50%; object-fit: cover;
+      border: 6px solid var(--white);
+      box-shadow: 0 2px 10px rgba(44,62,80,0.08);
+    }
+    .profile-eyebrow {
+      font-size: 0.78rem; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 2px;
+      color: var(--footer-text); margin-bottom: 4px;
+    }
+    .hero-content h1 {
+      font-size: 2.7rem; font-weight: 700;
+      margin-bottom: 0.2em; color: var(--accent); letter-spacing: 2px;
+    }
+    .hero-content h2 {
+      font-size: 1.3rem; color: #3d4a5a;
+      font-weight: 400; margin-top: 0;
+    }
+
+    /* ── Main sections ──────────────────────────────────── */
+    main {
+      max-width: 800px; margin: 0 auto;
+      padding: 2.5rem 1.2rem 1.5rem;
+    }
+    .section { margin-bottom: 3.5rem; }
+    .section h2 {
+      font-size: 1.25rem; color: var(--accent);
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 0.4em; margin-bottom: 1.2em;
+      letter-spacing: 1.2px;
+    }
+
+    /* ── Pills ──────────────────────────────────────────── */
+    .pill-list {
+      display: flex; flex-wrap: wrap;
+      gap: 0.7em; list-style: none;
+      padding: 0; margin: 0;
+    }
+    .pill-list li {
+      background: var(--pill-bg); color: var(--pill-text);
+      padding: 0.5em 1.2em; border-radius: 20px;
+      font-size: 1rem; font-weight: 500;
+    }
+
+    /* ── Experience / Education ─────────────────────────── */
+    #experience-list, #education-list, #references-list {
+      display: flex; flex-direction: column; gap: 2.2em;
+    }
+    .experience-item, .education-item {
+      background: var(--white); border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(44,62,80,0.03);
+      padding: 1.3em 1.5em;
+    }
+    .experience-item .role {
+      font-weight: 600; color: var(--accent); font-size: 1.08rem;
+    }
+    .experience-item .company,
+    .education-item .institution {
+      color: #6d7a8a; font-size: 1rem; margin-bottom: 0.2em;
+    }
+    .experience-item .dates,
+    .education-item .dates {
+      color: #333; font-size: 0.97rem; margin-bottom: 0.7em;
+    }
+    .experience-item ul, .education-item ul {
+      margin: 0.5em 0 0 1.1em; padding: 0;
+      color: #444; font-size: 1rem;
+    }
+
+    /* ── References ─────────────────────────────────────── */
+    .reference-item {
+      background: var(--white); border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(44,62,80,0.03);
+      padding: 1.1em 1.3em; min-width: 220px;
+    }
+    .reference-item .ref-name  { font-weight: 600; color: var(--accent); }
+    .reference-item .ref-role  { font-size: 0.97rem; color: #6d7a8a; }
+    .reference-item .ref-contact {
+      font-size: 0.95rem; color: #444; margin-top: 0.3em;
+    }
+
+    /* ── Contact list ───────────────────────────────────── */
+    #contact-list {
+      list-style: none; padding: 0; margin: 0;
+      font-size: 1rem; color: #444;
+    }
+    #contact-list li {
+      margin-bottom: 0.7em; display: flex;
+      align-items: center; gap: 10px;
+    }
+    #contact-list li svg { width: 18px; height: 18px; color: #6d7a8a; }
+
+    /* ── Footer ─────────────────────────────────────────── */
+    .footer {
+      background: var(--footer-bg);
+      padding: 1.5em 0 0.7em; margin-top: 2.5em;
+    }
+    .footer-content {
+      max-width: 900px; margin: 0 auto;
+      display: flex; justify-content: space-between;
+      align-items: center; flex-wrap: wrap; gap: 16px;
+    }
+    #footer-socials a {
+      margin: 0 0.5rem; font-size: 1.4rem;
+      color: #6d7a8a; transition: color 0.2s;
+    }
+    #footer-socials a:hover { color: #2d7de4; }
+    .footer-copy { color: var(--footer-text); font-size: 0.98rem; }
+
+    /* ── Fade-in ────────────────────────────────────────── */
+    .fade-in {
+      opacity: 0; transform: translateY(18px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Responsive ─────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .hero-content { flex-direction: column; gap: 1.5rem; align-items: flex-start; padding: 0 1.2rem; }
+      .footer-content { flex-direction: column; align-items: flex-start; gap: 8px; padding: 0 1.2rem; }
+    }
+    @media (max-width: 700px) {
+      .navbar { padding: 0 1rem; height: 54px; }
+      .nav-links {
+        position: absolute; top: 54px; left: 0; right: 0;
+        background: var(--nav-bg); flex-direction: column;
+        gap: 0; padding: 0; display: none;
+        box-shadow: 0 2px 10px rgba(44,62,80,0.08); z-index: 99;
+      }
+      .nav-links.open { display: flex; padding: 20px; gap: 10px; }
+      .nav-toggle { display: flex; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Upload Overlay -->
+  <div class="upload-overlay" id="uploadOverlay">
+    <div class="upload-box">
+      <h2>Load Resume Data</h2>
+      <p>No data found. Upload your <code>data.json</code> or use the form builder to create one.</p>
+      <input type="file" id="jsonFileUpload" accept=".json" style="display:none">
+      <button class="btn-upload" onclick="document.getElementById('jsonFileUpload').click()">
+        <i class="fas fa-upload"></i> Select JSON File
+      </button>
+      <br><br>
+      <a href="form.html"><i class="fas fa-pencil-alt"></i> Create with Form Builder</a>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-brand" id="nav-brand">Loading...</div>
+    <div class="nav-right">
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#education">Education</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#languages">Languages</a></li>
+        <li><a href="#references">References</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <!-- offline-only edit link -->
+      <a href="form.html" class="nav-edit-btn offline-only" style="display:none">
+        <i class="fas fa-pen"></i> Edit
+      </a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="hero-content">
+      <div class="profile-photo">
+        <img src="assets/profile.jpg" alt="Profile Photo" id="profileImage">
+      </div>
+      <div>
+        <p class="profile-eyebrow" id="profileEyebrow"></p>
+        <h1 id="name">Loading...</h1>
+        <h2 id="job-title"></h2>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section fade-in" id="about">
+      <h2>About Me</h2>
+      <p id="about-text"></p>
+    </section>
+
+    <section class="section fade-in" id="experience">
+      <h2>Work Experience</h2>
+      <div id="experience-list"></div>
+    </section>
+
+    <section class="section fade-in" id="education">
+      <h2>Education</h2>
+      <div id="education-list"></div>
+    </section>
+
+    <section class="section fade-in" id="skills">
+      <h2>Skills</h2>
+      <ul id="skills-list" class="pill-list"></ul>
+    </section>
+
+    <section class="section fade-in" id="languages">
+      <h2>Languages</h2>
+      <ul id="languages-list" class="pill-list"></ul>
+    </section>
+
+    <section class="section fade-in" id="references">
+      <h2>References</h2>
+      <div id="references-list"></div>
+    </section>
+
+    <section class="section fade-in" id="contact">
+      <h2>Contact</h2>
+      <ul id="contact-list"></ul>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <div id="footer-socials"></div>
+      <div class="footer-copy" id="footer-copy"></div>
+    </div>
+  </footer>
+
+  <script>
+  // ── Helpers ──────────────────────────────────────────────────────────────
+  function hexAlpha(hex, alpha) {
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+
+  // Themes recolour only the page frame: header/nav, hero and footer.
+  // The rest of the page keeps its original design.
+  function rpIsDarkHex(hex) {
+    if (!hex || hex.charAt(0) !== '#') return false;
+    var c = hex.substring(1);
+    if (c.length === 3) c = c.split('').map(function (x) { return x + x; }).join('');
+    if (c.length !== 6) return false;
+    var r = parseInt(c.substring(0, 2), 16) / 255;
+    var g = parseInt(c.substring(2, 4), 16) / 255;
+    var b = parseInt(c.substring(4, 6), 16) / 255;
+    return (0.2126 * r + 0.7152 * g + 0.0722 * b) < 0.55;
+  }
+
+  function rpHexToRgb(hex) {
+    var c = String(hex).replace('#', '');
+    if (c.length === 3) c = c.split('').map(function (x) { return x + x; }).join('');
+    return [parseInt(c.substring(0, 2), 16), parseInt(c.substring(2, 4), 16), parseInt(c.substring(4, 6), 16)];
+  }
+
+  // ratio = how much of `target` to mix in (0 = hex, 1 = target).
+  function rpMixHex(hex, target, ratio) {
+    var a = rpHexToRgb(hex);
+    var b = rpHexToRgb(target);
+    var out = '#';
+    for (var i = 0; i < 3; i++) {
+      var v = Math.round(a[i] * (1 - ratio) + b[i] * ratio);
+      out += ('0' + v.toString(16)).slice(-2);
+    }
+    return out;
+  }
+
+  function rpApplyFrameTheme(theme, regions) {
+    var MARK = 'data-rp-frame-themed';
+    var marked = document.querySelectorAll('[' + MARK + ']');
+    for (var i = 0; i < marked.length; i++) {
+      marked[i].removeAttribute(MARK);
+      marked[i].style.removeProperty('background');
+      marked[i].style.removeProperty('background-color');
+      marked[i].style.removeProperty('background-image');
+    }
+    var styleEl = document.getElementById('rpFrameThemeStyle');
+    if (styleEl) styleEl.parentNode.removeChild(styleEl);
+    if (!theme || !theme.gradientStart) return;
+
+    var g1 = theme.gradientStart;
+    var g2 = theme.gradientEnd || g1;
+    var dark = rpIsDarkHex(g1);
+    var tc = theme.textColor || (dark ? '#f1f5f9' : '#1e293b');
+    var hc = theme.headingColor || (dark ? '#ffffff' : '#0f172a');
+
+    var found = document.querySelectorAll(regions.join(','));
+    var picked = [];
+    for (var j = 0; j < found.length; j++) {
+      var nested = false;
+      for (var k = 0; k < picked.length; k++) {
+        if (picked[k] !== found[j] && picked[k].contains(found[j])) { nested = true; break; }
+      }
+      if (!nested) picked.push(found[j]);
+    }
+    for (var m = 0; m < picked.length; m++) {
+      picked[m].setAttribute(MARK, '1');
+      picked[m].style.setProperty('background', 'linear-gradient(135deg, ' + g1 + ' 0%, ' + g2 + ' 100%)', 'important');
+    }
+
+    styleEl = document.createElement('style');
+    styleEl.id = 'rpFrameThemeStyle';
+    var navAccent = dark ? rpMixHex(g1, '#ffffff', 0.55) : rpMixHex(g1, '#000000', 0.55);
+    styleEl.textContent =
+      '[' + MARK + '] { color: ' + tc + ' !important; }' +
+      '[' + MARK + '] h1, [' + MARK + '] h2, [' + MARK + '] h3, [' + MARK + '] h4, [' + MARK + '] h5, [' + MARK + '] h6 { color: ' + hc + ' !important; }' +
+      '[' + MARK + '] p, [' + MARK + '] span, [' + MARK + '] li, [' + MARK + '] a, [' + MARK + '] strong, [' + MARK + '] em, [' + MARK + '] small, [' + MARK + '] blockquote, [' + MARK + '] figcaption, [' + MARK + '] time { color: ' + tc + ' !important; }' +
+      '[' + MARK + '] .nav-brand { color: ' + hc + ' !important; }' +
+      '[' + MARK + '] .nav-toggle span { background: ' + tc + ' !important; }' +
+      '[' + MARK + '] .nav-links li a:hover, [' + MARK + '] .nav-links li a.active { color: ' + navAccent + ' !important; }' +
+      '@media (max-width: 700px) { [' + MARK + '] .nav-links { background: ' + g1 + ' !important; } }';
+    document.head.appendChild(styleEl);
+  }
+
+  function applyTheme(theme) {
+    rpApplyFrameTheme(theme, ['nav.navbar', 'header.hero', 'footer.footer']);
+  }
+  window.applyTheme = applyTheme;
+
+  // ── Render ────────────────────────────────────────────────────────────────
+  function render(data) {
+    applyTheme(data.theme);
+
+    document.title = `${data.name} – Resume`;
+    document.getElementById('nav-brand').textContent = data.name;
+    document.getElementById('name').textContent      = data.name;
+    document.getElementById('job-title').textContent = data.title;
+
+    // Profile eyebrow & image
+    document.getElementById('profileEyebrow').textContent = data.profile?.eyebrow || '';
+    if (data.profile?.image) document.getElementById('profileImage').src = data.profile.image;
+
+    // About
+    document.getElementById('about-text').textContent =
+      Array.isArray(data.about) ? data.about.join('\n\n') : (data.about || '');
+
+    // Experience
+    document.getElementById('experience-list').innerHTML = (data.experience || []).map(exp => `
+      <div class="experience-item">
+        <div class="dates">${exp.start} – ${exp.end}</div>
+        <div class="company">${exp.company}</div>
+        <div class="role">${exp.role}</div>
+        <ul>${(exp.details || []).map(d => `<li>${d}</li>`).join('')}</ul>
+      </div>`).join('');
+
+    // Education
+    document.getElementById('education-list').innerHTML = (data.education || []).map(edu => {
+      const yr = edu.start === edu.end ? edu.start : `${edu.start} – ${edu.end}`;
+      return `<div class="education-item">
+        <div class="dates">${yr}</div>
+        <div class="institution">${edu.institution}</div>
+        <div class="degree">${edu.degree}</div>
+        ${edu.description ? `<div style="font-size:0.9rem;color:#999;margin-top:4px">${edu.description}</div>` : ''}
+      </div>`;
+    }).join('');
+
+    // Skills — support string array or object array
+    document.getElementById('skills-list').innerHTML = (data.skills || []).map(s =>
+      `<li>${typeof s === 'string' ? s : s.name}</li>`).join('');
+
+    // Languages — support string array or object array
+    document.getElementById('languages-list').innerHTML = (data.languages || []).map(l =>
+      `<li>${typeof l === 'string' ? l : l.name}</li>`).join('');
+
+    // References
+    document.getElementById('references-list').innerHTML = (data.references || []).map(ref => `
+      <div class="reference-item">
+        <div class="ref-name">${ref.name}</div>
+        <div class="ref-role">${ref.role}</div>
+        <div class="ref-contact">
+          <strong>Phone:</strong> ${ref.phone}<br>
+          <strong>Email:</strong> <a href="mailto:${ref.email}" style="color:#6d7a8a">${ref.email}</a>
+        </div>
+      </div>`).join('');
+
+    // Contact
+    document.getElementById('contact-list').innerHTML = `
+      <li>
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M22 16.92V19a2 2 0 0 1-2.18 2A19.72 19.72 0 0 1 3 5.18 2 2 0 0 1 5 3h2.09a2 2 0 0 1 2 1.72c.13 1.05.35 2.07.68 3.06a2 2 0 0 1-.45 2.11L8.09 10.91a16 16 0 0 0 6 6l1.02-1.02a2 2 0 0 1 2.11-.45c.99.33 2.01.55 3.06.68A2 2 0 0 1 22 16.92z"/>
+        </svg>${data.contact.phone}
+      </li>
+      <li>
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6l-10 7L2 6"/>
+        </svg>
+        <a href="mailto:${data.contact.email}" style="color:#6d7a8a">${data.contact.email}</a>
+      </li>
+      <li>
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+          <circle cx="12" cy="9" r="2.5"/>
+        </svg>${data.contact.address}
+      </li>`;
+
+    // Footer
+    const year = new Date().getFullYear();
+    const ftxt = (data.footer?.text || `© {year} ${data.name}. All rights reserved.`).replace('{year}', year);
+    document.getElementById('footer-copy').textContent = ftxt;
+
+    // Social links — icon field is FA class (fa-linkedin etc) or name fallback
+    const footerSocials = document.getElementById('footer-socials');
+    footerSocials.innerHTML = '';
+    (data.footer?.socials || []).forEach(s => {
+      const a = document.createElement('a');
+      a.href = s.url; a.target = '_blank'; a.rel = 'noopener';
+      a.setAttribute('aria-label', s.name);
+      const iconClass = s.icon
+        ? (s.icon.startsWith('fa') ? s.icon : `fa-${s.icon.replace('.svg','')}`)
+        : `fa-${s.name.toLowerCase()}`;
+      a.innerHTML = `<i class="fab ${iconClass}"></i>`;
+      footerSocials.appendChild(a);
+    });
+
+    initFadeIn();
+    setupNavHighlight();
+  }
+
+  // ── Offline-only ──────────────────────────────────────────────────────────
+  if (location.protocol === 'file:') {
+    document.querySelectorAll('.offline-only').forEach(el => el.style.display = '');
+  }
+
+  // ── Load Data ─────────────────────────────────────────────────────────────
+  async function loadData() {
+    try {
+      const res = await fetch('data.json');
+      if (!res.ok) throw new Error('fetch failed');
+      render(await res.json());
+    } catch {
+      if (location.hash && location.hash.startsWith('#data=')) {
+        try { render(JSON.parse(decodeURIComponent(location.hash.substring(6)))); return; } catch { /* fall */ }
+      }
+      document.getElementById('uploadOverlay').classList.add('show');
+    }
+  }
+
+  document.getElementById('jsonFileUpload').addEventListener('change', function(e) {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        render(JSON.parse(ev.target.result));
+        document.getElementById('uploadOverlay').classList.remove('show');
+      } catch { alert('Invalid JSON file. Please check the format.'); }
+    };
+    reader.readAsText(file);
+  });
+
+  // ── Hamburger ─────────────────────────────────────────────────────────────
+  const navToggle = document.getElementById('nav-toggle');
+  const navLinks  = document.getElementById('nav-links');
+
+  navToggle.addEventListener('click', () => {
+    const open = navLinks.classList.toggle('open');
+    navToggle.classList.toggle('active', open);
+  });
+
+  document.addEventListener('click', e => {
+    if (!navLinks.contains(e.target) && !navToggle.contains(e.target)) {
+      navLinks.classList.remove('open');
+      navToggle.classList.remove('active');
+    }
+  });
+
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    navLinks.classList.remove('open');
+    navToggle.classList.remove('active');
+  }));
+
+  // ── Nav Highlight ─────────────────────────────────────────────────────────
+  function setupNavHighlight() {
+    const sections = document.querySelectorAll('main > .section');
+    const links    = document.querySelectorAll('.nav-links a');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(sec => {
+        if (window.scrollY >= sec.offsetTop - 90) current = sec.id;
+      });
+      links.forEach(a => {
+        a.classList.remove('active');
+        if (a.getAttribute('href') === `#${current}`) a.classList.add('active');
+      });
+    });
+  }
+
+  // ── Fade-in ───────────────────────────────────────────────────────────────
+  function initFadeIn() {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+  }
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  loadData();
+  </script>
+
+<script src="assets/jspdf.umd.min.js"></script>
+<script src="assets/rp-pdf.js"></script>
+</body>
+</html>

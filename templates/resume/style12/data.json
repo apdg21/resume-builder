@@ -1,0 +1,112 @@
+{
+  "name": "Maya Dela Cruz",
+  "title": "Environmental Scientist & Climate Researcher",
+  "theme": {
+    "gradientStart": "#1a3a2a",
+    "gradientEnd": "#0d2233",
+    "accentColor": "#4caf82"
+  },
+  "contact": {
+    "phone": "+63 912 334 7782",
+    "email": "maya.delacruz@earthlab.ph",
+    "address": "Quezon City, Metro Manila, PH"
+  },
+  "about": "Environmental scientist with 9 years of field and laboratory research experience focused on coastal ecosystems, climate adaptation, and community-based conservation. I bridge rigorous science with practical policy — translating complex environmental data into actionable recommendations for governments, NGOs, and local communities across Southeast Asia.",
+  "education": [
+    {
+      "degree": "M.Sc. Environmental Science",
+      "institution": "University of the Philippines Diliman",
+      "start": "2017",
+      "end": "2019"
+    },
+    {
+      "degree": "B.Sc. Biology, cum laude",
+      "institution": "Ateneo de Manila University",
+      "start": "2012",
+      "end": "2016"
+    }
+  ],
+  "skills": [
+    "Field Ecology & Sampling",
+    "GIS & Remote Sensing",
+    "R & Python (Data Analysis)",
+    "Environmental Impact Assessment",
+    "Climate Modelling (CMIP6)",
+    "Grant Writing",
+    "Science Communication",
+    "Community Engagement"
+  ],
+  "languages": [
+    "Filipino (Native)",
+    "English (Fluent)",
+    "Bahasa Indonesia (Intermediate)"
+  ],
+  "experience": [
+    {
+      "start": "2021",
+      "end": "Present",
+      "company": "Philippine Institute for Climate Research",
+      "role": "Senior Research Scientist",
+      "details": [
+        "Lead a 7-person team monitoring coral bleaching events across 14 Visayan reef sites.",
+        "Developed a predictive bleaching model adopted by DENR for early-warning alerts.",
+        "Secured ₱18M in research funding from DOST and international climate foundations.",
+        "Published 6 peer-reviewed papers; cited 340+ times in the last 3 years."
+      ]
+    },
+    {
+      "start": "2019",
+      "end": "2021",
+      "company": "WWF Philippines",
+      "role": "Climate Adaptation Specialist",
+      "details": [
+        "Designed community-based mangrove restoration programs covering 850 ha across Palawan.",
+        "Co-authored the Sulu Sea Biodiversity Corridor management plan (2020–2030).",
+        "Trained 120+ local government unit staff in coastal vulnerability assessments."
+      ]
+    },
+    {
+      "start": "2016",
+      "end": "2019",
+      "company": "Marine Science Institute — UP",
+      "role": "Research Associate",
+      "details": [
+        "Conducted quarterly benthic surveys across Tubbataha Reef National Park.",
+        "Managed a database of 15 years of oceanographic sensor data.",
+        "Contributed to UNESCO World Heritage Site monitoring reports."
+      ]
+    }
+  ],
+  "references": [
+    {
+      "name": "Dr. Ramon Aguilar",
+      "role": "Director, UP Marine Science Institute",
+      "phone": "+63 2 8981 8500",
+      "email": "r.aguilar@msi.upd.edu.ph"
+    },
+    {
+      "name": "Dr. Lena Hoffmann",
+      "role": "Regional Lead, WWF Asia-Pacific",
+      "phone": "+65 6730 8100",
+      "email": "l.hoffmann@wwf.org.sg"
+    }
+  ],
+  "footer": {
+    "text": "© 2025 Maya Dela Cruz. All rights reserved.",
+    "socials": [
+      {
+        "name": "LinkedIn",
+        "url": "https://linkedin.com/in/mayadelacruz",
+        "icon": "linkedin.svg"
+      },
+      {
+        "name": "Twitter",
+        "url": "https://twitter.com/mayaeco",
+        "icon": "twitter.svg"
+      }
+    ]
+  },
+  "profile": {
+    "image": "assets/profile.jpg"
+  }
+}
