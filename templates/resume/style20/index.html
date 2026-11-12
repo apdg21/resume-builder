@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="page-title">Loading…</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    /* ─── CSS Variables ──────────────────────────────────── */
+    :root {
+      --g1: #faf6ef;
+      --g2: #f0e8d8;
+      --accent: #b84c1e;
+      --accent-dim: rgba(184,76,30,0.10);
+      --accent-mid: rgba(184,76,30,0.25);
+      --accent-text: #8f3714;
+      --ink: #1a1108;
+      --ink-mid: #3d2e1a;
+      --ink-soft: #7a6650;
+      --ink-faint: #b8a898;
+      --surface: rgba(255,252,247,0.85);
+      --surface-alt: rgba(244,238,226,0.7);
+      --border-light: rgba(184,76,30,0.15);
+      --border-mid: rgba(26,17,8,0.12);
+      --nav-h: 66px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Figtree', sans-serif;
+      background: linear-gradient(168deg, var(--g1) 0%, var(--g2) 100%);
+      background-attachment: fixed;
+      color: var(--ink);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Paper grain texture */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 1;
+    }
+
+    /* Subtle halftone dots */
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: radial-gradient(circle, rgba(26,17,8,0.045) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    /* ─── Upload Overlay ─────────────────────────────────── */
+    #upload-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(245,240,230,0.97);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .upload-box {
+      background: white;
+      border: 1px solid var(--border-mid);
+      box-shadow: 0 4px 40px rgba(26,17,8,0.12);
+      padding: 3rem 2.75rem;
+      max-width: 420px; width: 90%;
+      text-align: center;
+    }
+    .upload-box::before {
+      content: '';
+      display: block;
+      width: 40px; height: 3px;
+      background: var(--accent);
+      margin: 0 auto 1.5rem;
+    }
+    .upload-box h2 {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.6rem;
+      color: var(--ink);
+      margin-bottom: 0.75rem;
+    }
+    .upload-box p { color: var(--ink-soft); font-size: 0.95rem; line-height: 1.65; margin-bottom: 1.75rem; }
+    .upload-box .btn-upload {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      font-family: 'Figtree', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.85rem 2rem;
+      border: none; cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .upload-box .btn-upload:hover { background: var(--accent-text); transform: translateY(-1px); }
+    .upload-box .create-note {
+      margin-top: 1.25rem;
+      font-size: 0.83rem;
+      color: var(--ink-faint);
+    }
+    .upload-box .create-note a { color: var(--accent); text-decoration: none; font-weight: 500; }
+    .upload-box .create-note a:hover { text-decoration: underline; }
+
+    /* ─── Navigation ─────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: var(--nav-h);
+      background: rgba(250,246,239,0.94);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border-mid);
+    }
+    .nav-inner {
+      max-width: 1240px; margin: 0 auto; padding: 0 2rem;
+      height: 100%;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--ink);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .nav-brand-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .nav-links {
+      display: flex; align-items: center; gap: 0.15rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      text-decoration: none;
+      padding: 0.45rem 0.9rem;
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0.9rem; right: 0.9rem;
+      height: 1.5px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.25s ease;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--ink); }
+    .nav-links a:hover::after, .nav-links a.active::after { transform: scaleX(1); }
+
+    .nav-offline {
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .btn-nav-load {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: none;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 0.38rem 0.9rem;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn-nav-load:hover { background: var(--accent); color: white; }
+    .nav-links .offline-only { display: none; }
+
+    .hamburger {
+      display: none;
+      background: none; border: none;
+      cursor: pointer;
+      flex-direction: column; gap: 5px;
+      padding: 5px;
+    }
+    .hamburger-line {
+      display: block; width: 22px; height: 2px;
+      background: var(--ink);
+      transition: transform 0.25s, opacity 0.25s;
+    }
+    .hamburger.open .hamburger-line:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open .hamburger-line:nth-child(2) { opacity: 0; }
+    .hamburger.open .hamburger-line:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* ─── Layout ─────────────────────────────────────────── */
+    main {
+      position: relative; z-index: 1;
+      max-width: 1240px; margin: 0 auto;
+      padding: calc(var(--nav-h) + 3.5rem) 2rem 5rem;
+    }
+
+    /* ─── Hero / Header ──────────────────────────────────── */
+    #about {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 0;
+      border-bottom: 1px solid var(--border-mid);
+      margin-bottom: 4rem;
+      padding-bottom: 3.5rem;
+    }
+
+    .hero-left {
+      padding-right: 3.5rem;
+      border-right: 1px solid var(--border-mid);
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+
+    .kicker {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .kicker::before {
+      content: '';
+      width: 28px; height: 1.5px;
+      background: var(--accent);
+    }
+
+    .hero-name {
+      font-family: 'Libre Baskerville', serif;
+      font-size: clamp(2.4rem, 5vw, 4.2rem);
+      font-weight: 700;
+      line-height: 1.05;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem;
+    }
+
+    #about-text {
+      font-size: 1.0rem;
+      font-weight: 300;
+      line-height: 1.8;
+      color: var(--ink-mid);
+      max-width: 580px;
+    }
+
+    .hero-right {
+      padding-left: 2.5rem;
+      display: flex; flex-direction: column; align-items: flex-start; gap: 1.5rem;
+    }
+
+    .photo-frame {
+      position: relative; width: 100%;
+    }
+    .photo-frame::after {
+      content: '';
+      position: absolute;
+      bottom: -10px; right: -10px;
+      width: 100%; height: 100%;
+      border: 1.5px solid var(--accent);
+      z-index: 0;
+    }
+    #profile-photo-display {
+      width: 100%;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+      position: relative; z-index: 1;
+      display: block;
+      filter: sepia(8%) contrast(1.04);
+    }
+
+    /* ─── Section Header ─────────────────────────────────── */
+    .section-head {
+      display: flex; align-items: center; gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .section-number {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 0.7rem;
+      font-style: italic;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+    .section-head h2 {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.015em;
+    }
+    .section-rule {
+      flex: 1; height: 1px;
+      background: var(--border-mid);
+    }
+
+    /* ─── Content Sections ───────────────────────────────── */
+    .content-section {
+      margin-bottom: 4rem;
+    }
+
+    /* ─── Experience ─────────────────────────────────────── */
+    #experience-list .exp-item {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 0;
+      border-top: 1px solid var(--border-mid);
+      padding: 1.75rem 0;
+    }
+    #experience-list .exp-item:last-child {
+      border-bottom: 1px solid var(--border-mid);
+    }
+    .exp-meta {
+      padding-right: 2rem;
+      border-right: 1px solid var(--border-mid);
+    }
+    .exp-date-tag {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 0.78rem;
+      font-style: italic;
+      color: var(--accent);
+      margin-bottom: 0.4rem;
+    }
+    .exp-company-name {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--ink-soft);
+      line-height: 1.4;
+    }
+    .exp-body { padding-left: 2rem; }
+    .exp-position-title {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 0.6rem;
+      letter-spacing: -0.01em;
+    }
+    .exp-desc {
+      font-size: 0.92rem;
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--ink-mid);
+    }
+
+    /* ─── Education ──────────────────────────────────────── */
+    #education-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5px;
+      background: var(--border-mid);
+      border: 1px solid var(--border-mid);
+    }
+    #education-list .edu-item {
+      background: var(--surface);
+      padding: 1.5rem 1.75rem;
+    }
+    .edu-date-tag {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 0.72rem;
+      font-style: italic;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    .edu-degree-name {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.0rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 0.35rem;
+      line-height: 1.35;
+    }
+    .edu-institution-name {
+      font-size: 0.82rem;
+      color: var(--ink-soft);
+      line-height: 1.45;
+    }
+
+    /* ─── Skills ─────────────────────────────────────────── */
+    #skills-list {
+      display: flex; flex-wrap: wrap;
+      gap: 0;
+      border: 1px solid var(--border-mid);
+    }
+    #skills-list li {
+      list-style: none;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      padding: 0.7rem 1.3rem;
+      border-right: 1px solid var(--border-mid);
+      border-bottom: 1px solid var(--border-mid);
+      color: var(--ink-mid);
+      transition: background 0.2s, color 0.2s;
+      cursor: default;
+    }
+    #skills-list li:hover {
+      background: var(--accent-dim);
+      color: var(--accent-text);
+    }
+
+    /* ─── Languages ──────────────────────────────────────── */
+    #languages-list {
+      display: flex; flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    #languages-list li {
+      list-style: none;
+      font-family: 'Libre Baskerville', serif;
+      font-size: 0.92rem;
+      font-style: italic;
+      color: var(--ink-mid);
+      padding: 0.5rem 1.2rem;
+      border: 1px solid var(--border-mid);
+      background: var(--surface);
+    }
+
+    /* ─── Two-column layout for Skills+Languages / References+Contact ── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+    }
+
+    /* ─── References ─────────────────────────────────────── */
+    #references-list .ref-item {
+      padding: 1.25rem 0;
+      border-bottom: 1px solid var(--border-mid);
+    }
+    #references-list .ref-item:first-child {
+      border-top: 1px solid var(--border-mid);
+    }
+    .ref-name-text {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.0rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 0.25rem;
+    }
+    .ref-role {
+      font-size: 0.8rem;
+      color: var(--ink-soft);
+      margin-bottom: 0.2rem;
+    }
+    .ref-contact-text {
+      font-size: 0.78rem;
+      color: var(--accent);
+      font-style: italic;
+    }
+
+    /* ─── Contact ────────────────────────────────────────── */
+    #contact-info {
+      display: flex; flex-direction: column; gap: 0.9rem;
+    }
+    #contact-info p {
+      display: flex; align-items: center; gap: 0.85rem;
+      font-size: 0.92rem;
+      color: var(--ink-mid);
+    }
+    #contact-info p i {
+      color: var(--accent);
+      width: 16px; text-align: center;
+      flex-shrink: 0;
+    }
+
+    /* ─── Footer ─────────────────────────────────────────── */
+    footer {
+      position: relative; z-index: 1;
+      border-top: 1px solid var(--border-mid);
+      background: rgba(250,246,239,0.6);
+    }
+    .footer-inner {
+      max-width: 1240px; margin: 0 auto;
+      padding: 2rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    #footer-text {
+      font-size: 0.75rem;
+      color: var(--ink-faint);
+      letter-spacing: 0.04em;
+    }
+    .social-icons { display: flex; gap: 0.5rem; }
+    .social-icons a {
+      width: 34px; height: 34px;
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid var(--border-mid);
+      color: var(--ink-soft);
+      text-decoration: none;
+      font-size: 0.8rem;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .social-icons a:hover {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    /* ─── Fade-in ────────────────────────────────────────── */
+    .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.55s ease, transform 0.55s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* ─── Responsive ─────────────────────────────────────── */
+    @media (max-width: 900px) {
+      #about { grid-template-columns: 1fr; }
+      .hero-left { padding-right: 0; border-right: none; border-bottom: 1px solid var(--border-mid); padding-bottom: 2rem; margin-bottom: 2rem; }
+      .hero-right { padding-left: 0; flex-direction: row; align-items: flex-start; }
+      .photo-frame { max-width: 180px; }
+      .two-col { grid-template-columns: 1fr; gap: 3rem; }
+      #experience-list .exp-item { grid-template-columns: 1fr; }
+      .exp-meta { border-right: none; padding-right: 0; border-bottom: 1px solid var(--border-mid); padding-bottom: 0.75rem; margin-bottom: 0.75rem; }
+      .exp-body { padding-left: 0; }
+    }
+    @media (max-width: 700px) {
+      .nav-links {
+        display: none;
+        position: absolute; top: var(--nav-h); left: 0; right: 0;
+        background: rgba(250,246,239,0.98);
+        border-bottom: 1px solid var(--border-mid);
+        flex-direction: column; gap: 0; padding: 0.5rem 0;
+        box-shadow: 0 8px 20px rgba(26,17,8,0.08);
+      }
+      .nav-links.open { display: flex; }
+      .nav-links a { padding: 0.85rem 2rem; font-size: 0.78rem; }
+      .nav-links a::after { display: none; }
+      .hamburger { display: flex; }
+      .nav-offline { display: none; }
+      main { padding-left: 1.25rem; padding-right: 1.25rem; }
+      .hero-right { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Upload Overlay -->
+  <div id="upload-overlay" style="display:none;">
+    <div class="upload-box">
+      <h2>Load Resume Data</h2>
+      <p>No data.json was found. Select your resume data file to populate this page.</p>
+      <button class="btn-upload" id="upload-btn">Select data.json</button>
+      <input type="file" id="upload-input" accept=".json" style="display:none;" />
+      <p class="create-note">Don't have a file yet? <a href="form.html">Build one in the editor →</a></p>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-inner">
+      <a href="#about" class="nav-brand">
+        <span class="nav-brand-dot"></span>
+        <span id="nav-brand-text">V.C.M</span>
+      </a>
+
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#about">Profile</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#education">Education</a></li>
+        <li><a href="#skills-languages">Skills</a></li>
+        <li><a href="#references-contact">References</a></li>
+        <li class="offline-only" style="display:none;">
+          <a href="#" id="nav-load-link">↑ Load JSON</a>
+          <input type="file" id="nav-file-input" accept=".json" style="display:none;" />
+        </li>
+        <li class="offline-only" style="display:none;"><a href="form.html">✦ Edit</a></li>
+      </ul>
+
+      <div class="nav-offline offline-only" style="display:none;">
+        <button class="btn-nav-load" id="nav-load-btn">↑ Load JSON</button>
+        <input type="file" id="nav-file-input-desktop" accept=".json" style="display:none;" />
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main>
+
+    <!-- About / Hero -->
+    <section id="about" class="fade-in">
+      <div class="hero-left">
+        <div>
+          <p class="kicker" id="profile-title-display">Architect</p>
+          <h1 class="hero-name" id="profile-name-display">Loading…</h1>
+          <p id="about-text">Loading resume data…</p>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="photo-frame">
+          <img src="assets/profile.jpg" alt="Profile Photo" id="profile-photo-display" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Experience -->
+    <section id="experience" class="content-section fade-in">
+      <div class="section-head">
+        <span class="section-number">01.</span>
+        <h2>Experience</h2>
+        <div class="section-rule"></div>
+      </div>
+      <div id="experience-list"></div>
+    </section>
+
+    <!-- Education -->
+    <section id="education" class="content-section fade-in">
+      <div class="section-head">
+        <span class="section-number">02.</span>
+        <h2>Education</h2>
+        <div class="section-rule"></div>
+      </div>
+      <div id="education-list"></div>
+    </section>
+
+    <!-- Skills + Languages -->
+    <div class="two-col" id="skills-languages">
+      <section class="content-section fade-in">
+        <div class="section-head">
+          <span class="section-number">03.</span>
+          <h2>Skills</h2>
+          <div class="section-rule"></div>
+        </div>
+        <ul id="skills-list"></ul>
+      </section>
+      <section class="content-section fade-in">
+        <div class="section-head">
+          <span class="section-number">04.</span>
+          <h2>Languages</h2>
+          <div class="section-rule"></div>
+        </div>
+        <ul id="languages-list"></ul>
+      </section>
+    </div>
+
+    <!-- References + Contact -->
+    <div class="two-col" id="references-contact">
+      <section class="content-section fade-in">
+        <div class="section-head">
+          <span class="section-number">05.</span>
+          <h2>References</h2>
+          <div class="section-rule"></div>
+        </div>
+        <div id="references-list"></div>
+      </section>
+      <section class="content-section fade-in">
+        <div class="section-head">
+          <span class="section-number">06.</span>
+          <h2>Contact</h2>
+          <div class="section-rule"></div>
+        </div>
+        <div id="contact-info"></div>
+      </section>
+    </div>
+
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <p id="footer-text">© 2025</p>
+      <div class="social-icons" id="social-icons"></div>
+    </div>
+  </footer>
+
+  <script>
+  (function() {
+
+    /* ── Hex helpers ──────────────────────────────────────── */
+    function hexAlpha(hex, a) {
+      hex = hex.replace('#','');
+      if (hex.length===3) hex=hex.split('').map(c=>c+c).join('');
+      const r=parseInt(hex.slice(0,2),16), g=parseInt(hex.slice(2,4),16), b=parseInt(hex.slice(4,6),16);
+      return `rgba(${r},${g},${b},${a})`;
+    }
+    function darken(hex, pct) {
+      hex=hex.replace('#','');
+      if(hex.length===3) hex=hex.split('').map(c=>c+c).join('');
+      const r=Math.max(0,parseInt(hex.slice(0,2),16)-Math.round(255*pct/100));
+      const g=Math.max(0,parseInt(hex.slice(2,4),16)-Math.round(255*pct/100));
+      const b=Math.max(0,parseInt(hex.slice(4,6),16)-Math.round(255*pct/100));
+      return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
+    }
+
+    /* ── Apply Theme ──────────────────────────────────────── */
+    // Themes recolour only the page frame: header/nav, hero and footer.
+    // The rest of the page keeps its original design.
+    function rpIsDarkHex(hex) {
+      if (!hex || hex.charAt(0) !== '#') return false;
+      var c = hex.substring(1);
+      if (c.length === 3) c = c.split('').map(function (x) { return x + x; }).join('');
+      if (c.length !== 6) return false;
+      var r = parseInt(c.substring(0, 2), 16) / 255;
+      var g = parseInt(c.substring(2, 4), 16) / 255;
+      var b = parseInt(c.substring(4, 6), 16) / 255;
+      return (0.2126 * r + 0.7152 * g + 0.0722 * b) < 0.55;
+    }
+
+    function rpApplyFrameTheme(theme, regions) {
+      var MARK = 'data-rp-frame-themed';
+      var marked = document.querySelectorAll('[' + MARK + ']');
+      for (var i = 0; i < marked.length; i++) {
+        marked[i].removeAttribute(MARK);
+        marked[i].style.removeProperty('background');
+        marked[i].style.removeProperty('background-color');
+        marked[i].style.removeProperty('background-image');
+      }
+      var styleEl = document.getElementById('rpFrameThemeStyle');
+      if (styleEl) styleEl.parentNode.removeChild(styleEl);
+      if (!theme || !theme.gradientStart) return;
+
+      var g1 = theme.gradientStart;
+      var g2 = theme.gradientEnd || g1;
+      var dark = rpIsDarkHex(g1);
+      var tc = theme.textColor || (dark ? '#f1f5f9' : '#1e293b');
+      var hc = theme.headingColor || (dark ? '#ffffff' : '#0f172a');
+
+      var found = document.querySelectorAll(regions.join(','));
+      var picked = [];
+      for (var j = 0; j < found.length; j++) {
+        var nested = false;
+        for (var k = 0; k < picked.length; k++) {
+          if (picked[k] !== found[j] && picked[k].contains(found[j])) { nested = true; break; }
+        }
+        if (!nested) picked.push(found[j]);
+      }
+      for (var m = 0; m < picked.length; m++) {
+        picked[m].setAttribute(MARK, '1');
+        picked[m].style.setProperty('background', 'linear-gradient(135deg, ' + g1 + ' 0%, ' + g2 + ' 100%)', 'important');
+      }
+
+      styleEl = document.createElement('style');
+      styleEl.id = 'rpFrameThemeStyle';
+      styleEl.textContent =
+        '[' + MARK + '] { color: ' + tc + ' !important; }' +
+        '[' + MARK + '] h1, [' + MARK + '] h2, [' + MARK + '] h3, [' + MARK + '] h4, [' + MARK + '] h5, [' + MARK + '] h6 { color: ' + hc + ' !important; }' +
+        '[' + MARK + '] p, [' + MARK + '] span, [' + MARK + '] li, [' + MARK + '] a, [' + MARK + '] strong, [' + MARK + '] em, [' + MARK + '] small, [' + MARK + '] blockquote, [' + MARK + '] figcaption, [' + MARK + '] time { color: ' + tc + ' !important; }';
+      document.head.appendChild(styleEl);
+    }
+
+    function applyTheme(theme) {
+      rpApplyFrameTheme(theme, ['nav', 'footer']);
+    }
+    window.applyTheme = applyTheme;
+
+    /* ── Populate Resume ──────────────────────────────────── */
+    function populateResume(data) {
+      if (!data) return;
+      document.title = data.title || 'Resume';
+      applyTheme(data.theme);
+
+      // Brand initials
+      const brandEl = document.getElementById('nav-brand-text');
+      if (brandEl && data.header?.title) brandEl.textContent = data.header.title;
+
+      // Profile
+      const nameEl = document.getElementById('profile-name-display');
+      if (nameEl) nameEl.textContent = data.profile?.name || '';
+      const titleEl = document.getElementById('profile-title-display');
+      if (titleEl) titleEl.textContent = data.profile?.title || '';
+      const photoEl = document.getElementById('profile-photo-display');
+      if (photoEl && data.profile?.photo) photoEl.src = data.profile.photo;
+
+      // About
+      const aboutEl = document.getElementById('about-text');
+      if (aboutEl) aboutEl.textContent = data.about || '';
+
+      // Experience
+      const expList = document.getElementById('experience-list');
+      if (expList) {
+        expList.innerHTML = '';
+        (data.experience || []).forEach(exp => {
+          const d = document.createElement('div');
+          d.className = 'exp-item';
+          d.innerHTML = `
+            <div class="exp-meta">
+              <div class="exp-date-tag">${exp.date || ''}</div>
+              <div class="exp-company-name">${exp.company || ''}</div>
+            </div>
+            <div class="exp-body">
+              <div class="exp-position-title">${exp.position || ''}</div>
+              <div class="exp-desc">${exp.description || ''}</div>
+            </div>`;
+          expList.appendChild(d);
+        });
+      }
+
+      // Education
+      const eduList = document.getElementById('education-list');
+      if (eduList) {
+        eduList.innerHTML = '';
+        (data.education || []).forEach(edu => {
+          const d = document.createElement('div');
+          d.className = 'edu-item';
+          d.innerHTML = `
+            <div class="edu-date-tag">${edu.date || ''}</div>
+            <div class="edu-degree-name">${edu.degree || ''}</div>
+            <div class="edu-institution-name">${edu.institution || ''}</div>`;
+          eduList.appendChild(d);
+        });
+      }
+
+      // Skills
+      const skillsEl = document.getElementById('skills-list');
+      if (skillsEl) {
+        skillsEl.innerHTML = '';
+        (data.skills || []).forEach(s => {
+          const li = document.createElement('li');
+          li.textContent = s;
+          skillsEl.appendChild(li);
+        });
+      }
+
+      // Languages
+      const langsEl = document.getElementById('languages-list');
+      if (langsEl) {
+        langsEl.innerHTML = '';
+        (data.languages || []).forEach(l => {
+          const li = document.createElement('li');
+          li.textContent = l;
+          langsEl.appendChild(li);
+        });
+      }
+
+      // References
+      const refsEl = document.getElementById('references-list');
+      if (refsEl) {
+        refsEl.innerHTML = '';
+        (data.references || []).forEach(ref => {
+          const d = document.createElement('div');
+          d.className = 'ref-item';
+          d.innerHTML = `
+            <div class="ref-name-text">${ref.name || ''}</div>
+            <div class="ref-role">${ref.position || ''}${ref.position && ref.company ? ' · ' : ''}${ref.company || ''}</div>
+            <div class="ref-contact-text">${ref.contact || ''}</div>`;
+          refsEl.appendChild(d);
+        });
+      }
+
+      // Contact
+      const contactEl = document.getElementById('contact-info');
+      if (contactEl) {
+        contactEl.innerHTML = '';
+        if (data.contact?.Email) {
+          const p = document.createElement('p');
+          p.innerHTML = `<i class="fas fa-envelope"></i> ${data.contact.Email}`;
+          contactEl.appendChild(p);
+        }
+        if (data.contact?.Phone) {
+          const p = document.createElement('p');
+          p.innerHTML = `<i class="fas fa-phone"></i> ${data.contact.Phone}`;
+          contactEl.appendChild(p);
+        }
+      }
+
+      // Social icons
+      const socialEl = document.getElementById('social-icons');
+      if (socialEl) {
+        socialEl.innerHTML = '';
+        const iconMap = {
+          LinkedIn: 'fab fa-linkedin-in', GitHub: 'fab fa-github',
+          Twitter: 'fab fa-x-twitter', Instagram: 'fab fa-instagram',
+          Facebook: 'fab fa-facebook-f', Website: 'fas fa-globe'
+        };
+        if (data.socials && typeof data.socials === 'object') {
+          Object.entries(data.socials).forEach(([platform, url]) => {
+            const a = document.createElement('a');
+            let href = url;
+            if (!href.startsWith('http')) href = 'https://' + href;
+            a.href = href;
+            a.target = '_blank'; a.rel = 'noopener noreferrer';
+            a.setAttribute('aria-label', platform);
+            const i = document.createElement('i');
+            i.className = iconMap[platform] || 'fas fa-link';
+            a.appendChild(i);
+            socialEl.appendChild(a);
+          });
+        }
+      }
+
+      // Footer
+      const footerEl = document.getElementById('footer-text');
+      if (footerEl) footerEl.textContent = data.footer || '';
+    }
+
+    /* ── Offline-only ─────────────────────────────────────── */
+    const isLocal = location.protocol === 'file:';
+    if (isLocal) {
+      document.querySelectorAll('.offline-only').forEach(el => el.style.display = '');
+    }
+
+    /* ── Nav load buttons ─────────────────────────────────── */
+    function bindLoadBtn(btnId, inputId) {
+      const btn = document.getElementById(btnId);
+      const inp = document.getElementById(inputId);
+      if (!btn || !inp) return;
+      btn.addEventListener('click', e => { e.preventDefault(); inp.click(); });
+      inp.addEventListener('change', e => {
+        const file = e.target.files[0]; if (!file) return;
+        const r = new FileReader();
+        r.onload = ev => { try { populateResume(JSON.parse(ev.target.result)); } catch(err) { alert('Invalid JSON.'); } };
+        r.readAsText(file);
+      });
+    }
+    bindLoadBtn('nav-load-link', 'nav-file-input');
+    bindLoadBtn('nav-load-btn', 'nav-file-input-desktop');
+
+    /* ── Upload overlay ───────────────────────────────────── */
+    const overlay = document.getElementById('upload-overlay');
+    document.getElementById('upload-btn').addEventListener('click', () => document.getElementById('upload-input').click());
+    document.getElementById('upload-input').addEventListener('change', e => {
+      const file = e.target.files[0]; if (!file) return;
+      const r = new FileReader();
+      r.onload = ev => {
+        try { populateResume(JSON.parse(ev.target.result)); overlay.style.display = 'none'; }
+        catch(err) { alert('Invalid JSON.'); }
+      };
+      r.readAsText(file);
+    });
+
+    /* ── Hamburger ────────────────────────────────────────── */
+    const hamburger = document.getElementById('hamburger');
+    const navLinksEl = document.getElementById('nav-links');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      navLinksEl.classList.toggle('open');
+    });
+    navLinksEl.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        hamburger.classList.remove('open');
+        navLinksEl.classList.remove('open');
+      });
+    });
+    document.addEventListener('click', e => {
+      if (!hamburger.contains(e.target) && !navLinksEl.contains(e.target)) {
+        hamburger.classList.remove('open');
+        navLinksEl.classList.remove('open');
+      }
+    });
+
+    /* ── Active nav on scroll ─────────────────────────────── */
+    const sections = document.querySelectorAll('main section[id], main div[id]');
+    const navAs = document.querySelectorAll('.nav-links a[href^="#"]');
+    const scrollObs = new IntersectionObserver(entries => {
+      entries.forEach(en => {
+        if (en.isIntersecting) {
+          navAs.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + en.target.id));
+        }
+      });
+    }, { rootMargin: '-35% 0px -60% 0px' });
+    sections.forEach(s => scrollObs.observe(s));
+
+    /* ── Fade-in on scroll ────────────────────────────────── */
+    const fadeObs = new IntersectionObserver(entries => {
+      entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('visible'); fadeObs.unobserve(en.target); } });
+    }, { threshold: 0.06 });
+    document.querySelectorAll('.fade-in').forEach(el => fadeObs.observe(el));
+
+    /* ── Data load ────────────────────────────────────────── */
+    fetch('data.json')
+      .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+      .then(data => populateResume(data))
+      .catch(() => {
+        const hash = location.hash;
+        if (hash && hash.startsWith('#data=')) {
+          try { populateResume(JSON.parse(decodeURIComponent(hash.slice(6)))); return; } catch(e) {}
+        }
+        overlay.style.display = 'flex';
+      });
+
+  })();
+  </script>
+
+<script src="assets/jspdf.umd.min.js"></script>
+<script src="assets/rp-pdf.js"></script>
+</body>
+</html>

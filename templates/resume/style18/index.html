@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tenor+Sans&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous">
+  <style>
+    /* ─────────────────────────────────────────
+       CSS Variables & Base
+    ───────────────────────────────────────── */
+    :root {
+      --g1: #0b1a12;
+      --g2: #0f2318;
+      --accent: #c9a84c;
+      --accent-dim: rgba(201,168,76,0.15);
+      --accent-glow: rgba(201,168,76,0.3);
+      --accent-light: #e8c97a;
+      --gold-rule: rgba(201,168,76,0.35);
+      --text-primary: #f0ede6;
+      --text-secondary: #a89e88;
+      --text-muted: #5c5545;
+      --surface: rgba(255,255,255,0.03);
+      --surface-mid: rgba(255,255,255,0.055);
+      --border: rgba(201,168,76,0.18);
+      --nav-h: 72px;
+      --display: 'Tenor Sans', serif;
+      --body: 'Libre Baskerville', Georgia, serif;
+      --sans: 'Josefin Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: var(--body);
+      background: linear-gradient(160deg, var(--g1) 0%, var(--g2) 100%);
+      background-attachment: fixed;
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Noise texture */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+      opacity: 0.7;
+    }
+
+    /* Art Deco geometric overlay — fan/chevron pattern */
+    body::after {
+      content: '';
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image:
+        repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 40px,
+          rgba(201,168,76,0.018) 40px,
+          rgba(201,168,76,0.018) 41px
+        ),
+        repeating-linear-gradient(
+          -45deg,
+          transparent,
+          transparent 40px,
+          rgba(201,168,76,0.018) 40px,
+          rgba(201,168,76,0.018) 41px
+        );
+    }
+
+    /* ─────────────────────────────────────────
+       Upload Overlay
+    ───────────────────────────────────────── */
+    #upload-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(11,26,18,0.97);
+      display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(8px);
+    }
+    #upload-overlay.hidden { display: none; }
+
+    .upload-box {
+      max-width: 480px; width: 90%;
+      text-align: center;
+      padding: 3.5rem 3rem;
+      position: relative;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--gold-rule);
+    }
+    /* Deco corner ornaments */
+    .upload-box::before, .upload-box::after,
+    .upload-box .corner-br, .upload-box .corner-tl {
+      content: '';
+      position: absolute;
+      width: 24px; height: 24px;
+      border-color: var(--accent);
+      border-style: solid;
+    }
+    .upload-box::before  { top: 8px; left: 8px;   border-width: 2px 0 0 2px; }
+    .upload-box::after   { top: 8px; right: 8px;  border-width: 2px 2px 0 0; }
+    .upload-box .corner-br { bottom: 8px; right: 8px; border-width: 0 2px 2px 0; }
+    .upload-box .corner-tl { bottom: 8px; left: 8px;  border-width: 0 0 2px 2px; }
+
+    .upload-ornament {
+      font-family: var(--sans);
+      font-size: 0.6rem; letter-spacing: 0.35em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 1.5rem;
+      display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+    }
+    .upload-ornament::before, .upload-ornament::after {
+      content: '◆'; font-size: 0.45rem; opacity: 0.6;
+    }
+    .upload-box h2 {
+      font-family: var(--display);
+      font-size: 1.8rem; font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 0.75rem; letter-spacing: 0.05em;
+    }
+    .upload-box p { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.65; margin-bottom: 2rem; }
+    .upload-btn {
+      display: block; width: 100%;
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-family: var(--sans); font-size: 0.68rem;
+      letter-spacing: 0.2em; text-transform: uppercase; font-weight: 600;
+      padding: 0.9rem 2rem; cursor: pointer;
+      transition: all 0.25s; margin-bottom: 1rem;
+    }
+    .upload-btn:hover { background: var(--accent); color: var(--g1); }
+    .upload-create { font-family: var(--sans); font-size: 0.68rem; color: var(--text-muted); }
+    .upload-create a { color: var(--accent); text-decoration: none; }
+    .upload-create a:hover { color: var(--accent-light); }
+
+    /* ─────────────────────────────────────────
+       Navigation
+    ───────────────────────────────────────── */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: var(--nav-h); z-index: 1000;
+      background: rgba(11,26,18,0.92);
+      border-bottom: 1px solid var(--gold-rule);
+      backdrop-filter: blur(20px);
+      transition: box-shadow 0.3s;
+    }
+    .navbar.scrolled { box-shadow: 0 4px 30px rgba(0,0,0,0.5); }
+    .nav-inner {
+      max-width: 1280px; margin: 0 auto;
+      height: 100%; padding: 0 2.5rem;
+      display: flex; align-items: center; gap: 2rem;
+    }
+    .nav-logo {
+      font-family: var(--display);
+      font-size: 1.1rem; letter-spacing: 0.12em;
+      color: var(--accent); text-decoration: none;
+      display: flex; align-items: center; gap: 0.5rem;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .nav-logo-monogram {
+      width: 34px; height: 34px;
+      border: 1px solid var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--sans); font-size: 0.65rem;
+      letter-spacing: 0.08em; font-weight: 600;
+      color: var(--accent);
+    }
+    .nav-rule { width: 1px; height: 24px; background: var(--gold-rule); flex-shrink: 0; }
+    .nav-links {
+      display: flex; align-items: center; gap: 0;
+      list-style: none; flex: 1;
+    }
+    .nav-links a {
+      font-family: var(--sans); font-size: 0.6rem;
+      letter-spacing: 0.18em; text-transform: uppercase; font-weight: 400;
+      color: var(--text-secondary); text-decoration: none;
+      padding: 0.45rem 0.75rem;
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute; bottom: -1px; left: 0.75rem; right: 0.75rem;
+      height: 1px; background: var(--accent);
+      transform: scaleX(0); transition: transform 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+    .nav-links a:hover::after, .nav-links a.active::after { transform: scaleX(1); }
+    .nav-actions {
+      display: flex; gap: 0.5rem; align-items: center; margin-left: auto;
+    }
+    .nav-btn {
+      font-family: var(--sans); font-size: 0.6rem; font-weight: 600;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      padding: 0.45rem 1rem;
+      border: 1px solid var(--gold-rule); color: var(--text-secondary);
+      background: transparent; cursor: pointer; text-decoration: none;
+      transition: all 0.2s; white-space: nowrap;
+    }
+    .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Hamburger */
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      cursor: pointer; background: none; border: none; padding: 6px;
+    }
+    .hamburger span { display: block; width: 22px; height: 1px; background: var(--text-secondary); transition: all 0.3s; }
+    .hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); background: var(--accent); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); background: var(--accent); }
+
+    .mobile-nav {
+      display: none; position: fixed;
+      top: var(--nav-h); left: 0; right: 0;
+      background: rgba(11,26,18,0.98);
+      border-bottom: 1px solid var(--gold-rule);
+      backdrop-filter: blur(20px); z-index: 999;
+    }
+    .mobile-nav.open { display: block; }
+    .mobile-nav a {
+      display: block; padding: 0.9rem 2.5rem;
+      font-family: var(--sans); font-size: 0.68rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--text-secondary); text-decoration: none;
+      border-bottom: 1px solid rgba(201,168,76,0.08);
+      transition: color 0.2s, background 0.2s;
+    }
+    .mobile-nav a:hover { color: var(--accent); background: var(--accent-dim); }
+    .mobile-nav .offline-only a { color: var(--accent); }
+
+    /* ─────────────────────────────────────────
+       Main Layout
+    ───────────────────────────────────────── */
+    main { position: relative; z-index: 1; padding-top: var(--nav-h); }
+
+    /* ─────────────────────────────────────────
+       Hero
+    ───────────────────────────────────────── */
+    .hero {
+      min-height: calc(100vh - var(--nav-h));
+      display: flex; align-items: center;
+      padding: 4rem 2.5rem;
+      position: relative; overflow: hidden;
+    }
+    /* Gold radial glow behind */
+    .hero-glow {
+      position: absolute;
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 800px; height: 600px;
+      background: radial-gradient(ellipse, rgba(201,168,76,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-inner {
+      max-width: 1280px; margin: 0 auto; width: 100%;
+      display: grid; grid-template-columns: 1fr 420px;
+      align-items: center; gap: 5rem; position: relative; z-index: 1;
+    }
+
+    /* Left: text */
+    .hero-ornament {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .hero-ornament-line { flex: 0 0 48px; height: 1px; background: var(--accent); }
+    .hero-ornament-text {
+      font-family: var(--sans); font-size: 0.6rem;
+      letter-spacing: 0.35em; text-transform: uppercase; color: var(--accent);
+    }
+    .hero-ornament-diamond { color: var(--accent); font-size: 0.45rem; opacity: 0.7; }
+
+    .hero-name {
+      font-family: var(--display);
+      font-size: clamp(2.8rem, 5.5vw, 5rem);
+      font-weight: 400; letter-spacing: 0.04em; line-height: 1.05;
+      color: var(--text-primary); margin-bottom: 0.75rem;
+    }
+    .hero-title {
+      font-family: var(--sans); font-size: 0.72rem;
+      letter-spacing: 0.3em; text-transform: uppercase; font-weight: 300;
+      color: var(--accent); margin-bottom: 2rem;
+    }
+    .hero-desc {
+      font-size: 0.95rem; line-height: 1.8;
+      color: var(--text-secondary); max-width: 520px;
+      margin-bottom: 2.5rem; font-style: italic;
+    }
+    .hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn-gold {
+      font-family: var(--sans); font-size: 0.65rem;
+      letter-spacing: 0.2em; text-transform: uppercase; font-weight: 600;
+      padding: 0.85rem 2rem;
+      background: var(--accent); color: var(--g1);
+      border: none; text-decoration: none; cursor: pointer; transition: all 0.25s;
+    }
+    .btn-gold:hover { background: var(--accent-light); box-shadow: 0 0 24px var(--accent-glow); }
+    .btn-outline-gold {
+      font-family: var(--sans); font-size: 0.65rem;
+      letter-spacing: 0.2em; text-transform: uppercase; font-weight: 600;
+      padding: 0.85rem 2rem;
+      background: transparent; color: var(--accent);
+      border: 1px solid var(--accent); text-decoration: none; cursor: pointer; transition: all 0.25s;
+    }
+    .btn-outline-gold:hover { background: var(--accent-dim); box-shadow: 0 0 18px var(--accent-glow); }
+
+    /* Right: profile card */
+    .hero-card {
+      position: relative;
+    }
+    .profile-frame {
+      position: relative;
+      padding: 2.5rem;
+      background: var(--surface-mid);
+      border: 1px solid var(--gold-rule);
+    }
+    /* Deco corner ornaments */
+    .profile-frame::before, .profile-frame::after {
+      content: '';
+      position: absolute;
+      width: 20px; height: 20px;
+      border-color: var(--accent);
+      border-style: solid;
+    }
+    .profile-frame::before { top: 6px; left: 6px; border-width: 2px 0 0 2px; }
+    .profile-frame::after  { bottom: 6px; right: 6px; border-width: 0 2px 2px 0; }
+    .profile-img-wrap {
+      position: relative; margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+    .profile-img-wrap::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, transparent 60%, rgba(11,26,18,0.7) 100%);
+    }
+    .profile-img {
+      width: 100%; aspect-ratio: 3/4; object-fit: cover;
+      display: block;
+      filter: sepia(15%) contrast(1.05);
+    }
+    .profile-name {
+      font-family: var(--display); font-size: 1.15rem;
+      letter-spacing: 0.06em; color: var(--text-primary);
+      text-align: center; margin-bottom: 0.35rem;
+    }
+    .profile-title {
+      font-family: var(--sans); font-size: 0.6rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--accent); text-align: center; margin-bottom: 1.5rem;
+    }
+    .profile-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      margin-bottom: 1.25rem;
+    }
+    .profile-contacts { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+    .profile-contacts li {
+      display: flex; align-items: center; gap: 0.75rem;
+      font-family: var(--sans); font-size: 0.65rem;
+      letter-spacing: 0.06em; color: var(--text-secondary);
+    }
+    .profile-contacts i { color: var(--accent); width: 14px; text-align: center; font-size: 0.7rem; }
+
+    /* ─────────────────────────────────────────
+       Section wrapper
+    ───────────────────────────────────────── */
+    .section {
+      padding: 6rem 2.5rem;
+      position: relative; z-index: 1;
+    }
+    .section:nth-child(even) { background: rgba(255,255,255,0.015); }
+    .section-inner { max-width: 1280px; margin: 0 auto; }
+
+    /* Section heading — Art Deco styled */
+    .section-head {
+      text-align: center; margin-bottom: 4rem;
+    }
+    .section-head-ornament {
+      display: flex; align-items: center; justify-content: center; gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .deco-line { flex: 0 0 60px; height: 1px; background: var(--gold-rule); }
+    .deco-diamond { color: var(--accent); font-size: 0.5rem; }
+    .section-tag {
+      font-family: var(--sans); font-size: 0.58rem;
+      letter-spacing: 0.35em; text-transform: uppercase; color: var(--accent);
+    }
+    .section-title {
+      font-family: var(--display);
+      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      font-weight: 400; letter-spacing: 0.08em;
+      color: var(--text-primary);
+    }
+    .section-rule {
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .section-rule::before, .section-rule::after {
+      content: '';
+      flex: 0 0 80px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-rule));
+    }
+    .section-rule::after { background: linear-gradient(90deg, var(--gold-rule), transparent); }
+    .section-rule span { color: var(--accent); font-size: 0.4rem; }
+
+    /* Fade in animation */
+    .fade-in {
+      opacity: 0; transform: translateY(28px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: none; }
+
+    /* ─────────────────────────────────────────
+       About
+    ───────────────────────────────────────── */
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start;
+    }
+    .about-text {
+      font-size: 0.95rem; line-height: 1.85; color: var(--text-secondary);
+    }
+    .about-text p + p { margin-top: 1em; }
+    .info-list { list-style: none; display: flex; flex-direction: column; gap: 0; }
+    .info-list li {
+      display: flex; gap: 0; padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(201,168,76,0.1);
+      font-size: 0.88rem;
+    }
+    .info-list li:first-child { border-top: 1px solid rgba(201,168,76,0.1); }
+    .info-list li strong {
+      font-family: var(--sans); font-size: 0.6rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--accent); min-width: 90px; font-weight: 600;
+      padding-top: 0.15rem;
+    }
+    .info-list li span { color: var(--text-secondary); }
+
+    /* ─────────────────────────────────────────
+       Timeline (Experience + Education)
+    ───────────────────────────────────────── */
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 1px;
+      background: linear-gradient(180deg, transparent, var(--gold-rule) 10%, var(--gold-rule) 90%, transparent);
+    }
+    .timeline-item {
+      position: relative; margin-bottom: 3rem; padding-left: 2rem;
+    }
+    .timeline-item::before {
+      content: '◆';
+      position: absolute; left: -0.4rem; top: 0.15rem;
+      font-size: 0.5rem; color: var(--accent);
+      line-height: 1;
+    }
+    .timeline-date {
+      font-family: var(--sans); font-size: 0.6rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 0.4rem;
+    }
+    .timeline-title {
+      font-family: var(--display); font-size: 1.15rem;
+      font-weight: 400; letter-spacing: 0.03em;
+      color: var(--text-primary); margin-bottom: 0.3rem;
+    }
+    .timeline-subtitle {
+      font-family: var(--sans); font-size: 0.65rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text-muted); margin-bottom: 0.85rem;
+    }
+    .timeline-description {
+      font-size: 0.88rem; line-height: 1.75; color: var(--text-secondary);
+    }
+
+    /* ─────────────────────────────────────────
+       Skills
+    ───────────────────────────────────────── */
+    .skills-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+    .skill-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 1.5rem 1.75rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      position: relative; overflow: hidden;
+    }
+    .skill-item::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      transform: scaleX(0); transition: transform 0.3s;
+    }
+    .skill-item:hover { border-color: var(--accent); box-shadow: 0 0 20px var(--accent-dim); }
+    .skill-item:hover::before { transform: scaleX(1); }
+    .skill-icon {
+      font-size: 1.5rem; color: var(--accent);
+      margin-bottom: 0.75rem; opacity: 0.8;
+    }
+    .skill-name {
+      font-family: var(--display); font-size: 0.95rem;
+      font-weight: 400; letter-spacing: 0.04em;
+      color: var(--text-primary); margin-bottom: 0.75rem;
+    }
+    .skill-level {
+      height: 2px; background: rgba(201,168,76,0.12);
+      position: relative; overflow: visible;
+    }
+    .skill-level-bar {
+      height: 100%; background: var(--accent);
+      position: relative; transition: width 1.3s cubic-bezier(0.4,0,0.2,1);
+      width: 0;
+    }
+    .skill-level-bar::after {
+      content: '';
+      position: absolute; right: -3px; top: 50%; transform: translateY(-50%);
+      width: 6px; height: 6px;
+      background: var(--accent); border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent);
+    }
+    .skill-level-bar.animate { width: var(--skill-w); }
+    .skill-pct {
+      font-family: var(--sans); font-size: 0.6rem;
+      letter-spacing: 0.1em; color: var(--text-muted);
+      text-align: right; margin-top: 0.3rem;
+    }
+
+    /* ─────────────────────────────────────────
+       Languages
+    ───────────────────────────────────────── */
+    .languages-grid {
+      display: flex; flex-wrap: wrap; gap: 1rem;
+      justify-content: center;
+    }
+    .language-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 1.25rem 2rem;
+      text-align: center;
+      min-width: 160px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .language-item:hover { border-color: var(--accent); box-shadow: 0 0 18px var(--accent-dim); }
+    .language-name {
+      font-family: var(--display); font-size: 1rem;
+      font-weight: 400; color: var(--text-primary);
+      letter-spacing: 0.04em; margin-bottom: 0.35rem;
+    }
+    .language-level {
+      font-family: var(--sans); font-size: 0.58rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    /* ─────────────────────────────────────────
+       References
+    ───────────────────────────────────────── */
+    .references-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(320px,1fr));
+      gap: 1.5rem;
+    }
+    .reference-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 2rem;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+    .reference-item:hover { border-color: var(--gold-rule); }
+    /* Opening quote mark */
+    .reference-item::before {
+      content: '"';
+      position: absolute; top: 1rem; left: 1.5rem;
+      font-family: var(--display); font-size: 4rem;
+      color: var(--accent); opacity: 0.15; line-height: 1;
+      pointer-events: none;
+    }
+    .ref-top {
+      display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;
+    }
+    .ref-photo {
+      width: 56px; height: 56px; object-fit: cover;
+      border: 1px solid var(--gold-rule);
+      flex-shrink: 0;
+    }
+    .ref-name {
+      font-family: var(--display); font-size: 0.95rem;
+      font-weight: 400; color: var(--text-primary); margin-bottom: 0.2rem;
+    }
+    .ref-position {
+      font-family: var(--sans); font-size: 0.6rem;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);
+    }
+    .ref-text {
+      font-size: 0.88rem; font-style: italic;
+      line-height: 1.72; color: var(--text-secondary); margin-bottom: 0.75rem;
+    }
+    .ref-contact {
+      font-family: var(--sans); font-size: 0.62rem;
+      letter-spacing: 0.06em; color: var(--text-muted);
+    }
+
+    /* ─────────────────────────────────────────
+       Contact
+    ───────────────────────────────────────── */
+    .contact-grid {
+      display: grid; grid-template-columns: 1fr 1.4fr; gap: 3rem; align-items: start;
+    }
+    .contact-items { display: flex; flex-direction: column; gap: 1rem; }
+    .contact-item {
+      display: flex; align-items: center; gap: 1.25rem;
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 1.25rem 1.5rem;
+      transition: border-color 0.2s;
+    }
+    .contact-item:hover { border-color: var(--gold-rule); }
+    .contact-icon {
+      width: 40px; height: 40px; flex-shrink: 0;
+      border: 1px solid var(--gold-rule);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent); font-size: 0.9rem;
+    }
+    .contact-text a, .contact-text {
+      font-size: 0.88rem; color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .contact-text a:hover { color: var(--accent); }
+    .contact-map iframe {
+      width: 100%; height: 320px; border: 1px solid var(--gold-rule);
+      filter: grayscale(80%) sepia(30%) hue-rotate(80deg);
+    }
+
+    /* ─────────────────────────────────────────
+       Footer
+    ───────────────────────────────────────── */
+    footer {
+      position: relative; z-index: 1;
+      background: rgba(0,0,0,0.5);
+      border-top: 1px solid var(--gold-rule);
+      padding: 2.5rem;
+    }
+    .footer-inner {
+      max-width: 1280px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;
+    }
+    .footer-social { display: flex; gap: 0.75rem; }
+    .footer-social a {
+      width: 38px; height: 38px;
+      border: 1px solid var(--gold-rule);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted); font-size: 0.9rem; text-decoration: none;
+      transition: all 0.2s;
+    }
+    .footer-social a:hover { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 12px var(--accent-dim); }
+    .footer-copyright {
+      font-family: var(--sans); font-size: 0.6rem;
+      letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted);
+    }
+    .footer-ornament {
+      font-family: var(--sans); font-size: 0.6rem;
+      letter-spacing: 0.2em; color: var(--accent); opacity: 0.5;
+    }
+
+    /* ─────────────────────────────────────────
+       Responsive
+    ───────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .hero-inner { grid-template-columns: 1fr; max-width: 640px; }
+      .hero-card { display: none; }
+      .about-grid { grid-template-columns: 1fr; }
+      .contact-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .nav-links, .nav-actions { display: none; }
+      .hamburger { display: flex; }
+      .section { padding: 4rem 1.5rem; }
+      .hero { padding: 3rem 1.5rem; }
+    }
+    @media (max-width: 480px) {
+      .hero-name { font-size: 2.4rem; }
+      .timeline { padding-left: 1rem; }
+      .timeline-item { padding-left: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Upload Overlay -->
+  <div id="upload-overlay" class="hidden">
+    <div class="upload-box">
+      <div class="corner-br"></div>
+      <div class="corner-tl"></div>
+      <div class="upload-ornament">Portfolio</div>
+      <h2>Load Your Data</h2>
+      <p>Select your <strong>data.json</strong> file to render this resume, or use the builder to create one from scratch.</p>
+      <button class="upload-btn" id="upload-trigger">Select data.json</button>
+      <p class="upload-create">No file yet? <a href="form.html">Create one with the builder →</a></p>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <header class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="#home" class="nav-logo" id="nav-logo">
+        <div class="nav-logo-monogram" id="nav-monogram">CV</div>
+        <span id="nav-name">Resume</span>
+      </a>
+      <div class="nav-rule"></div>
+      <ul class="nav-links" id="nav-links"></ul>
+      <div class="nav-actions">
+        <button class="nav-btn offline-only" id="load-json-btn" style="display:none">Load JSON</button>
+        <a href="form.html" class="nav-btn offline-only" style="display:none">Edit</a>
+      </div>
+      <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
+  <!-- Mobile nav -->
+  <nav class="mobile-nav" id="mobile-nav">
+    <div id="mobile-nav-links"></div>
+    <div class="offline-only" style="display:none"><a href="form.html">Edit Resume</a></div>
+  </nav>
+
+  <main>
+    <!-- Hero -->
+    <section class="section hero" id="home" style="padding:4rem 2.5rem">
+      <div class="hero-glow"></div>
+      <div class="hero-inner">
+        <div class="hero-text fade-in">
+          <div class="hero-ornament">
+            <span class="hero-ornament-line"></span>
+            <span class="hero-ornament-text" id="hero-ornament-text">Concert Pianist</span>
+            <span class="hero-ornament-diamond">◆</span>
+          </div>
+          <h1 class="hero-name" id="hero-name">Isadora Kuznetsova</h1>
+          <p class="hero-title" id="hero-title-el">Concert Pianist &amp; Music Director</p>
+          <p class="hero-desc" id="hero-desc"></p>
+          <div class="hero-buttons">
+            <a href="#contact" class="btn-gold">Get in Touch</a>
+            <a href="#" class="btn-outline-gold" id="download-cv">Download CV</a>
+          </div>
+        </div>
+        <div class="hero-card fade-in" style="transition-delay:0.2s">
+          <div class="profile-frame">
+            <div class="profile-img-wrap">
+              <img src="assets/profile.jpg" alt="Profile" class="profile-img" id="profile-photo">
+            </div>
+            <div class="profile-name" id="card-name">Isadora Kuznetsova</div>
+            <div class="profile-title" id="card-title">Concert Pianist</div>
+            <div class="profile-divider"></div>
+            <ul class="profile-contacts" id="card-contacts"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section class="section" id="about">
+      <div class="section-inner">
+        <div class="section-head fade-in">
+          <div class="section-head-ornament">
+            <div class="deco-line"></div>
+            <span class="deco-diamond">◆</span>
+            <span class="section-tag">Who I Am</span>
+            <span class="deco-diamond">◆</span>
+            <div class="deco-line"></div>
+          </div>
+          <h2 class="section-title">About Me</h2>
+          <div class="section-rule"><span>◆</span></div>
+        </div>
+        <div class="about-grid">
+          <p class="about-text fade-in" id="about-text"></p>
+          <ul class="info-list fade-in" id="personal-info" style="transition-delay:.15s"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Experience -->
+    <section class="section" id="experience">
+      <div class="section-inner">
+        <div class="section-head fade-in">
+          <div class="section-head-ornament">
+            <div class="deco-line"></div>
+            <span class="deco-diamond">◆</span>
+            <span class="section-tag">Career</span>
+            <span class="deco-diamond">◆</span>
+            <div class="deco-line"></div>
+          </div>
+          <h2 class="section-title">Experience</h2>
+          <div class="section-rule"><span>◆</span></div>
+        </div>
+        <div class="timeline" id="experience-timeline"></div>
+      </div>
+    </section>
+
+    <!-- Education -->
+    <section class="section" id="education">
+      <div class="section-inner">
+        <div class="section-head fade-in">
+          <div class="section-head-ornament">
+            <div class="deco-line"></div>
+            <span class="deco-diamond">◆</span>
+            <span class="section-tag">Formation</span>
+            <span class="deco-diamond">◆</span>
+            <div class="deco-line"></div>
+          </div>
+          <h2 class="section-title">Education</h2>
+          <div class="section-rule"><span>◆</span></div>
+        </div>
+        <div class="timeline" id="education-timeline"></div>
+      </div>
+    </section>
+
+    <!-- Skills -->
+    <section class="section" id="skills">
+      <div class="section-inner">
+        <div class="section-head fade-in">
+          <div class="section-head-ornament">
+            <div class="deco-line"></div>
+            <span class="deco-diamond">◆</span>
+            <span class="section-tag">Expertise</span>
+            <span class="deco-diamond">◆</span>
+            <div class="deco-line"></div>
+          </div>
+          <h2 class="section-title">Skills</h2>
+          <div class="section-rule"><span>◆</span></div>
+        </div>
+        <div class="skills-grid" id="skills-container"></div>
+      </div>
+    </section>
+
+    <!-- Languages -->
+    <section class="section" id="languages">
+      <div class="section-inner">
+        <div class="section-head fade-in">
+          <div class="section-head-ornament">
+            <div class="deco-line"></div>
+            <span class="deco-diamond">◆</span>
+            <span class="section-tag">Linguistic</span>
+            <span class="deco-diamond">◆</span>
+            <div class="deco-line"></div>
+          </div>
+          <h2 class="section-title">Languages</h2>
+          <div class="section-rule"><span>◆</span></div>
+        </div>
+        <div class="languages-grid" id="languages-container"></div>
+      </div>
+    </section>
+
+    <!-- References -->
+    <section class="section" id="references">
+      <div class="section-inner">
+        <div class="section-head fade-in">
+          <div class="section-head-ornament">
+            <div class="deco-line"></div>
+            <span class="deco-diamond">◆</span>
+            <span class="section-tag">Testimonials</span>
+            <span class="deco-diamond">◆</span>
+            <div class="deco-line"></div>
+          </div>
+          <h2 class="section-title">References</h2>
+          <div class="section-rule"><span>◆</span></div>
+        </div>
+        <div class="references-grid" id="references-container"></div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="section" id="contact">
+      <div class="section-inner">
+        <div class="section-head fade-in">
+          <div class="section-head-ornament">
+            <div class="deco-line"></div>
+            <span class="deco-diamond">◆</span>
+            <span class="section-tag">Reach Out</span>
+            <span class="deco-diamond">◆</span>
+            <div class="deco-line"></div>
+          </div>
+          <h2 class="section-title">Contact</h2>
+          <div class="section-rule"><span>◆</span></div>
+        </div>
+        <div class="contact-grid">
+          <div class="contact-items fade-in" id="contact-info"></div>
+          <div class="contact-map fade-in" style="transition-delay:.15s">
+            <iframe id="map-iframe" src="" frameborder="0" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-social" id="footer-social"></div>
+      <div class="footer-ornament">◆ ◆ ◆</div>
+      <div class="footer-copyright" id="footer-copyright">© 2025 Resume</div>
+    </div>
+  </footer>
+
+  <input type="file" id="json-file-input" accept=".json" style="display:none">
+
+  <script>
+    /* ─── Helpers ─── */
+    function hexAlpha(hex, a) {
+      hex = hex.replace('#','');
+      if (hex.length===3) hex=hex.split('').map(c=>c+c).join('');
+      const r=parseInt(hex.slice(0,2),16), g=parseInt(hex.slice(2,4),16), b=parseInt(hex.slice(4,6),16);
+      return `rgba(${r},${g},${b},${a})`;
+    }
+
+    // Whole-page themes: recolour the gradient background and adapt text to
+    // stay readable — dark text on light backgrounds, white on dark ones.
+    function rpIsDarkHex(hex) {
+      if (!hex || hex.charAt(0) !== '#') return false;
+      var c = hex.substring(1);
+      if (c.length === 3) c = c.split('').map(function (x) { return x + x; }).join('');
+      if (c.length !== 6) return false;
+      var r = parseInt(c.substring(0, 2), 16) / 255;
+      var g = parseInt(c.substring(2, 4), 16) / 255;
+      var b = parseInt(c.substring(4, 6), 16) / 255;
+      return (0.2126 * r + 0.7152 * g + 0.0722 * b) < 0.55;
+    }
+
+    function rpApplyPageTheme(theme, opts) {
+      var root = document.documentElement;
+      var MARK = 'data-rp-page-themed';
+      var prevVars = root.getAttribute('data-rp-theme-vars');
+      if (prevVars) {
+        prevVars.split(',').forEach(function (k) { root.style.removeProperty(k); });
+        root.removeAttribute('data-rp-theme-vars');
+      }
+      root.removeAttribute('data-rp-light-bg');
+      var marked = document.querySelectorAll('[' + MARK + ']');
+      for (var i = 0; i < marked.length; i++) {
+        marked[i].removeAttribute(MARK);
+        marked[i].style.removeProperty('background');
+        marked[i].style.removeProperty('background-color');
+        marked[i].style.removeProperty('background-image');
+      }
+      var styleEl = document.getElementById('rpPageThemeStyle');
+      if (styleEl) styleEl.parentNode.removeChild(styleEl);
+      if (!theme || !theme.gradientStart) return;
+
+      var g1 = theme.gradientStart;
+      var g2 = theme.gradientEnd || g1;
+      var light = !rpIsDarkHex(g1);
+      var tc = light ? '#1a1a1a' : '#ffffff';
+      var vars = { '--g1': g1, '--g2': g2 };
+      opts.primary.forEach(function (v) { vars[v] = tc; });
+      if (light) {
+        opts.secondary.forEach(function (v) { vars[v] = 'rgba(0,0,0,0.72)'; });
+        opts.muted.forEach(function (v) { vars[v] = 'rgba(0,0,0,0.55)'; });
+        opts.surface.forEach(function (v) { vars[v] = 'rgba(0,0,0,0.045)'; });
+        opts.border.forEach(function (v) { vars[v] = 'rgba(0,0,0,0.12)'; });
+      }
+      Object.keys(vars).forEach(function (k) { root.style.setProperty(k, vars[k]); });
+      root.setAttribute('data-rp-theme-vars', Object.keys(vars).join(','));
+      if (light) root.setAttribute('data-rp-light-bg', '1');
+
+      var regions = document.querySelectorAll(opts.regions.join(','));
+      for (var j = 0; j < regions.length; j++) {
+        regions[j].setAttribute(MARK, '1');
+        regions[j].style.setProperty('background', 'transparent', 'important');
+      }
+
+      if (light && opts.lightText.length) {
+        styleEl = document.createElement('style');
+        styleEl.id = 'rpPageThemeStyle';
+        styleEl.textContent = '[data-rp-light-bg] ' + opts.lightText.join(', [data-rp-light-bg] ') + ' { color: ' + tc + ' !important; }';
+        document.head.appendChild(styleEl);
+      }
+    }
+
+    function applyTheme(theme) {
+      rpApplyPageTheme(theme, {
+        regions: ['header.navbar', '.mobile-nav', 'footer'],
+        primary: ['--text-primary'],
+        secondary: ['--text-secondary'],
+        muted: ['--text-muted'],
+        surface: ['--surface', '--surface-mid'],
+        border: ['--border'],
+        lightText: []
+      });
+    }
+    window.applyTheme = applyTheme;
+
+    /* ─── Render ─── */
+    function populateResume(data) {
+      if (!data) return;
+      if (data.theme) applyTheme(data.theme);
+
+      document.title = data.pageTitle || 'Resume';
+
+      /* Nav */
+      const navLinks = document.getElementById('nav-links');
+      const mobileLinks = document.getElementById('mobile-nav-links');
+      navLinks.innerHTML = ''; mobileLinks.innerHTML = '';
+      (data.navigation || []).forEach(item => {
+        const li = document.createElement('li');
+        const a  = document.createElement('a');
+        a.href = item.link; a.textContent = item.text;
+        li.appendChild(a); navLinks.appendChild(li);
+        const ma = document.createElement('a');
+        ma.href = item.link; ma.textContent = item.text;
+        mobileLinks.appendChild(ma);
+      });
+
+      /* Logo */
+      const logoText = data.logoText || (data.hero?.title || '').substring(0,2).toUpperCase();
+      document.getElementById('nav-monogram').textContent = logoText;
+      document.getElementById('nav-name').textContent = data.hero?.title || 'Resume';
+
+      /* Hero */
+      const hero = data.hero || {};
+      document.getElementById('hero-name').textContent = hero.title || '';
+      document.getElementById('hero-title-el').textContent = hero.subtitle || '';
+      document.getElementById('hero-desc').textContent = hero.description || '';
+      document.getElementById('hero-ornament-text').textContent = (hero.subtitle || '').split('&')[0].trim() || 'Professional';
+      if (hero.profilePhoto) document.getElementById('profile-photo').src = hero.profilePhoto;
+      document.getElementById('card-name').textContent = hero.title || '';
+      document.getElementById('card-title').textContent = hero.subtitle || '';
+      if (data.downloadCvLink) document.getElementById('download-cv').href = data.downloadCvLink;
+
+      /* Card contacts */
+      const cardContacts = document.getElementById('card-contacts');
+      cardContacts.innerHTML = '';
+      (data.about?.personalInfo || []).forEach(info => {
+        const li = document.createElement('li');
+        li.innerHTML = `<i class="fas fa-${info.label==='Email'?'envelope':info.label==='Location'?'map-marker-alt':'user'}"></i><span>${info.value}</span>`;
+        cardContacts.appendChild(li);
+      });
+
+      /* About */
+      document.getElementById('about-text').textContent = data.about?.text || '';
+      const infoList = document.getElementById('personal-info');
+      infoList.innerHTML = '';
+      (data.about?.personalInfo || []).forEach(info => {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${info.label}</strong><span>${info.value}</span>`;
+        infoList.appendChild(li);
+      });
+
+      /* Experience */
+      const expTl = document.getElementById('experience-timeline');
+      expTl.innerHTML = '';
+      (data.experience || []).forEach((exp, i) => {
+        const div = document.createElement('div');
+        div.className = 'timeline-item fade-in';
+        div.style.transitionDelay = `${i * 0.1}s`;
+        div.innerHTML = `
+          <div class="timeline-date">${exp.date||''}</div>
+          <h3 class="timeline-title">${exp.title||''}</h3>
+          <div class="timeline-subtitle">${exp.company||''}</div>
+          <p class="timeline-description">${exp.description||''}</p>
+        `;
+        expTl.appendChild(div);
+      });
+
+      /* Education */
+      const eduTl = document.getElementById('education-timeline');
+      eduTl.innerHTML = '';
+      (data.education || []).forEach((edu, i) => {
+        const div = document.createElement('div');
+        div.className = 'timeline-item fade-in';
+        div.style.transitionDelay = `${i * 0.1}s`;
+        div.innerHTML = `
+          <div class="timeline-date">${edu.date||''}</div>
+          <h3 class="timeline-title">${edu.degree||''}</h3>
+          <div class="timeline-subtitle">${edu.institution||''}</div>
+          <p class="timeline-description">${edu.description||''}</p>
+        `;
+        eduTl.appendChild(div);
+      });
+
+      /* Skills */
+      const skillsEl = document.getElementById('skills-container');
+      skillsEl.innerHTML = '';
+      (data.skills || []).forEach((skill, i) => {
+        const div = document.createElement('div');
+        div.className = 'skill-item fade-in';
+        div.style.transitionDelay = `${i * 0.08}s`;
+        div.innerHTML = `
+          <div class="skill-icon"><i class="${skill.icon||'fas fa-star'}"></i></div>
+          <div class="skill-name">${skill.name||''}</div>
+          <div class="skill-level">
+            <div class="skill-level-bar" style="--skill-w:${skill.level||0}%"></div>
+          </div>
+          <div class="skill-pct">${skill.level||0}%</div>
+        `;
+        skillsEl.appendChild(div);
+      });
+
+      /* Languages */
+      const langEl = document.getElementById('languages-container');
+      langEl.innerHTML = '';
+      (data.languages || []).forEach((lang, i) => {
+        const div = document.createElement('div');
+        div.className = 'language-item fade-in';
+        div.style.transitionDelay = `${i * 0.07}s`;
+        div.innerHTML = `<div class="language-name">${lang.name||''}</div><div class="language-level">${lang.level||''}</div>`;
+        langEl.appendChild(div);
+      });
+
+      /* References */
+      const refEl = document.getElementById('references-container');
+      refEl.innerHTML = '';
+      (data.references || []).forEach((ref, i) => {
+        const div = document.createElement('div');
+        div.className = 'reference-item fade-in';
+        div.style.transitionDelay = `${i * 0.1}s`;
+        div.innerHTML = `
+          <div class="ref-top">
+            ${ref.photo ? `<img src="${ref.photo}" alt="${ref.name||''}" class="ref-photo">` : ''}
+            <div>
+              <div class="ref-name">${ref.name||''}</div>
+              <div class="ref-position">${ref.position||''}</div>
+            </div>
+          </div>
+          <p class="ref-text">${ref.text||''}</p>
+          ${ref.contact ? `<p class="ref-contact"><i class="fas fa-envelope" style="color:var(--accent);margin-right:.4rem;font-size:.65rem"></i>${ref.contact}</p>` : ''}
+        `;
+        refEl.appendChild(div);
+      });
+
+      /* Contact */
+      const contactEl = document.getElementById('contact-info');
+      contactEl.innerHTML = '';
+      (data.contact?.items || []).forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'contact-item fade-in';
+        div.innerHTML = `
+          <div class="contact-icon"><i class="${item.icon||'fas fa-link'}"></i></div>
+          <div class="contact-text">${item.link ? `<a href="${item.link}">${item.text}</a>` : item.text}</div>
+        `;
+        contactEl.appendChild(div);
+      });
+      /* Map: centre it on the person's location rather than leaving it blank.
+         The exact street address isn't needed — a city-level query is enough.
+         The bundled schema's mapEmbedUrl is sample data, so it is ignored. */
+      const mapFrame = document.getElementById('map-iframe');
+      const mapWrap = mapFrame ? mapFrame.closest('.contact-map') : null;
+      const locationEntry = (data.about?.personalInfo || []).find(
+        entry => /^(location|address)$/i.test(String(entry.label || '').trim())
+      );
+      const locationValue = locationEntry && typeof locationEntry.value === 'string' ? locationEntry.value.trim() : '';
+      if (mapFrame && mapWrap) {
+        if (locationValue) {
+          mapFrame.src = 'https://www.google.com/maps?q=' + encodeURIComponent(locationValue) + '&z=12&output=embed';
+          mapFrame.title = 'Map of ' + locationValue;
+          mapWrap.style.display = '';
+          if (mapWrap.parentElement) mapWrap.parentElement.style.gridTemplateColumns = '';
+        } else {
+          mapFrame.removeAttribute('src');
+          mapWrap.style.display = 'none';
+          if (mapWrap.parentElement) mapWrap.parentElement.style.gridTemplateColumns = '1fr';
+        }
+      }
+
+      /* Footer */
+      const socialEl = document.getElementById('footer-social');
+      socialEl.innerHTML = '';
+      (data.footer?.socialLinks || []).forEach(link => {
+        const a = document.createElement('a');
+        a.href = link.url||'#'; a.target='_blank'; a.rel='noopener noreferrer';
+        a.innerHTML = `<i class="${link.icon||'fas fa-link'}"></i>`;
+        socialEl.appendChild(a);
+      });
+      document.getElementById('footer-copyright').textContent = data.footer?.copyright || `© ${new Date().getFullYear()} Resume`;
+
+      /* Re-observe new fade-ins */
+      document.querySelectorAll('.fade-in:not(.visible)').forEach(el => observer.observe(el));
+
+      /* Animate skill bars after short delay */
+      setTimeout(() => {
+        document.querySelectorAll('.skill-level-bar').forEach(b => b.classList.add('animate'));
+      }, 500);
+    }
+
+    /* ─── IntersectionObserver ─── */
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    /* ─── Scroll: navbar + active links ─── */
+    window.addEventListener('scroll', () => {
+      document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 30);
+      const sectionIds = ['about','experience','education','skills','languages','references','contact'];
+      let current = 'home';
+      sectionIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && window.scrollY >= el.offsetTop - 130) current = id;
+      });
+      document.querySelectorAll('#nav-links a').forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+      });
+    });
+
+    /* ─── Hamburger ─── */
+    const hamburger = document.getElementById('hamburger');
+    const mobileNav = document.getElementById('mobile-nav');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileNav.classList.toggle('open');
+    });
+    mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+      hamburger.classList.remove('open'); mobileNav.classList.remove('open');
+    }));
+    document.addEventListener('click', e => {
+      if (!hamburger.contains(e.target) && !mobileNav.contains(e.target)) {
+        hamburger.classList.remove('open'); mobileNav.classList.remove('open');
+      }
+    });
+
+    /* ─── Offline-only ─── */
+    const isLocal = location.protocol === 'file:';
+    if (isLocal) document.querySelectorAll('.offline-only').forEach(el => el.style.display = '');
+
+    /* ─── File input ─── */
+    const fileInput = document.getElementById('json-file-input');
+    document.getElementById('load-json-btn').addEventListener('click', () => fileInput.click());
+    document.getElementById('upload-trigger').addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', e => {
+      const file = e.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        try {
+          populateResume(JSON.parse(ev.target.result));
+          document.getElementById('upload-overlay').classList.add('hidden');
+        } catch { alert('Invalid JSON file.'); }
+      };
+      reader.readAsText(file);
+    });
+
+    /* ─── Hash fallback ─── */
+    function tryHash() {
+      try {
+        const h = location.hash;
+        if (h.startsWith('#data=')) return JSON.parse(decodeURIComponent(h.slice(6)));
+      } catch {}
+      return null;
+    }
+
+    /* ─── Bootstrap ─── */
+    fetch('data.json')
+      .then(r => { if (!r.ok) throw 0; return r.json(); })
+      .then(d => { document.getElementById('upload-overlay').classList.add('hidden'); populateResume(d); })
+      .catch(() => {
+        const hd = tryHash();
+        if (hd) { document.getElementById('upload-overlay').classList.add('hidden'); populateResume(hd); }
+        else document.getElementById('upload-overlay').classList.remove('hidden');
+      });
+  </script>
+
+<script src="assets/jspdf.umd.min.js"></script>
+<script src="assets/rp-pdf.js"></script>
+</body>
+</html>

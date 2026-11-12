@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loading…</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Barlow+Condensed:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    /* ─── CSS Variables ───────────────────────────────────── */
+    :root {
+      --g1: #0a1628;
+      --g2: #0d2340;
+      --accent: #d4894a;
+      --accent-dim: rgba(212,137,74,0.18);
+      --accent-glow: rgba(212,137,74,0.45);
+      --accent-text: #f0b87a;
+      --text-primary: #eef2f7;
+      --text-secondary: #8da4be;
+      --text-muted: #4e6a85;
+      --border: rgba(212,137,74,0.22);
+      --card-bg: rgba(13,35,64,0.65);
+      --card-border: rgba(212,137,74,0.14);
+      --nav-h: 64px;
+    }
+
+    /* ─── Reset & Base ────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: 'Barlow Condensed', sans-serif;
+      background: linear-gradient(160deg, var(--g1) 0%, var(--g2) 100%);
+      background-attachment: fixed;
+      color: var(--text-primary);
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ─── Texture Overlay ─────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='60' height='60' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+      opacity: 0.6;
+    }
+
+    /* Grid-line pattern */
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(212,137,74,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212,137,74,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    /* ─── Upload Overlay ──────────────────────────────────── */
+    #upload-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(5,12,24,0.97);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .upload-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      padding: 3rem 2.5rem;
+      max-width: 440px;
+      width: 90%;
+      text-align: center;
+      clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%);
+    }
+    .upload-box h2 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-text);
+      margin-bottom: 0.75rem;
+    }
+    .upload-box p { color: var(--text-secondary); font-size: 1rem; line-height: 1.6; margin-bottom: 1.5rem; }
+    .upload-box .btn-primary {
+      display: inline-block;
+      background: var(--accent);
+      color: #0a1628;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.8rem 1.8rem;
+      border: none; cursor: pointer;
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+      transition: background 0.2s, transform 0.2s;
+    }
+    .upload-box .btn-primary:hover { background: var(--accent-text); transform: translateY(-2px); }
+    .upload-box .create-link {
+      display: block; margin-top: 1.2rem;
+      color: var(--text-muted); font-size: 0.85rem;
+    }
+    .upload-box .create-link a { color: var(--accent-text); text-decoration: none; border-bottom: 1px solid var(--accent-dim); }
+    .upload-box .create-link a:hover { color: var(--accent); }
+
+    /* ─── Navigation ──────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: var(--nav-h);
+      background: rgba(8,18,38,0.88);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+    }
+    .nav-inner {
+      max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;
+      width: 100%;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-text);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .nav-brand span { color: var(--text-muted); }
+
+    .nav-links {
+      display: flex; align-items: center; gap: 0;
+      list-style: none;
+    }
+    .nav-links a {
+      display: block;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 0.5rem 0.85rem;
+      border-left: 1px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--accent-text);
+      border-left-color: var(--accent);
+    }
+    /* Light theme backgrounds: the pale accent is unreadable, use a dark amber */
+    [data-rp-light-bg] .nav-links a:hover,
+    [data-rp-light-bg] .nav-links a.active { color: #7a4f17; }
+    .nav-links .offline-only { display: none; }
+    .nav-links .offline-only a {
+      color: var(--accent);
+      border-left-color: var(--accent-dim);
+    }
+
+    /* Offline load btn in nav */
+    .nav-load-btn {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: var(--accent-dim);
+      color: var(--accent-text);
+      border: 1px solid var(--border);
+      padding: 0.4rem 0.9rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .nav-load-btn:hover { background: rgba(212,137,74,0.3); }
+
+    .hamburger {
+      display: none;
+      background: none; border: none; cursor: pointer;
+      flex-direction: column; gap: 5px; padding: 6px;
+    }
+    .hamburger-line {
+      display: block; width: 24px; height: 2px;
+      background: var(--text-primary);
+      transition: transform 0.25s, opacity 0.25s;
+    }
+    .hamburger.open .hamburger-line:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open .hamburger-line:nth-child(2) { opacity: 0; }
+    .hamburger.open .hamburger-line:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* ─── Main Layout ─────────────────────────────────────── */
+    main {
+      position: relative; z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: calc(var(--nav-h) + 3rem) 1.5rem 4rem;
+    }
+
+    /* ─── Section Titles ──────────────────────────────────── */
+    .section-label {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    .section-label-line {
+      height: 2px; flex: 1;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+    .section-label h2 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--accent-text);
+      white-space: nowrap;
+    }
+    .section-label h2 span {
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    /* ─── About Section ───────────────────────────────────── */
+    #about {
+      padding-top: 1rem;
+      margin-bottom: 5rem;
+    }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+    .about-photo-wrap {
+      position: relative;
+    }
+    .about-photo-wrap::before {
+      content: '';
+      position: absolute;
+      top: 12px; left: 12px;
+      width: 100%; height: 100%;
+      border: 2px solid var(--accent);
+      pointer-events: none;
+      z-index: 0;
+    }
+    #profile-photo {
+      width: 100%; aspect-ratio: 3/4; object-fit: cover;
+      position: relative; z-index: 1;
+      display: block;
+      filter: grayscale(20%) contrast(1.05);
+    }
+    .about-content { }
+    .person-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      font-weight: 800;
+      line-height: 0.92;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      margin-bottom: 0.4rem;
+    }
+    .person-name em {
+      font-style: normal;
+      color: var(--accent-text);
+      display: block;
+    }
+    .person-tagline {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.8rem;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .person-tagline::after {
+      content: '';
+      flex: 1; height: 1px;
+      background: var(--accent-dim);
+    }
+    #about-text {
+      font-size: 1.05rem;
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--text-secondary);
+      letter-spacing: 0.015em;
+    }
+
+    /* ─── Card Style ──────────────────────────────────────── */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(12px);
+      padding: 1.75rem 2rem;
+      margin-bottom: 1.25rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .card:hover { border-color: var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 0 1px var(--card-border); transform: translateY(-2px); }
+    .card:hover::before { opacity: 1; }
+
+    /* ─── Experience Section ──────────────────────────────── */
+    #experience, #education { margin-bottom: 5rem; }
+    .exp-header { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem; }
+    .exp-position {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.3rem; font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-primary);
+    }
+    .exp-duration {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+    .exp-company {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      color: var(--accent-text);
+      margin-bottom: 0.9rem;
+    }
+    .exp-description {
+      font-size: 0.95rem;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--text-secondary);
+    }
+
+    /* ─── Education Section ───────────────────────────────── */
+    .edu-degree {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.25rem; font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      margin-bottom: 0.4rem;
+    }
+    .edu-meta {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+    .edu-meta span { color: var(--accent-text); }
+
+    /* ─── Skills Section ──────────────────────────────────── */
+    #skills { margin-bottom: 5rem; }
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.75rem;
+    }
+    .skill-item {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(8px);
+      padding: 0.7rem 1rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      display: flex; align-items: center; gap: 0.6rem;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .skill-item::before {
+      content: '▸';
+      color: var(--accent);
+      font-size: 0.6rem;
+    }
+    .skill-item:hover {
+      background: var(--accent-dim);
+      color: var(--accent-text);
+      border-color: var(--accent);
+    }
+
+    /* ─── Languages Section ───────────────────────────────── */
+    #languages { margin-bottom: 5rem; }
+    .languages-grid {
+      display: flex; flex-wrap: wrap; gap: 1rem;
+    }
+    .lang-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(8px);
+      padding: 0.6rem 1.4rem;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1rem; font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+    }
+
+    /* ─── References Section ──────────────────────────────── */
+    #references { margin-bottom: 5rem; }
+    .ref-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.2rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      color: var(--text-primary); margin-bottom: 0.3rem;
+    }
+    .ref-contact {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.08em;
+      color: var(--accent-text);
+      margin-bottom: 0.4rem;
+    }
+    .ref-relationship {
+      font-size: 0.9rem; font-weight: 300;
+      color: var(--text-muted);
+    }
+
+    /* ─── Contact Section ─────────────────────────────────── */
+    #contact { margin-bottom: 5rem; }
+    #contact-info {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.8rem; letter-spacing: 0.08em;
+      color: var(--text-secondary);
+      line-height: 2;
+    }
+
+    /* ─── Footer ──────────────────────────────────────────── */
+    footer {
+      position: relative; z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 1.5rem;
+    }
+    .footer-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1.5rem;
+    }
+    #footer-text {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .social-icons { display: flex; gap: 0.75rem; }
+    .social-icons a {
+      width: 38px; height: 38px;
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .social-icons a:hover {
+      background: var(--accent-dim);
+      color: var(--accent-text);
+      border-color: var(--accent);
+    }
+
+    /* ─── Fade-in Animation ───────────────────────────────── */
+    .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* ─── Responsive ──────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .about-grid { grid-template-columns: 1fr; }
+      .about-photo-wrap { max-width: 220px; }
+      .person-name { font-size: 2.5rem; }
+      .nav-links {
+        display: none;
+        position: absolute; top: var(--nav-h); left: 0; right: 0;
+        /* Follows the active theme gradient start so the opened menu stays
+           legible with the themed link colors (light themes use dark text). */
+        background: var(--g1);
+        border-bottom: 1px solid var(--border);
+        flex-direction: column; gap: 0; padding: 0.5rem 0;
+      }
+      .nav-links.open { display: flex; }
+      .nav-links a { border-left: none; border-bottom: 1px solid rgba(212,137,74,0.08); padding: 0.9rem 1.5rem; font-size: 0.72rem; }
+      .hamburger { display: flex; }
+      .skills-grid { grid-template-columns: 1fr 1fr; }
+      .footer-inner { flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 480px) {
+      .skills-grid { grid-template-columns: 1fr; }
+      main { padding-top: calc(var(--nav-h) + 2rem); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Upload Overlay -->
+  <div id="upload-overlay" style="display:none;">
+    <div class="upload-box">
+      <h2>Load Resume Data</h2>
+      <p>No data.json was found. Select your resume data file to populate this page.</p>
+      <button class="btn-primary" id="upload-btn">⬆ Select data.json</button>
+      <input type="file" id="upload-input" accept=".json" style="display:none;" />
+      <p class="create-link">Don't have a file? <a href="form.html">Build one in the editor →</a></p>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav id="main-nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="#about" id="nav-brand">S<span>.</span>B</a>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#education">Education</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#languages">Languages</a></li>
+        <li><a href="#references">References</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li class="offline-only" style="display:none;">
+          <button class="nav-load-btn" id="nav-load-btn">⬆ Load JSON</button>
+          <input type="file" id="nav-file-input" accept=".json" style="display:none;" />
+        </li>
+        <li class="offline-only" style="display:none;"><a href="form.html">✦ Edit</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main>
+
+    <!-- About -->
+    <section id="about">
+      <div class="about-grid fade-in">
+        <div class="about-photo-wrap">
+          <img src="assets/profile.jpg" alt="Profile Photo" id="profile-photo" />
+        </div>
+        <div class="about-content">
+          <div class="person-name" id="person-name">Loading…</div>
+          <div class="person-tagline" id="person-tagline">Marine Biologist</div>
+          <p id="about-text">Loading resume data…</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Experience -->
+    <section id="experience" class="fade-in">
+      <div class="section-label">
+        <h2>Work <span>Experience</span></h2>
+        <div class="section-label-line"></div>
+      </div>
+      <div id="experience-list"></div>
+    </section>
+
+    <!-- Education -->
+    <section id="education" class="fade-in">
+      <div class="section-label">
+        <h2>Education <span>& Training</span></h2>
+        <div class="section-label-line"></div>
+      </div>
+      <div id="education-list"></div>
+    </section>
+
+    <!-- Skills -->
+    <section id="skills" class="fade-in">
+      <div class="section-label">
+        <h2>Skills <span>& Expertise</span></h2>
+        <div class="section-label-line"></div>
+      </div>
+      <div class="skills-grid" id="skills-list"></div>
+    </section>
+
+    <!-- Languages -->
+    <section id="languages" class="fade-in">
+      <div class="section-label">
+        <h2>Languages</h2>
+        <div class="section-label-line"></div>
+      </div>
+      <div class="languages-grid" id="languages-list"></div>
+    </section>
+
+    <!-- References -->
+    <section id="references" class="fade-in">
+      <div class="section-label">
+        <h2>References</h2>
+        <div class="section-label-line"></div>
+      </div>
+      <div id="references-list"></div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="fade-in">
+      <div class="section-label">
+        <h2>Contact</h2>
+        <div class="section-label-line"></div>
+      </div>
+      <p id="contact-info"></p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <p id="footer-text">© 2025</p>
+      <div class="social-icons" id="social-icons"></div>
+    </div>
+  </footer>
+
+  <script>
+  (function() {
+
+    /* ─── Hex to rgba helper ─────────────────────────────── */
+    function hexAlpha(hex, alpha) {
+      hex = hex.replace('#', '');
+      if (hex.length === 3) hex = hex.split('').map(c => c+c).join('');
+      const r = parseInt(hex.slice(0,2),16);
+      const g = parseInt(hex.slice(2,4),16);
+      const b = parseInt(hex.slice(4,6),16);
+      return `rgba(${r},${g},${b},${alpha})`;
+    }
+
+    /* ─── Apply Theme ────────────────────────────────────── */
+    // Whole-page themes: recolour the gradient background and adapt text to
+    // stay readable — dark text on light backgrounds, white on dark ones.
+    function rpIsDarkHex(hex) {
+      if (!hex || hex.charAt(0) !== '#') return false;
+      var c = hex.substring(1);
+      if (c.length === 3) c = c.split('').map(function (x) { return x + x; }).join('');
+      if (c.length !== 6) return false;
+      var r = parseInt(c.substring(0, 2), 16) / 255;
+      var g = parseInt(c.substring(2, 4), 16) / 255;
+      var b = parseInt(c.substring(4, 6), 16) / 255;
+      return (0.2126 * r + 0.7152 * g + 0.0722 * b) < 0.55;
+    }
+
+    function rpApplyPageTheme(theme, opts) {
+      var root = document.documentElement;
+      var MARK = 'data-rp-page-themed';
+      var prevVars = root.getAttribute('data-rp-theme-vars');
+      if (prevVars) {
+        prevVars.split(',').forEach(function (k) { root.style.removeProperty(k); });
+        root.removeAttribute('data-rp-theme-vars');
+      }
+      root.removeAttribute('data-rp-light-bg');
+      var marked = document.querySelectorAll('[' + MARK + ']');
+      for (var i = 0; i < marked.length; i++) {
+        marked[i].removeAttribute(MARK);
+        marked[i].style.removeProperty('background');
+        marked[i].style.removeProperty('background-color');
+        marked[i].style.removeProperty('background-image');
+      }
+      var styleEl = document.getElementById('rpPageThemeStyle');
+      if (styleEl) styleEl.parentNode.removeChild(styleEl);
+      if (!theme || !theme.gradientStart) return;
+
+      var g1 = theme.gradientStart;
+      var g2 = theme.gradientEnd || g1;
+      var light = !rpIsDarkHex(g1);
+      var tc = light ? '#1a1a1a' : '#ffffff';
+      var vars = { '--g1': g1, '--g2': g2 };
+      opts.primary.forEach(function (v) { vars[v] = tc; });
+      if (light) {
+        opts.secondary.forEach(function (v) { vars[v] = 'rgba(0,0,0,0.72)'; });
+        opts.muted.forEach(function (v) { vars[v] = 'rgba(0,0,0,0.55)'; });
+        opts.surface.forEach(function (v) { vars[v] = 'rgba(0,0,0,0.045)'; });
+        opts.border.forEach(function (v) { vars[v] = 'rgba(0,0,0,0.12)'; });
+      }
+      Object.keys(vars).forEach(function (k) { root.style.setProperty(k, vars[k]); });
+      root.setAttribute('data-rp-theme-vars', Object.keys(vars).join(','));
+      if (light) root.setAttribute('data-rp-light-bg', '1');
+
+      var regions = document.querySelectorAll(opts.regions.join(','));
+      for (var j = 0; j < regions.length; j++) {
+        regions[j].setAttribute(MARK, '1');
+        regions[j].style.setProperty('background', 'transparent', 'important');
+      }
+
+      if (light && opts.lightText.length) {
+        styleEl = document.createElement('style');
+        styleEl.id = 'rpPageThemeStyle';
+        styleEl.textContent = '[data-rp-light-bg] ' + opts.lightText.join(', [data-rp-light-bg] ') + ' { color: ' + tc + ' !important; }';
+        document.head.appendChild(styleEl);
+      }
+    }
+
+    function applyTheme(theme) {
+      rpApplyPageTheme(theme, {
+        regions: ['nav#main-nav', 'footer'],
+        primary: ['--text-primary'],
+        secondary: ['--text-secondary'],
+        muted: ['--text-muted'],
+        surface: ['--card-bg'],
+        border: ['--card-border'],
+        lightText: []
+      });
+    }
+    window.applyTheme = applyTheme;
+
+    function lighten(hex, pct) {
+      hex = hex.replace('#', '');
+      if (hex.length === 3) hex = hex.split('').map(c => c+c).join('');
+      let r = Math.min(255, parseInt(hex.slice(0,2),16) + Math.round(255*pct/100));
+      let g = Math.min(255, parseInt(hex.slice(2,4),16) + Math.round(255*pct/100));
+      let b = Math.min(255, parseInt(hex.slice(4,6),16) + Math.round(255*pct/100));
+      return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+    }
+
+    /* ─── Render Resume ──────────────────────────────────── */
+    function renderResume(data) {
+      if (!data) return;
+
+      document.title = data.htmlTitle || 'Resume';
+      applyTheme(data.theme);
+
+      // Name
+      const nameEl = document.getElementById('person-name');
+      if (nameEl && data.header) {
+        const parts = data.header.split(' ');
+        if (parts.length >= 2) {
+          const last = parts.pop();
+          nameEl.innerHTML = parts.join(' ') + '<em>' + last + '</em>';
+        } else {
+          nameEl.textContent = data.header;
+        }
+      }
+
+      // Nav brand
+      const brand = document.getElementById('nav-brand');
+      if (brand && data.header) {
+        const parts = data.header.split(' ');
+        const init = parts.map(p => p[0]).join('');
+        brand.innerHTML = init.slice(0,-1) + '<span>.</span>' + init.slice(-1);
+      }
+
+      // Tagline from contact or title
+      const tagline = document.getElementById('person-tagline');
+      if (tagline && data.htmlTitle) {
+        const t = data.htmlTitle.replace(/^[^—–-]+[—–-]\s*/,'');
+        tagline.textContent = t || '';
+      }
+
+      // About
+      const aboutEl = document.getElementById('about-text');
+      if (aboutEl) aboutEl.textContent = data.about || '';
+
+      // Profile photo
+      if (data.profilePhoto) {
+        const img = document.getElementById('profile-photo');
+        if (img) img.src = data.profilePhoto;
+      }
+
+      // Experience
+      const expList = document.getElementById('experience-list');
+      if (expList) {
+        expList.innerHTML = '';
+        (data.experience || []).forEach(exp => {
+          const d = document.createElement('div');
+          d.className = 'card';
+          d.innerHTML = `
+            <div class="exp-header">
+              <div class="exp-position">${exp.position || ''}</div>
+              <div class="exp-duration">${exp.duration || ''}</div>
+            </div>
+            <div class="exp-company">${exp.company || ''}</div>
+            <div class="exp-description">${exp.description || ''}</div>
+          `;
+          expList.appendChild(d);
+        });
+      }
+
+      // Education
+      const eduList = document.getElementById('education-list');
+      if (eduList) {
+        eduList.innerHTML = '';
+        (data.education || []).forEach(edu => {
+          const d = document.createElement('div');
+          d.className = 'card';
+          d.innerHTML = `
+            <div class="edu-degree">${edu.degree || ''}</div>
+            <div class="edu-meta">${edu.institution || ''} — <span>${edu.year || ''}</span></div>
+          `;
+          eduList.appendChild(d);
+        });
+      }
+
+      // Skills
+      const skillsEl = document.getElementById('skills-list');
+      if (skillsEl) {
+        skillsEl.innerHTML = '';
+        (data.skills || []).forEach(s => {
+          const d = document.createElement('div');
+          d.className = 'skill-item';
+          d.textContent = s;
+          skillsEl.appendChild(d);
+        });
+      }
+
+      // Languages
+      const langsEl = document.getElementById('languages-list');
+      if (langsEl) {
+        langsEl.innerHTML = '';
+        (data.languages || []).forEach(l => {
+          const d = document.createElement('div');
+          d.className = 'lang-item';
+          d.textContent = l;
+          langsEl.appendChild(d);
+        });
+      }
+
+      // References
+      const refsEl = document.getElementById('references-list');
+      if (refsEl) {
+        refsEl.innerHTML = '';
+        (data.references || []).forEach(ref => {
+          const d = document.createElement('div');
+          d.className = 'card';
+          d.innerHTML = `
+            <div class="ref-name">${ref.name || ''}</div>
+            <div class="ref-contact">${ref.contact || ''}</div>
+            ${ref.relationship ? `<div class="ref-relationship">${ref.relationship}</div>` : ''}
+          `;
+          refsEl.appendChild(d);
+        });
+      }
+
+      // Contact
+      const contactEl = document.getElementById('contact-info');
+      if (contactEl) contactEl.textContent = data.contact || '';
+
+      // Social icons
+      const socialEl = document.getElementById('social-icons');
+      if (socialEl) {
+        socialEl.innerHTML = '';
+        (data.socialLinks || []).forEach(link => {
+          const a = document.createElement('a');
+          a.href = link.url || '#';
+          a.target = '_blank'; a.rel = 'noopener noreferrer';
+          a.setAttribute('aria-label', link.name || 'Social');
+          const iconMap = {
+            linkedin: 'fab fa-linkedin-in', twitter: 'fab fa-x-twitter',
+            facebook: 'fab fa-facebook-f', instagram: 'fab fa-instagram',
+            github: 'fab fa-github', email: 'fas fa-envelope'
+          };
+          const key = (link.name || '').toLowerCase();
+          const i = document.createElement('i');
+          i.className = iconMap[key] || 'fas fa-link';
+          a.appendChild(i);
+          socialEl.appendChild(a);
+        });
+      }
+
+      // Footer
+      const footerEl = document.getElementById('footer-text');
+      if (footerEl) footerEl.textContent = data.footer || '';
+    }
+
+    /* ─── Offline-only UI ────────────────────────────────── */
+    const isLocal = location.protocol === 'file:';
+    if (isLocal) {
+      document.querySelectorAll('.offline-only').forEach(el => el.style.display = '');
+    }
+
+    /* ─── Hamburger ──────────────────────────────────────── */
+    const hamburger = document.getElementById('hamburger');
+    const navLinksEl = document.getElementById('nav-links');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      navLinksEl.classList.toggle('open');
+    });
+    navLinksEl.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        hamburger.classList.remove('open');
+        navLinksEl.classList.remove('open');
+      });
+    });
+    document.addEventListener('click', e => {
+      if (!hamburger.contains(e.target) && !navLinksEl.contains(e.target)) {
+        hamburger.classList.remove('open');
+        navLinksEl.classList.remove('open');
+      }
+    });
+
+    /* ─── Inline Load JSON (offline nav button) ──────────── */
+    const navLoadBtn = document.getElementById('nav-load-btn');
+    const navFileInput = document.getElementById('nav-file-input');
+    if (navLoadBtn && navFileInput) {
+      navLoadBtn.addEventListener('click', () => navFileInput.click());
+      navFileInput.addEventListener('change', e => {
+        const file = e.target.files[0]; if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => {
+          try { renderResume(JSON.parse(ev.target.result)); }
+          catch(err) { alert('Invalid JSON file.'); }
+        };
+        reader.readAsText(file);
+      });
+    }
+
+    /* ─── Upload Overlay ─────────────────────────────────── */
+    const overlay = document.getElementById('upload-overlay');
+    const uploadBtn = document.getElementById('upload-btn');
+    const uploadInput = document.getElementById('upload-input');
+    uploadBtn.addEventListener('click', () => uploadInput.click());
+    uploadInput.addEventListener('change', e => {
+      const file = e.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        try {
+          renderResume(JSON.parse(ev.target.result));
+          overlay.style.display = 'none';
+        } catch(err) { alert('Invalid JSON.'); }
+      };
+      reader.readAsText(file);
+    });
+
+    /* ─── Active Nav on Scroll ───────────────────────────── */
+    const sections = document.querySelectorAll('main section[id]');
+    const navAs = document.querySelectorAll('.nav-links a[href^="#"]');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(en => {
+        if (en.isIntersecting) {
+          navAs.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + en.target.id));
+        }
+      });
+    }, { rootMargin: '-40% 0px -55% 0px' });
+    sections.forEach(s => observer.observe(s));
+
+    /* ─── Fade-in on Scroll ──────────────────────────────── */
+    const fadeEls = document.querySelectorAll('.fade-in');
+    const fadeObserver = new IntersectionObserver(entries => {
+      entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('visible'); fadeObserver.unobserve(en.target); } });
+    }, { threshold: 0.08 });
+    fadeEls.forEach(el => fadeObserver.observe(el));
+
+    /* ─── Data Loading ───────────────────────────────────── */
+    fetch('data.json')
+      .then(r => { if (!r.ok) throw new Error('fetch failed'); return r.json(); })
+      .then(data => renderResume(data))
+      .catch(() => {
+        // Try URL hash fallback
+        const hash = location.hash;
+        if (hash && hash.startsWith('#data=')) {
+          try {
+            const data = JSON.parse(decodeURIComponent(hash.slice(6)));
+            renderResume(data);
+            return;
+          } catch(e) {}
+        }
+        // Show overlay
+        overlay.style.display = 'flex';
+      });
+
+  })();
+  </script>
+
+<script src="assets/jspdf.umd.min.js"></script>
+<script src="assets/rp-pdf.js"></script>
+</body>
+</html>

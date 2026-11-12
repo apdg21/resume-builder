@@ -1,0 +1,97 @@
+{
+  "name": "Marcus Delgado",
+  "title": "Senior Cybersecurity Engineer",
+  "aboutMe": "I'm a cybersecurity engineer with over 8 years of experience protecting enterprise systems, leading incident response operations, and building resilient security architectures. I specialize in threat intelligence, penetration testing, and cloud security — translating complex risks into actionable defenses. Based in Berlin, I've worked across fintech, healthcare, and critical infrastructure sectors, and I'm passionate about making digital systems safer for everyone.",
+  "contact": {
+    "phone": "+49 30 5541 8823",
+    "email": "marcus.delgado@secstack.io",
+    "address": "Prenzlauer Berg, Berlin, Germany"
+  },
+  "social_links": [
+    {
+      "platform": "linkedin",
+      "url": "https://linkedin.com/in/marcusdelgado",
+      "icon": "fab fa-linkedin"
+    },
+    {
+      "platform": "twitter",
+      "url": "https://twitter.com/marcusdlgd",
+      "icon": "fab fa-x-twitter"
+    },
+    {
+      "platform": "github",
+      "url": "https://github.com/marcusdelgado",
+      "icon": "fab fa-github"
+    }
+  ],
+  "skills": [
+    "Penetration Testing",
+    "Threat Intelligence",
+    "Cloud Security (AWS, Azure)",
+    "SIEM & Log Analysis",
+    "Zero Trust Architecture",
+    "Incident Response",
+    "Python & Bash Scripting",
+    "Vulnerability Assessment"
+  ],
+  "languages": [
+    "English (Native)",
+    "German (Fluent)",
+    "Spanish (Conversational)"
+  ],
+  "education": [
+    {
+      "degree": "M.Sc. Information Security",
+      "university": "Technical University of Berlin",
+      "years": "2014–2016",
+      "grade": "Summa Cum Laude"
+    },
+    {
+      "degree": "B.Sc. Computer Science",
+      "university": "University of Salamanca",
+      "years": "2010–2014",
+      "grade": "3.92 GPA"
+    }
+  ],
+  "experience": [
+    {
+      "title": "Senior Cybersecurity Engineer",
+      "company": "VaultCore Technologies, Berlin",
+      "years": "2021–Present",
+      "responsibilities": [
+        "Architect and maintain Zero Trust security framework across a 400-node hybrid cloud environment",
+        "Lead red team exercises and penetration testing for financial services clients in the EU",
+        "Developed a custom SIEM integration reducing mean-time-to-detect (MTTD) by 62%",
+        "Mentor a team of 4 junior security analysts and coordinate quarterly threat reviews"
+      ]
+    },
+    {
+      "title": "Cybersecurity Analyst",
+      "company": "HelixMed Systems, Munich",
+      "years": "2018–2021",
+      "responsibilities": [
+        "Managed vulnerability lifecycle across 200+ healthcare endpoints compliant with GDPR and HIPAA",
+        "Conducted weekly security audits and authored remediation reports for executive stakeholders",
+        "Deployed and tuned Splunk SIEM across production environments, reducing false positives by 40%"
+      ]
+    },
+    {
+      "title": "Junior Security Consultant",
+      "company": "CipherEdge GmbH, Frankfurt",
+      "years": "2016–2018",
+      "responsibilities": [
+        "Performed web application penetration tests and delivered written reports for 30+ clients",
+        "Assisted in building internal CTF challenges for security awareness training programs",
+        "Supported implementation of ISO 27001 compliance documentation for SME clients"
+      ]
+    }
+  ],
+  "theme": {
+    "gradientStart": "#0a0e1a",
+    "gradientEnd": "#0d1f3c",
+    "accentColor": "#00e5ff"
+  },
+  "profile": {
+    "image": "assets/profile.jpg"
+  }
+}

@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume | Your Name</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Dancing+Script:wght@500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Libraries used to turn the actual rendered resume into a PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --purple: #b19cd9;
+      --purple-dark: #5a4a7a;
+      --purple-light: #d4c2fc;
+      --pink: #ff80bf;
+      --pink-light: #ffb6e1;
+      --bg1: #f9f0ff;
+      --bg2: #f0e6ff;
+      --white: #ffffff;
+      --muted: #a394c4;
+      --ink: #4a3d68;
+      --shadow-sm: 0 5px 15px rgba(177,156,217,0.18);
+      --shadow-md: 0 12px 30px rgba(177,156,217,0.28);
+      --radius: 20px;
+      --script: 'Dancing Script', cursive;
+      --heading: 'Poppins', sans-serif;
+      --body: 'Quicksand', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--body);
+      background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+      background-attachment: fixed;
+      color: var(--ink);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ── NAV ── */
+    .top-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 2px 20px rgba(177,156,217,0.15);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 3rem;
+      height: 68px;
+    }
+    .nav-logo {
+      font-family: var(--script);
+      font-size: 1.7rem; font-weight: 700;
+      color: var(--purple);
+      text-decoration: none;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .nav-links {
+      display: flex; gap: 2.2rem; list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--heading);
+      font-size: 0.85rem; font-weight: 500;
+      color: var(--purple-dark);
+      text-decoration: none;
+      position: relative;
+      transition: color 0.25s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--pink); }
+    .nav-links a.active::after {
+      content: '';
+      position: absolute; bottom: -6px; left: 0; right: 0;
+      height: 2px; border-radius: 2px;
+      background: var(--pink);
+    }
+
+    .nav-actions { display: flex; gap: 0.75rem; align-items: center; }
+
+    .btn-pdf {
+      font-family: var(--heading);
+      font-size: 0.78rem; font-weight: 600;
+      background: linear-gradient(to right, var(--rp-btn1, var(--purple)), var(--rp-btn2, var(--purple-light)));
+      color: var(--rp-btn-text, white);
+      border: none; cursor: pointer;
+      padding: 0.6rem 1.3rem;
+      border-radius: 50px;
+      box-shadow: 0 4px 12px rgba(177,156,217,0.4);
+      transition: transform 0.25s, box-shadow 0.25s;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .btn-pdf:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(177,156,217,0.5); }
+
+    .btn-upload-json {
+      font-family: var(--heading);
+      font-size: 0.78rem; font-weight: 600;
+      background: transparent;
+      color: var(--purple-dark);
+      border: 1.5px solid var(--purple-light);
+      cursor: pointer;
+      padding: 0.55rem 1.2rem;
+      border-radius: 50px;
+      transition: all 0.25s;
+    }
+    .btn-upload-json:hover {
+      color: var(--purple);
+      border-color: var(--purple);
+      background: rgba(177,156,217,0.08);
+    }
+
+    .hamburger {
+      display: none;
+      background: none; border: none; cursor: pointer;
+      color: var(--purple); font-size: 1.3rem;
+      padding: 0.4rem;
+      z-index: 110;
+    }
+
+    .mobile-dropdown {
+      display: none;
+      position: fixed;
+      top: 68px; left: 0; right: 0;
+      z-index: 99;
+      background: rgba(255,255,255,0.97);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 20px rgba(177,156,217,0.2);
+      padding: 0.5rem 0 1rem;
+      flex-direction: column;
+    }
+    .mobile-dropdown.open { display: flex; }
+    .mobile-dropdown a {
+      font-family: var(--heading);
+      font-size: 0.85rem; font-weight: 500;
+      color: var(--purple-dark);
+      text-decoration: none;
+      padding: 0.9rem 2rem;
+      border-bottom: 1px solid rgba(177,156,217,0.1);
+      transition: color 0.2s, background 0.2s;
+    }
+    .mobile-dropdown a:hover { color: var(--pink); background: rgba(255,128,191,0.06); }
+    .mobile-dropdown a.offline-only { display: none; }
+
+    /* ── HERO ── */
+    .hero {
+      max-width: 1200px;
+      margin: 100px auto 2.5rem;
+      background: linear-gradient(120deg, var(--purple) 0%, var(--purple-light) 100%);
+      border-radius: var(--radius);
+      padding: 3rem 3.5rem;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 2.8rem;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+    .hero-float {
+      position: absolute; border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      pointer-events: none;
+    }
+    .hero-float.f1 { width: 90px; height: 90px; top: 15px; right: 90px; animation: floaty 6s ease-in-out infinite; }
+    .hero-float.f2 { width: 46px; height: 46px; bottom: 25px; right: 190px; animation: floaty 5s ease-in-out infinite reverse; }
+    .hero-float.f3 { width: 65px; height: 65px; top: 55px; right: 300px; animation: floaty 7s ease-in-out infinite; }
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-14px); }
+    }
+
+    .hero-photo-wrap { position: relative; z-index: 1; animation: floaty 4s ease-in-out infinite; }
+    .hero-photo {
+      width: 170px; height: 170px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 5px solid white;
+      display: block;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    .hero-text { position: relative; z-index: 1; }
+    .hero-label {
+      font-family: var(--heading);
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: white;
+      background: rgba(255,255,255,0.2);
+      display: inline-block;
+      padding: 0.3rem 0.9rem;
+      border-radius: 50px;
+      margin-bottom: 1rem;
+    }
+    .hero-name {
+      font-family: var(--heading);
+      font-weight: 600;
+      font-size: clamp(2.2rem, 4vw, 3rem);
+      color: white;
+      line-height: 1.1;
+      margin-bottom: 0.35rem;
+      text-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+    }
+    .hero-title {
+      font-family: var(--script);
+      font-size: 1.8rem; font-weight: 600;
+      color: white;
+      margin-bottom: 1.4rem;
+    }
+    .hero-contacts { display: flex; flex-wrap: wrap; gap: 0.9rem; }
+    .hero-contact-item {
+      display: flex; align-items: center; gap: 0.5rem;
+      background: var(--rp-hero-chip-bg, rgba(255,255,255,0.92));
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-size: 0.82rem;
+      color: var(--rp-chip-text, var(--purple-dark));
+      box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    }
+    .hero-contact-item i { color: var(--rp-chip-text, var(--purple)); font-size: 0.78rem; }
+
+    /* ── LAYOUT ── */
+    .resume-layout {
+      max-width: 1200px;
+      margin: 0 auto 3rem;
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 2rem;
+      padding: 0 1.5rem;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 2.4rem 2rem;
+      box-shadow: var(--shadow-sm);
+      position: sticky; top: 90px;
+      height: fit-content;
+      max-height: calc(100vh - 110px);
+      overflow-y: auto;
+    }
+    .sidebar::-webkit-scrollbar { width: 5px; }
+    .sidebar::-webkit-scrollbar-track { background: transparent; }
+    .sidebar::-webkit-scrollbar-thumb { background: var(--purple-light); border-radius: 3px; }
+
+    .sidebar-section { margin-bottom: 2.4rem; }
+    .sidebar-section:last-child { margin-bottom: 0; }
+    .sidebar-heading {
+      font-family: var(--heading);
+      font-size: 0.9rem; font-weight: 600;
+      color: var(--purple);
+      margin-bottom: 1.3rem;
+      display: flex; align-items: center; gap: 0.6rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 2px solid var(--bg2);
+    }
+
+    .skill-item { margin-bottom: 1rem; }
+    .skill-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 0.35rem;
+    }
+    .skill-name { font-size: 0.83rem; font-weight: 600; color: var(--ink); }
+    .skill-pct { font-family: var(--heading); font-size: 0.72rem; font-weight: 700; color: var(--purple); }
+    .skill-track {
+      height: 7px;
+      background: var(--bg2);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .skill-fill {
+      height: 100%;
+      background: linear-gradient(to right, var(--purple), var(--pink-light));
+      border-radius: 10px;
+      transition: width 1.1s cubic-bezier(0.19, 1, 0.22, 1);
+      width: 0;
+    }
+
+    .edu-item { margin-bottom: 1.3rem; }
+    .edu-degree { font-family: var(--heading); font-size: 0.85rem; font-weight: 600; color: var(--purple-dark); margin-bottom: 0.2rem; }
+    .edu-school { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.2rem; }
+    .edu-year {
+      font-family: var(--heading);
+      font-size: 0.68rem; font-weight: 600;
+      color: var(--rp-chip-text, var(--purple));
+      background: var(--bg2);
+      display: inline-block;
+      padding: 0.15rem 0.6rem;
+      border-radius: 50px;
+    }
+
+    .lang-item { margin-bottom: 0.9rem; }
+    .lang-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem; }
+    .lang-name { font-size: 0.83rem; font-weight: 600; color: var(--ink); }
+    .lang-dots { display: flex; gap: 4px; }
+    .lang-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--bg2); transition: background 0.3s; }
+    .lang-dot.filled { background: var(--purple); }
+
+    .social-row { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+    .social-link {
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      border: 1.5px solid var(--bg2);
+      border-radius: 50%;
+      color: var(--purple);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: all 0.25s;
+    }
+    .social-link:hover { background: var(--purple); color: white; border-color: var(--purple); transform: translateY(-2px); }
+
+    /* ── MAIN CONTENT ── */
+    .main-content { display: flex; flex-direction: column; gap: 2rem; }
+
+    .content-section {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 2.2rem 2.5rem;
+      box-shadow: var(--shadow-sm);
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .content-section.visible { opacity: 1; transform: translateY(0); }
+
+    .section-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.8rem; }
+    .section-icon {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: var(--bg2);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--purple); font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .section-title { font-family: var(--heading); font-size: 1.4rem; font-weight: 600; color: var(--purple-dark); }
+    .section-line { flex: 1; height: 2px; background: linear-gradient(90deg, var(--bg2), transparent); }
+
+    #aboutText { font-size: 1rem; line-height: 1.9; color: #5c4f7a; max-width: 700px; font-weight: 400; }
+
+    /* Experience timeline */
+    .exp-item {
+      padding-bottom: 1.8rem;
+      margin-bottom: 1.8rem;
+      border-bottom: 1px dashed #e6d9fb;
+      position: relative;
+      padding-left: 1.8rem;
+    }
+    .exp-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .exp-item::before {
+      content: '';
+      position: absolute; left: 0; top: 6px;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--pink);
+      box-shadow: 0 0 0 4px var(--bg2);
+    }
+    .exp-meta { margin-bottom: 0.4rem; }
+    .exp-dates {
+      font-family: var(--heading);
+      font-size: 0.7rem; font-weight: 600;
+      color: var(--rp-chip-text, var(--purple));
+      background: var(--bg2);
+      padding: 0.25rem 0.8rem;
+      border-radius: 50px;
+      display: inline-block;
+    }
+    .exp-position { font-family: var(--heading); font-size: 1.1rem; font-weight: 600; color: var(--purple-dark); margin-top: 0.5rem; margin-bottom: 0.2rem; }
+    .exp-company { font-size: 0.85rem; font-weight: 600; color: var(--purple); margin-bottom: 0.7rem; }
+    .exp-desc { font-size: 0.88rem; line-height: 1.7; color: #6b5f89; margin-bottom: 0.8rem; }
+    .exp-details { list-style: none; display: flex; flex-direction: column; gap: 0.45rem; }
+    .exp-details li {
+      font-size: 0.84rem; line-height: 1.6; color: #5c5077;
+      padding-left: 1.3rem; position: relative;
+    }
+    .exp-details li::before {
+      content: '\f0da';
+      font-family: 'Font Awesome 6 Free'; font-weight: 900;
+      position: absolute; left: 0; top: 0.1rem;
+      color: var(--pink); font-size: 0.7rem;
+    }
+
+    /* Projects */
+    .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 1.4rem; }
+    .project-card {
+      border-radius: 16px;
+      padding: 1.6rem;
+      background: linear-gradient(135deg, #fff 0%, #fbf7ff 100%);
+      border: 1px solid var(--bg2);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .project-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(to right, var(--purple), var(--pink-light));
+    }
+    .project-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .project-title { font-family: var(--heading); font-size: 1rem; font-weight: 600; color: var(--purple-dark); margin-bottom: 0.6rem; }
+    .project-desc { font-size: 0.82rem; line-height: 1.65; color: var(--muted); margin-bottom: 1.1rem; }
+    .project-links { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+    .project-links a {
+      font-family: var(--heading);
+      font-size: 0.72rem; font-weight: 600;
+      color: white;
+      background: var(--purple);
+      text-decoration: none;
+      padding: 0.4rem 0.9rem;
+      border-radius: 50px;
+      display: flex; align-items: center; gap: 0.35rem;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .project-links a:hover { background: var(--pink); transform: translateY(-2px); }
+
+    /* ── FOOTER ── */
+    .resume-footer {
+      max-width: 1200px;
+      margin: 0 auto 2.5rem;
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 1.8rem 3rem;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .footer-name { font-family: var(--script); font-size: 1.4rem; font-weight: 600; color: var(--purple); }
+    .footer-copy { font-size: 0.78rem; color: var(--muted); }
+
+    /* ── UPLOAD OVERLAY ── */
+    .upload-overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(90,74,122,0.55);
+      backdrop-filter: blur(6px);
+      align-items: center; justify-content: center;
+    }
+    .upload-overlay.show { display: flex; }
+    .upload-box {
+      background: white;
+      border-radius: var(--radius);
+      padding: 3rem;
+      text-align: center;
+      max-width: 440px; width: 90%;
+      box-shadow: var(--shadow-md);
+    }
+    .upload-box h2 { font-family: var(--heading); font-weight: 600; font-size: 1.6rem; color: var(--purple-dark); margin-bottom: 0.75rem; }
+    .upload-box p { font-size: 0.88rem; line-height: 1.7; color: var(--muted); margin-bottom: 2rem; }
+    .upload-box p a { color: var(--pink); text-decoration: none; font-weight: 600; }
+    .upload-select-btn {
+      font-family: var(--heading);
+      font-size: 0.85rem; font-weight: 600;
+      background: linear-gradient(to right, var(--rp-btn1, var(--purple)), var(--rp-btn2, var(--purple-light)));
+      color: var(--rp-btn-text, white); border: none; cursor: pointer;
+      padding: 0.8rem 2rem; border-radius: 50px;
+      box-shadow: 0 4px 12px rgba(177,156,217,0.4);
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      transition: transform 0.2s;
+    }
+    .upload-select-btn:hover { transform: translateY(-2px); }
+
+    /* ── MOBILE ── */
+    @media (max-width: 1100px) {
+      .hero { margin: 90px 1.5rem 2rem; padding: 2.5rem; }
+      .resume-layout { padding: 0 1.5rem; }
+    }
+    @media (max-width: 900px) {
+      .resume-layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+      .hero { grid-template-columns: 1fr; text-align: center; gap: 1.5rem; }
+      .hero-photo-wrap { margin: 0 auto; }
+      .hero-contacts { justify-content: center; }
+      .top-nav { padding: 0 1.5rem; }
+      .nav-links { display: none !important; }
+      .nav-actions .btn-upload-json { display: none; }
+      .hamburger { display: block; }
+      .resume-footer { flex-direction: column; text-align: center; margin: 0 1.5rem 2rem; }
+    }
+    @media (max-width: 600px) {
+      .hero-name { font-size: 1.9rem; }
+      .content-section { padding: 1.6rem; }
+      .projects-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Applied to body while html2canvas is capturing, so scroll-reveal
+       sections and floating animations don't show mid-transition */
+    .pdf-capturing .content-section {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+    .pdf-capturing .hero-float {
+      animation: none !important;
+    }
+    .pdf-capturing .hero-photo-wrap {
+      animation: none !important;
+    }
+    .pdf-capturing .skill-fill {
+      transition: none !important;
+    }
+
+    /* ── PRINT ── */
+    @media print {
+      .top-nav, .btn-pdf, .btn-upload-json, .upload-overlay { display: none !important; }
+      .hero { margin-top: 0; }
+      .resume-layout { display: block; }
+      .sidebar { position: static; margin-bottom: 1.5rem; }
+      .content-section { opacity: 1; transform: none; margin-bottom: 1rem; }
+      body { background: white; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOP NAVIGATION -->
+<nav class="top-nav">
+  <a class="nav-logo" href="index.html" id="navLogo"><i class="fas fa-star"></i> Portfolio</a>
+  <ul class="nav-links">
+    <li><a href="#aboutSection">About</a></li>
+    <li><a href="#experienceSection">Experience</a></li>
+    <li><a href="#projectsSection">Projects</a></li>
+    <li><a href="#skillsSection">Skills</a></li>
+    <li class="edit-link-item" style="display:none"><a href="form.html">Edit</a></li>
+  </ul>
+  <div class="nav-actions">
+    <input type="file" id="jsonUploadInput" accept=".json" style="display:none">
+    <button class="btn-upload-json" id="uploadJsonBtn" title="Upload data.json for offline viewing">
+      <i class="fas fa-upload"></i> Load JSON
+    </button>
+    <button class="btn-pdf" id="downloadPdfBtn">
+      <i class="fas fa-download"></i> Download PDF
+    </button>
+  </div>
+  <button class="hamburger" id="hamburger" aria-label="Open menu">
+    <i class="fas fa-bars" id="hamburgerIcon"></i>
+  </button>
+</nav>
+
+<!-- MOBILE DROPDOWN NAV -->
+<div class="mobile-dropdown" id="mobileDropdown">
+  <a href="#aboutSection">About</a>
+  <a href="#experienceSection">Experience</a>
+  <a href="#projectsSection">Projects</a>
+  <a href="#skillsSection">Skills</a>
+  <a href="form.html" class="offline-only" id="mobileEditLink">Edit</a>
+  <a href="#" id="mobileLoadJson" class="offline-only" style="color:var(--pink)"><i class="fas fa-upload"></i> Load JSON</a>
+</div>
+
+<!-- Everything inside #resumeContent is exactly what gets exported to the PDF -->
+<div id="resumeContent">
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-float f1"></div>
+  <div class="hero-float f2"></div>
+  <div class="hero-float f3"></div>
+  <div class="hero-photo-wrap">
+    <img class="hero-photo" src="assets/profile.jpg" alt="Profile Photo" id="profileImage">
+  </div>
+  <div class="hero-text">
+    <div class="hero-label" id="heroLabel">Available for Work</div>
+    <h1 class="hero-name" id="fullName">Loading…</h1>
+    <p class="hero-title" id="jobTitle">Loading…</p>
+    <div class="hero-contacts">
+      <div class="hero-contact-item"><i class="fas fa-envelope"></i><span id="emailVal">—</span></div>
+      <div class="hero-contact-item"><i class="fas fa-mobile-alt"></i><span id="phoneVal">—</span></div>
+      <div class="hero-contact-item"><i class="fas fa-map-marker-alt"></i><span id="locationVal">—</span></div>
+    </div>
+  </div>
+</header>
+
+<!-- BODY LAYOUT -->
+<div class="resume-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="sidebar-section" id="skillsSection">
+      <h4 class="sidebar-heading"><i class="fas fa-code"></i> Skills</h4>
+      <div id="skillsList"></div>
+    </div>
+
+    <div class="sidebar-section" id="educationSection">
+      <h4 class="sidebar-heading"><i class="fas fa-graduation-cap"></i> Education</h4>
+      <div id="educationList"></div>
+    </div>
+
+    <div class="sidebar-section" id="languagesSection">
+      <h4 class="sidebar-heading"><i class="fas fa-language"></i> Languages</h4>
+      <div id="languagesList"></div>
+    </div>
+
+    <div class="sidebar-section">
+      <h4 class="sidebar-heading"><i class="fas fa-share-alt"></i> Connect</h4>
+      <div class="social-row" id="socialLinks"></div>
+    </div>
+
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <section class="content-section" id="aboutSection">
+      <div class="section-header">
+        <div class="section-icon"><i class="fas fa-user"></i></div>
+        <h2 class="section-title">About Me</h2>
+        <div class="section-line"></div>
+      </div>
+      <p id="aboutText">Loading…</p>
+    </section>
+
+    <section class="content-section" id="experienceSection">
+      <div class="section-header">
+        <div class="section-icon"><i class="fas fa-briefcase"></i></div>
+        <h2 class="section-title">Experience</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="timeline" id="experienceList"></div>
+    </section>
+
+    <section class="content-section" id="projectsSection">
+      <div class="section-header">
+        <div class="section-icon"><i class="fas fa-layer-group"></i></div>
+        <h2 class="section-title">Projects</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="projects-grid" id="projectsList"></div>
+    </section>
+
+  </main>
+</div>
+
+</div><!-- /#resumeContent -->
+
+<!-- FOOTER -->
+<footer class="resume-footer">
+  <span class="footer-name" id="footerName">Your Name</span>
+  <span class="footer-copy">&copy; <span id="currentYear"></span>. All rights reserved.</span>
+</footer>
+
+<!-- FILE UPLOAD OVERLAY (offline fallback) -->
+<div class="upload-overlay" id="uploadOverlay">
+  <div class="upload-box">
+    <h2>Load Your Resume</h2>
+    <p>Upload your <code style="color:var(--purple)">data.json</code> file to view the resume.<br>
+       Don't have one yet? <a href="form.html">Create it here →</a></p>
+    <input type="file" id="overlayFileInput" accept=".json" style="display:none">
+    <button class="upload-select-btn" id="overlaySelectBtn">
+      <i class="fas fa-folder-open"></i> Select File
+    </button>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+  // ── Offline vs deployed detection ──
+  const isLocal = window.location.protocol === 'file:';
+
+  const uploadJsonBtn = document.getElementById('uploadJsonBtn');
+  const jsonUploadInput = document.getElementById('jsonUploadInput');
+  const editLinkItem = document.querySelector('.edit-link-item');
+
+  if (isLocal) {
+    uploadJsonBtn.style.display = '';
+    if (editLinkItem) editLinkItem.style.display = '';
+    document.querySelectorAll('.offline-only').forEach(el => el.style.display = '');
+  } else {
+    uploadJsonBtn.style.display = 'none';
+    if (editLinkItem) editLinkItem.style.display = 'none';
+  }
+
+  uploadJsonBtn.addEventListener('click', () => jsonUploadInput.click());
+  jsonUploadInput.addEventListener('change', e => handleFileUpload(e.target.files[0]));
+
+  const mobileLoadJson = document.getElementById('mobileLoadJson');
+  if (mobileLoadJson) {
+    mobileLoadJson.addEventListener('click', e => {
+      e.preventDefault();
+      jsonUploadInput.click();
+      closeMobileMenu();
+    });
+  }
+
+  // ── Hamburger ──
+  const hamburger = document.getElementById('hamburger');
+  const hamburgerIcon = document.getElementById('hamburgerIcon');
+  const mobileDropdown = document.getElementById('mobileDropdown');
+  let menuOpen = false;
+
+  hamburger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    menuOpen = !menuOpen;
+    mobileDropdown.classList.toggle('open', menuOpen);
+    hamburgerIcon.className = menuOpen ? 'fas fa-times' : 'fas fa-bars';
+    hamburger.setAttribute('aria-label', menuOpen ? 'Close menu' : 'Open menu');
+  });
+
+  mobileDropdown.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', () => closeMobileMenu());
+  });
+
+  document.addEventListener('click', (e) => {
+    if (menuOpen && !hamburger.contains(e.target) && !mobileDropdown.contains(e.target)) {
+      closeMobileMenu();
+    }
+  });
+
+  function closeMobileMenu() {
+    menuOpen = false;
+    mobileDropdown.classList.remove('open');
+    hamburgerIcon.className = 'fas fa-bars';
+    hamburger.setAttribute('aria-label', 'Open menu');
+  }
+
+  // ── Overlay ──
+  document.getElementById('overlaySelectBtn').addEventListener('click', () =>
+    document.getElementById('overlayFileInput').click());
+  document.getElementById('overlayFileInput').addEventListener('change', e => {
+    handleFileUpload(e.target.files[0]);
+  });
+
+  loadData();
+
+  // ── PDF download ──
+  document.getElementById('downloadPdfBtn').addEventListener('click', downloadResumePdf);
+
+  // ── Scroll animations ──
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.content-section').forEach(s => observer.observe(s));
+
+  setupNavHighlight();
+});
+
+async function loadData() {
+  try {
+    const r = await fetch('data.json');
+    if (!r.ok) throw new Error();
+    populateResume(await r.json());
+  } catch {
+    if (window.location.hash.startsWith('#data=')) {
+      try {
+        populateResume(JSON.parse(decodeURIComponent(window.location.hash.slice(6))));
+        return;
+      } catch {}
+    }
+    document.getElementById('uploadOverlay').classList.add('show');
+  }
+}
+
+function handleFileUpload(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      populateResume(JSON.parse(e.target.result));
+      document.getElementById('uploadOverlay').classList.remove('show');
+    } catch { alert('Invalid JSON file. Please check the format.'); }
+  };
+  reader.readAsText(file);
+}
+
+// Themes recolour only the page frame: header/nav, hero and footer.
+// The rest of the page keeps its original design.
+function rpIsDarkHex(hex) {
+  if (!hex || hex.charAt(0) !== '#') return false;
+  var c = hex.substring(1);
+  if (c.length === 3) c = c.split('').map(function (x) { return x + x; }).join('');
+  if (c.length !== 6) return false;
+  var r = parseInt(c.substring(0, 2), 16) / 255;
+  var g = parseInt(c.substring(2, 4), 16) / 255;
+  var b = parseInt(c.substring(4, 6), 16) / 255;
+  return (0.2126 * r + 0.7152 * g + 0.0722 * b) < 0.55;
+}
+
+// The page frame takes the full theme colour; the body, chips and primary
+// buttons take light (or, for pale themes, deeper) shades of it so they blend
+// with the theme instead of staying lavender.
+var RP_TINT_VARS = ['--bg1', '--bg2', '--rp-btn1', '--rp-btn2', '--rp-btn-text', '--rp-chip-text', '--rp-hero-chip-bg'];
+
+function rpHexToRgb(hex) {
+  if (!hex || hex.charAt(0) !== '#') return null;
+  var c = hex.substring(1);
+  if (c.length === 3) c = c.split('').map(function (x) { return x + x; }).join('');
+  if (c.length !== 6) return null;
+  var rgb = [parseInt(c.substring(0, 2), 16), parseInt(c.substring(2, 4), 16), parseInt(c.substring(4, 6), 16)];
+  return rgb.some(isNaN) ? null : rgb;
+}
+
+function rpMixHex(hex, target, ratio) {
+  var a = rpHexToRgb(hex);
+  var b = rpHexToRgb(target);
+  if (!a || !b) return hex;
+  return '#' + a.map(function (v, i) {
+    var n = Math.round(v * (1 - ratio) + b[i] * ratio);
+    return ('0' + n.toString(16)).slice(-2);
+  }).join('');
+}
+
+function rpApplyTintTheme(theme) {
+  var root = document.documentElement;
+  for (var i = 0; i < RP_TINT_VARS.length; i++) root.style.removeProperty(RP_TINT_VARS[i]);
+  if (!theme || !theme.gradientStart) return;
+
+  var g1 = theme.gradientStart;
+  var g2 = theme.gradientEnd || g1;
+  var dark = rpIsDarkHex(g1);
+  var white = '#ffffff';
+  var ink = '#1f2937';
+
+  root.style.setProperty('--bg1', rpMixHex(g1, white, dark ? 0.90 : 0.86));
+  root.style.setProperty('--bg2', rpMixHex(g2, white, dark ? 0.82 : 0.76));
+  root.style.setProperty('--rp-chip-text', rpMixHex(g1, ink, dark ? 0.10 : 0.62));
+  // Contact pills keep a light surface on dark heroes and switch to a faint
+  // dark wash on pale heroes, where white pills would disappear.
+  root.style.setProperty('--rp-hero-chip-bg', dark ? 'rgba(255,255,255,0.92)' : 'rgba(0,0,0,0.06)');
+
+  // On dark themes the button is a lighter version of the theme; on pale
+  // themes it has to go deeper, otherwise it would vanish into the header.
+  if (dark) {
+    root.style.setProperty('--rp-btn1', rpMixHex(g1, white, 0.10));
+    root.style.setProperty('--rp-btn2', rpMixHex(g2, white, 0.38));
+    root.style.setProperty('--rp-btn-text', white);
+  } else {
+    root.style.setProperty('--rp-btn1', rpMixHex(g1, ink, 0.45));
+    root.style.setProperty('--rp-btn2', rpMixHex(g2, ink, 0.32));
+    root.style.setProperty('--rp-btn-text', ink);
+  }
+}
+
+function rpApplyFrameTheme(theme, regions) {
+  var MARK = 'data-rp-frame-themed';
+  var marked = document.querySelectorAll('[' + MARK + ']');
+  for (var i = 0; i < marked.length; i++) {
+    marked[i].removeAttribute(MARK);
+    marked[i].style.removeProperty('background');
+    marked[i].style.removeProperty('background-color');
+    marked[i].style.removeProperty('background-image');
+  }
+  var styleEl = document.getElementById('rpFrameThemeStyle');
+  if (styleEl) styleEl.parentNode.removeChild(styleEl);
+  if (!theme || !theme.gradientStart) return;
+
+  var g1 = theme.gradientStart;
+  var g2 = theme.gradientEnd || g1;
+  var dark = rpIsDarkHex(g1);
+  var tc = theme.textColor || (dark ? '#f1f5f9' : '#1e293b');
+  var hc = theme.headingColor || (dark ? '#ffffff' : '#0f172a');
+
+  var found = document.querySelectorAll(regions.join(','));
+  var picked = [];
+  for (var j = 0; j < found.length; j++) {
+    var nested = false;
+    for (var k = 0; k < picked.length; k++) {
+      if (picked[k] !== found[j] && picked[k].contains(found[j])) { nested = true; break; }
+    }
+    if (!nested) picked.push(found[j]);
+  }
+  for (var m = 0; m < picked.length; m++) {
+    picked[m].setAttribute(MARK, '1');
+    picked[m].style.setProperty('background', 'linear-gradient(135deg, ' + g1 + ' 0%, ' + g2 + ' 100%)', 'important');
+  }
+
+  styleEl = document.createElement('style');
+  styleEl.id = 'rpFrameThemeStyle';
+  styleEl.textContent =
+    '[' + MARK + '] { color: ' + tc + ' !important; }' +
+    '[' + MARK + '] h1, [' + MARK + '] h2, [' + MARK + '] h3, [' + MARK + '] h4, [' + MARK + '] h5, [' + MARK + '] h6 { color: ' + hc + ' !important; }' +
+    '[' + MARK + '] p, [' + MARK + '] span, [' + MARK + '] li, [' + MARK + '] a, [' + MARK + '] strong, [' + MARK + '] em, [' + MARK + '] small, [' + MARK + '] blockquote, [' + MARK + '] figcaption, [' + MARK + '] time { color: ' + tc + ' !important; }' +
+    // The contact pills keep a light background, so their labels must stay dark.
+    '[' + MARK + '] .hero-contact-item span { color: var(--rp-chip-text, #1f2937) !important; }';
+  document.head.appendChild(styleEl);
+}
+
+function applyTheme(theme) {
+  rpApplyFrameTheme(theme, ['nav.top-nav', '.mobile-dropdown', 'header.hero', 'footer.resume-footer']);
+  rpApplyTintTheme(theme);
+}
+// The preview's theme picker calls window.applyTheme, so expose it.
+window.applyTheme = applyTheme;
+
+function populateResume(data) {
+  applyTheme(data.theme);
+  const p = data.personalInfo;
+  const fullName = `${p.firstName} ${p.lastName}`;
+
+  document.getElementById('fullName').textContent = fullName;
+  document.getElementById('jobTitle').textContent = p.jobTitle;
+  document.getElementById('emailVal').textContent = p.email;
+  document.getElementById('phoneVal').textContent = p.phone;
+  document.getElementById('locationVal').textContent = p.location;
+  document.getElementById('footerName').textContent = fullName;
+  document.getElementById('navLogo').innerHTML = `<i class="fas fa-star"></i> ${p.firstName} ${p.lastName.charAt(0)}.`;
+  document.getElementById('aboutText').textContent = data.about;
+  document.title = `${fullName} — Resume`;
+
+  // Profile photo — apply from data so user-uploaded images work both
+  // in standalone mode (offline file:// or hosted) and in the live preview.
+  if (p.profileImage) {
+    const profileImageEl = document.getElementById('profileImage');
+    if (profileImageEl) profileImageEl.src = p.profileImage;
+  }
+
+  // Skills
+  const sl = document.getElementById('skillsList');
+  sl.innerHTML = '';
+  data.skills.forEach(sk => {
+    sl.insertAdjacentHTML('beforeend', `
+      <div class="skill-item">
+        <div class="skill-header">
+          <span class="skill-name">${sk.name}</span>
+          <span class="skill-pct">${sk.level}%</span>
+        </div>
+        <div class="skill-track"><div class="skill-fill" data-width="${sk.level}"></div></div>
+      </div>
+    `);
+  });
+  setTimeout(() => {
+    document.querySelectorAll('.skill-fill').forEach(f => f.style.width = f.dataset.width + '%');
+  }, 200);
+
+  // Education
+  const el = document.getElementById('educationList');
+  el.innerHTML = '';
+  data.education.forEach(edu => {
+    el.insertAdjacentHTML('beforeend', `
+      <div class="edu-item">
+        <p class="edu-degree">${edu.degree}</p>
+        <p class="edu-school">${edu.institution}${edu.location ? ' · ' + edu.location : ''}</p>
+        <p class="edu-year">${edu.year}</p>
+      </div>
+    `);
+  });
+
+  // Languages
+  const ll = document.getElementById('languagesList');
+  ll.innerHTML = '';
+  data.languages.forEach(lang => {
+    const filled = Math.round(lang.level / 20);
+    const dots = Array.from({length:5}, (_,i) =>
+      `<div class="lang-dot ${i < filled ? 'filled' : ''}"></div>`).join('');
+    ll.insertAdjacentHTML('beforeend', `
+      <div class="lang-item">
+        <div class="lang-header">
+          <span class="lang-name">${lang.name}</span>
+          <div class="lang-dots">${dots}</div>
+        </div>
+      </div>
+    `);
+  });
+
+  // Experience
+  const xl = document.getElementById('experienceList');
+  xl.innerHTML = '';
+  data.experience.forEach(exp => {
+    xl.insertAdjacentHTML('beforeend', `
+      <div class="exp-item">
+        <div class="exp-meta">
+          <span class="exp-dates">${exp.startDate} — ${exp.endDate}</span>
+        </div>
+        <p class="exp-position">${exp.position}</p>
+        <p class="exp-company">${exp.company}</p>
+        ${exp.description ? `<p class="exp-desc">${exp.description}</p>` : ''}
+        <ul class="exp-details">
+          ${exp.details.map(d => `<li>${d}</li>`).join('')}
+        </ul>
+      </div>
+    `);
+  });
+
+  // Projects
+  const pl = document.getElementById('projectsList');
+  pl.innerHTML = '';
+  data.projects.forEach(proj => {
+    pl.insertAdjacentHTML('beforeend', `
+      <div class="project-card">
+        <h4 class="project-title">${proj.name}</h4>
+        <p class="project-desc">${proj.description}</p>
+        <div class="project-links">
+          ${proj.liveUrl ? `<a href="${proj.liveUrl}" target="_blank"><i class="fas fa-external-link-alt"></i> Live Demo</a>` : ''}
+          ${proj.codeUrl ? `<a href="${proj.codeUrl}" target="_blank"><i class="fab fa-github"></i> Source</a>` : ''}
+        </div>
+      </div>
+    `);
+  });
+
+  // Social
+  const soc = document.getElementById('socialLinks');
+  soc.innerHTML = '';
+  const iconMap = { github:'fab fa-github', linkedin:'fab fa-linkedin-in', twitter:'fab fa-twitter', facebook:'fab fa-facebook-f', instagram:'fab fa-instagram' };
+  data.socialLinks.forEach(link => {
+    const icon = iconMap[link.name.toLowerCase()] || 'fas fa-link';
+    soc.insertAdjacentHTML('beforeend', `
+      <a class="social-link" href="${link.url}" target="_blank" title="${link.name}">
+        <i class="${icon}"></i>
+      </a>
+    `);
+  });
+}
+
+// PDF Download Functionality - captures the ACTUAL rendered resume
+// (same fonts, colors, layout, icons as the webpage) using html2canvas,
+// then places that image into a paginated A4 PDF.
+async function downloadResumePdf() {
+  const btn = document.getElementById('downloadPdfBtn');
+  const originalHTML = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
+  btn.disabled = true;
+
+  const content = document.getElementById('resumeContent');
+
+  try {
+    // Reveal every scroll-triggered section and freeze animations so
+    // nothing looks mid-transition in the snapshot
+    document.querySelectorAll('.content-section').forEach(s => s.classList.add('visible'));
+    document.body.classList.add('pdf-capturing');
+
+    // Let the browser apply the styles before snapshotting
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    const canvas = await html2canvas(content, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#f9f0ff',
+      windowWidth: content.scrollWidth,
+      windowHeight: content.scrollHeight
+    });
+
+    document.body.classList.remove('pdf-capturing');
+
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+
+    const fullName = document.getElementById('fullName')?.textContent || 'Resume';
+    pdf.setProperties({
+      title: `${fullName} — Resume`,
+      subject: 'Curriculum Vitae',
+      author: fullName,
+      creator: 'Resume PDF Generator'
+    });
+
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    const imgWidth = pageWidth;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+
+    const totalPages = pdf.internal.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      pdf.setPage(i);
+      pdf.setTextColor(150, 150, 150);
+      pdf.setFontSize(8);
+      pdf.text(`Page ${i} of ${totalPages}`, pageWidth / 2, pageHeight - 5, { align: 'center' });
+    }
+
+    const fileSafeName = fullName.trim().replace(/\s+/g, '_') || 'Resume';
+    pdf.save(`${fileSafeName}_Resume.pdf`);
+
+    btn.innerHTML = originalHTML;
+    btn.disabled = false;
+
+    showNotification('PDF downloaded successfully!', 'success');
+
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    document.body.classList.remove('pdf-capturing');
+
+    btn.innerHTML = originalHTML;
+    btn.disabled = false;
+
+    showNotification('Error generating PDF. Please try again.', 'error');
+  }
+}
+
+function showNotification(message, type) {
+  const existing = document.querySelector('.pdf-notification');
+  if (existing) existing.remove();
+
+  const notification = document.createElement('div');
+  notification.className = 'pdf-notification';
+  notification.innerHTML = `
+    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+    <span>${message}</span>
+  `;
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: ${type === 'success' ? '#4CAF50' : '#f44336'};
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    z-index: 1000;
+    font-family: var(--body, sans-serif);
+    animation: pdfSlideIn 0.3s ease-out;
+  `;
+
+  if (!document.getElementById('pdfNotificationStyles')) {
+    const style = document.createElement('style');
+    style.id = 'pdfNotificationStyles';
+    style.textContent = `
+      @keyframes pdfSlideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+      @keyframes pdfSlideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+    `;
+    document.head.appendChild(style);
+  }
+
+  document.body.appendChild(notification);
+  setTimeout(() => {
+    notification.style.animation = 'pdfSlideOut 0.3s ease-out';
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
+}
+
+function setupNavHighlight() {
+  const sections = document.querySelectorAll('.content-section, .sidebar-section');
+  const links = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (pageYOffset >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => {
+      l.classList.toggle('active', l.getAttribute('href') === '#' + cur);
+    });
+  });
+}
+</script>
+
+<script src="assets/jspdf.umd.min.js"></script>
+<script src="assets/rp-pdf.js"></script>
+</body>
+</html>

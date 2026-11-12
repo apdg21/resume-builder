@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume Builder</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #111111;
+      --paper: #f4f0e8;
+      --cream: #ede8db;
+      --cream2: #e5dfd0;
+      --rust: #bf4626;
+      --rust-light: #e8c4b4;
+      --rust-dark: #8c3218;
+      --sand: #c9bfa8;
+      --muted: #6b6659;
+      --white: #ffffff;
+      --shadow-sm: 0 4px 24px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.04);
+      --shadow-md: 0 10px 40px rgba(0,0,0,0.09);
+      --radius: 18px;
+      --serif: 'Fraunces', Georgia, serif;
+      --sans: 'Instrument Sans', sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --nav-h: 60px;
+      --input-bg: #ffffff;
+      --input-border: #e5dfd0;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--paper);
+      color: var(--ink);
+      min-height: 100vh;
+      line-height: 1.55;
+    }
+
+    /* ── NAV ── */
+    .top-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(244,240,232,0.9);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--cream2);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem; height: var(--nav-h); gap: 1.25rem;
+    }
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 1.05rem; font-weight: 400; font-style: italic;
+      color: var(--rust); text-decoration: none;
+      white-space: nowrap;
+    }
+    .nav-links { display: flex; gap: 0.25rem; list-style: none; }
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.04em;
+      color: var(--muted); text-decoration: none;
+      padding: 0.32rem 0.75rem; border-radius: 20px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { background: var(--rust); color: var(--white); }
+    .nav-badge {
+      font-family: var(--mono);
+      font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--white);
+      background: var(--rust);
+      padding: 0.35rem 0.85rem; border-radius: 30px;
+      white-space: nowrap;
+    }
+    .hamburger {
+      display: none;
+      background: none; border: none; cursor: pointer;
+      color: var(--rust); font-size: 1.2rem;
+    }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      max-width: 900px; margin: 0 auto;
+      padding: calc(var(--nav-h) + 3rem) 1.5rem 2rem;
+      text-align: center;
+    }
+    .page-eyebrow {
+      font-family: var(--mono);
+      font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--rust);
+      margin-bottom: 0.8rem;
+    }
+    .page-title {
+      font-family: var(--serif);
+      font-size: clamp(2.2rem, 4vw, 3rem);
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1.1;
+      margin-bottom: 0.6rem;
+    }
+    .page-title em { color: var(--rust); font-style: italic; }
+    .page-sub { font-size: 0.88rem; color: var(--muted); max-width: 520px; margin: 0 auto; }
+
+    /* ── FORM LAYOUT ── */
+    .form-wrapper { max-width: 900px; margin: 0 auto; padding: 1rem 1.5rem 6rem; }
+
+    /* ── SECTION BLOCK ── */
+    .form-block {
+      background: var(--white);
+      border: 1px solid var(--cream2);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      padding: 2.1rem 2.3rem;
+      margin-bottom: 1.6rem;
+    }
+    .form-block-header {
+      display: flex; align-items: center; gap: 0.9rem;
+      margin-bottom: 1.7rem;
+      padding-bottom: 0.9rem;
+      border-bottom: 1px solid var(--cream2);
+    }
+    .form-block-icon {
+      width: 34px; height: 34px;
+      border-radius: 9px;
+      background: var(--rust);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--white); font-size: 0.82rem;
+      flex-shrink: 0;
+    }
+    .form-block-title {
+      font-family: var(--serif);
+      font-size: 1.25rem; font-weight: 400;
+      color: var(--ink);
+      border-bottom: 2px solid var(--rust);
+      padding-bottom: 3px;
+    }
+
+    /* ── GRID ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+
+    /* ── FIELDS ── */
+    .field { margin-bottom: 1.2rem; }
+    label {
+      display: block;
+      font-family: var(--mono);
+      font-size: 0.62rem; letter-spacing: 0.07em; text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="url"],
+    textarea,
+    select {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1.5px solid var(--input-border);
+      border-radius: 10px;
+      padding: 0.68rem 0.95rem;
+      font-family: var(--sans);
+      font-size: 0.88rem;
+      color: var(--ink);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--rust);
+      box-shadow: 0 0 0 3px rgba(191,70,38,0.12);
+    }
+    input::placeholder, textarea::placeholder { color: #bdb6a6; }
+    textarea { min-height: 90px; resize: vertical; line-height: 1.6; }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23bf4626' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      padding-right: 2.5rem;
+      cursor: pointer;
+    }
+
+    /* ── RANGE ── */
+    .range-row { display: flex; align-items: center; gap: 1rem; }
+    .range-row input[type="range"] {
+      flex: 1; padding: 0;
+      -webkit-appearance: none; appearance: none;
+      height: 5px;
+      background: var(--cream2);
+      border: none; border-radius: 10px;
+      cursor: pointer;
+    }
+    .range-row input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 17px; height: 17px;
+      border-radius: 50%;
+      background: var(--rust);
+      border: 3px solid var(--white);
+      box-shadow: 0 2px 6px rgba(191,70,38,0.4);
+      cursor: pointer;
+    }
+    .range-row input[type="range"]::-moz-range-thumb {
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--rust);
+      border: 3px solid var(--white);
+      cursor: pointer;
+    }
+    .range-row input[type="range"]:focus { box-shadow: none; }
+    .range-val {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--rust);
+      min-width: 42px; text-align: right;
+    }
+
+    /* ── DYNAMIC CARD ── */
+    .dyn-card {
+      background: var(--cream);
+      border: 1px solid var(--cream2);
+      border-left: 3px solid var(--rust);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+    .dyn-card-label {
+      font-family: var(--mono);
+      font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--rust);
+      margin-bottom: 1rem;
+    }
+    .dyn-card input, .dyn-card textarea, .dyn-card select { background: var(--white); }
+
+    /* ── BUTTONS ── */
+    .btn {
+      font-family: var(--sans);
+      font-size: 0.75rem; font-weight: 600;
+      border: none; cursor: pointer;
+      padding: 0.6rem 1.2rem; border-radius: 30px;
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      transition: all 0.22s;
+    }
+    .btn-gold {
+      background: var(--rust);
+      color: var(--white);
+    }
+    .btn-gold:hover { background: var(--rust-dark); transform: translateY(-1px); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--muted);
+      border: 1.5px solid var(--sand);
+    }
+    .btn-outline:hover { color: var(--rust); border-color: var(--rust); }
+
+    .btn-danger {
+      background: transparent;
+      color: var(--muted);
+      border: 1.5px solid var(--cream2);
+    }
+    .btn-danger:hover { color: var(--rust); border-color: var(--rust-light); background: rgba(191,70,38,0.05); }
+
+    .btn-add {
+      background: rgba(191,70,38,0.04);
+      color: var(--rust);
+      border: 1.5px dashed var(--rust-light);
+      width: 100%;
+      justify-content: center;
+      padding: 0.8rem;
+    }
+    .btn-add:hover { background: rgba(191,70,38,0.09); border-color: var(--rust); }
+
+    /* ── ACTION BAR ── */
+    .action-bar {
+      position: sticky; bottom: 0;
+      background: rgba(244,240,232,0.95);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-top: 1px solid var(--cream2);
+      padding: 0.9rem 2.5rem;
+      display: flex; align-items: center; gap: 0.8rem;
+      justify-content: flex-end;
+      z-index: 50;
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 90px; right: 2rem;
+      background: var(--ink);
+      border-left: 3px solid var(--rust);
+      box-shadow: var(--shadow-md);
+      padding: 0.9rem 1.3rem;
+      font-size: 0.82rem; color: var(--paper);
+      border-radius: 10px;
+      transform: translateY(20px); opacity: 0;
+      transition: all 0.3s;
+      pointer-events: none; z-index: 200;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 900px) {
+      .form-wrapper { padding: 1rem 1.2rem 5rem; }
+      .page-header { padding: calc(var(--nav-h) + 2rem) 1.2rem 1.5rem; }
+      .top-nav { padding: 0 1.25rem; }
+      .nav-links {
+        display: none;
+        position: fixed;
+        top: var(--nav-h); left: 0; right: 0;
+        background: rgba(244,240,232,0.98);
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid var(--cream2);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+        flex-direction: column;
+        padding: 0.4rem 0;
+        z-index: 99;
+      }
+      .nav-links.mobile-open { display: flex; }
+      .nav-links li { list-style: none; }
+      .nav-links a {
+        display: block;
+        padding: 0.85rem 2rem;
+        border-radius: 0;
+        border-bottom: 1px solid var(--cream2);
+        font-size: 0.7rem;
+      }
+      .nav-links a:hover { background: rgba(191,70,38,0.05); color: var(--rust); }
+      .hamburger { display: block; }
+      .two-col, .three-col { grid-template-columns: 1fr; }
+      .action-bar { padding: 0.9rem 1.2rem; flex-wrap: wrap; }
+      .form-block { padding: 1.5rem; }
+      .toast { right: 1.2rem; left: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="top-nav">
+  <a class="nav-logo" href="index.html" id="navLogo">Resume Builder</a>
+  <ul class="nav-links">
+    <li><a href="index.html">View Resume</a></li>
+    <li><a href="#personalBlock">Personal</a></li>
+    <li><a href="#skillsBlock">Skills</a></li>
+    <li><a href="#expBlock">Experience</a></li>
+  </ul>
+  <span class="nav-badge"><i class="fas fa-pen"></i> Builder</span>
+  <button class="hamburger" id="hamburger" aria-label="Open menu"><i class="fas fa-bars"></i></button>
+</nav>
+
+<!-- PAGE HEADER -->
+<header class="page-header">
+  <div class="page-eyebrow">Resume Builder · JSON Generator</div>
+  <h1 class="page-title">Craft Your <em>Story</em></h1>
+  <p class="page-sub">Fill in your details below. When you're ready, generate your data file and view the result.</p>
+</header>
+
+<!-- FORM -->
+<div class="form-wrapper">
+
+  <!-- PERSONAL -->
+  <div class="form-block" id="personalBlock">
+    <div class="form-block-header">
+      <div class="form-block-icon"><i class="fas fa-user"></i></div>
+      <h2 class="form-block-title">Personal Information</h2>
+    </div>
+    <div class="two-col">
+      <div class="field"><label>First Name</label><input type="text" id="firstName" placeholder="John"></div>
+      <div class="field"><label>Last Name</label><input type="text" id="lastName" placeholder="Doe"></div>
+    </div>
+    <div class="field"><label>Job Title</label><input type="text" id="jobTitle" placeholder="Email Marketing &amp; Shopify Strategist"></div>
+    <div class="two-col">
+      <div class="field"><label>Email</label><input type="email" id="email" placeholder="john@example.com"></div>
+      <div class="field"><label>Phone</label><input type="tel" id="phone" placeholder="+63 912 345 6789"></div>
+    </div>
+    <div class="field"><label>Location</label><input type="text" id="location" placeholder="Cavite, Philippines"></div>
+  </div>
+
+  <!-- ABOUT -->
+  <div class="form-block" id="aboutBlock">
+    <div class="form-block-header">
+      <div class="form-block-icon"><i class="fas fa-align-left"></i></div>
+      <h2 class="form-block-title">Professional Summary</h2>
+    </div>
+    <div class="field">
+      <label>About You</label>
+      <textarea id="about" placeholder="Write a compelling summary of your professional background, expertise, and goals…"></textarea>
+    </div>
+  </div>
+
+  <!-- SKILLS -->
+  <div class="form-block" id="skillsBlock">
+    <div class="form-block-header">
+      <div class="form-block-icon"><i class="fas fa-code"></i></div>
+      <h2 class="form-block-title">Skills</h2>
+    </div>
+    <div id="skills-container"></div>
+    <button class="btn btn-add" type="button" onclick="addSkillField()"><i class="fas fa-plus"></i> Add Skill</button>
+  </div>
+
+  <!-- EXPERIENCE -->
+  <div class="form-block" id="expBlock">
+    <div class="form-block-header">
+      <div class="form-block-icon"><i class="fas fa-briefcase"></i></div>
+      <h2 class="form-block-title">Work Experience</h2>
+    </div>
+    <div id="experience-container"></div>
+    <button class="btn btn-add" type="button" onclick="addExperienceField()"><i class="fas fa-plus"></i> Add Experience</button>
+  </div>
+
+  <!-- EDUCATION -->
+  <div class="form-block" id="eduBlock">
+    <div class="form-block-header">
+      <div class="form-block-icon"><i class="fas fa-graduation-cap"></i></div>
+      <h2 class="form-block-title">Education</h2>
+    </div>
+    <div id="education-container"></div>
+    <button class="btn btn-add" type="button" onclick="addEducationField()"><i class="fas fa-plus"></i> Add Education</button>
+  </div>
+
+  <!-- LANGUAGES -->
+  <div class="form-block" id="langBlock">
+    <div class="form-block-header">
+      <div class="form-block-icon"><i class="fas fa-language"></i></div>
+      <h2 class="form-block-title">Languages</h2>
+    </div>
+    <div id="languages-container"></div>
+    <button class="btn btn-add" type="button" onclick="addLanguageField()"><i class="fas fa-plus"></i> Add Language</button>
+  </div>
+
+  <!-- PROJECTS -->
+  <div class="form-block" id="projBlock">
+    <div class="form-block-header">
+      <div class="form-block-icon"><i class="fas fa-layer-group"></i></div>
+      <h2 class="form-block-title">Projects</h2>
+    </div>
+    <div id="projects-container"></div>
+    <button class="btn btn-add" type="button" onclick="addProjectField()"><i class="fas fa-plus"></i> Add Project</button>
+  </div>
+
+  <!-- SOCIAL -->
+  <div class="form-block" id="socialBlock">
+    <div class="form-block-header">
+      <div class="form-block-icon"><i class="fas fa-share-alt"></i></div>
+      <h2 class="form-block-title">Social Links</h2>
+    </div>
+    <div id="social-container"></div>
+    <button class="btn btn-add" type="button" onclick="addSocialField()"><i class="fas fa-plus"></i> Add Link</button>
+  </div>
+
+</div>
+
+<!-- ACTION BAR -->
+<div class="action-bar">
+  <input type="file" id="loadFileInput" accept=".json" style="display:none" onchange="loadResumeFile(event)">
+  <button class="btn btn-outline" type="button" onclick="document.getElementById('loadFileInput').click()">
+    <i class="fas fa-upload"></i> Load JSON
+  </button>
+  <button class="btn btn-outline" type="button" onclick="previewResume()">
+    <i class="fas fa-eye"></i> Preview
+  </button>
+  <button class="btn btn-gold" type="button" onclick="generateResume()">
+    <i class="fas fa-download"></i> Generate &amp; Download
+  </button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  addSkillField();
+  addExperienceField();
+  addEducationField();
+  addLanguageField();
+  addProjectField();
+  addSocialField();
+
+  document.getElementById('hamburger').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const nl = document.querySelector('.nav-links');
+    const icon = document.querySelector('#hamburger i');
+    const isOpen = nl.classList.toggle('mobile-open');
+    icon.className = isOpen ? 'fas fa-times' : 'fas fa-bars';
+  });
+
+  document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', () => {
+      document.querySelector('.nav-links').classList.remove('mobile-open');
+      document.querySelector('#hamburger i').className = 'fas fa-bars';
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    const nl = document.querySelector('.nav-links');
+    if (nl.classList.contains('mobile-open') &&
+        !document.getElementById('hamburger').contains(e.target) &&
+        !nl.contains(e.target)) {
+      nl.classList.remove('mobile-open');
+      document.querySelector('#hamburger i').className = 'fas fa-bars';
+    }
+  });
+});
+
+function showToast(msg, dur = 3000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), dur);
+}
+
+// ── LOAD FILE ──
+function loadResumeFile(e) {
+  const file = e.target.files[0];
+  if (!file || !file.name.endsWith('.json')) { showToast('Please select a valid .json file'); return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const d = JSON.parse(ev.target.result);
+      ['skills','experience','education','languages','projects','social'].forEach(s => {
+        const c = document.getElementById(s + '-container');
+        c.innerHTML = '';
+      });
+      const p = d.personalInfo || {};
+      setVal('firstName', p.firstName);
+      setVal('lastName', p.lastName);
+      setVal('jobTitle', p.jobTitle);
+      setVal('email', p.email);
+      setVal('phone', p.phone);
+      setVal('location', p.location);
+      setVal('about', d.about);
+      d.skills?.forEach(s => addSkillField(s));
+      d.experience?.forEach(x => addExperienceField(x));
+      d.education?.forEach(e => addEducationField(e));
+      d.languages?.forEach(l => addLanguageField(l));
+      d.projects?.forEach(p => addProjectField(p));
+      d.socialLinks?.forEach(s => addSocialField(s));
+      showToast('✓ Resume data loaded!');
+    } catch { showToast('Error: Invalid JSON format'); }
+  };
+  reader.readAsText(file);
+}
+function setVal(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.value = val || '';
+}
+
+// ── ADD FIELDS ──
+let uid = 0;
+function nextId(prefix) { return prefix + '-' + Date.now() + '-' + (uid++); }
+
+function addSkillField(skill = { name: '', level: 50 }) {
+  const id = nextId('skill');
+  const c = document.getElementById('skills-container');
+  c.insertAdjacentHTML('beforeend', `
+    <div class="dyn-card" id="${id}">
+      <div class="dyn-card-label">Skill</div>
+      <div class="two-col">
+        <div class="field">
+          <label>Name</label>
+          <input type="text" class="skill-name" value="${esc(skill.name)}" placeholder="e.g. Klaviyo Automation">
+        </div>
+        <div class="field">
+          <label>Proficiency</label>
+          <div class="range-row">
+            <input type="range" class="skill-level-input" min="0" max="100" value="${skill.level}">
+            <span class="range-val skill-level-value">${skill.level}%</span>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-danger" type="button" onclick="document.getElementById('${id}').remove()">
+        <i class="fas fa-trash-alt"></i> Remove
+      </button>
+    </div>
+  `);
+  bindRange(id, '.skill-level-input', '.skill-level-value');
+}
+
+function addExperienceField(exp = { position:'', company:'', startDate:'', endDate:'', description:'', details:[''] }) {
+  const id = nextId('exp');
+  const c = document.getElementById('experience-container');
+  c.insertAdjacentHTML('beforeend', `
+    <div class="dyn-card" id="${id}">
+      <div class="dyn-card-label">Work Experience</div>
+      <div class="two-col">
+        <div class="field"><label>Position</label><input type="text" class="exp-position" value="${esc(exp.position)}" placeholder="Email Marketing Specialist"></div>
+        <div class="field"><label>Company</label><input type="text" class="exp-company" value="${esc(exp.company)}" placeholder="Company Inc."></div>
+      </div>
+      <div class="two-col">
+        <div class="field"><label>Start Date</label><input type="text" class="exp-start" value="${esc(exp.startDate)}" placeholder="Jan 2020"></div>
+        <div class="field"><label>End Date</label><input type="text" class="exp-end" value="${esc(exp.endDate)}" placeholder="Present"></div>
+      </div>
+      <div class="field"><label>Short Description</label><input type="text" class="exp-description" value="${esc(exp.description)}"></div>
+      <div class="field">
+        <label>Key Achievements (one per line)</label>
+        <textarea class="exp-details" placeholder="Enter each bullet point on a new line">${esc((exp.details || []).join('\n'))}</textarea>
+      </div>
+      <button class="btn btn-danger" type="button" onclick="document.getElementById('${id}').remove()">
+        <i class="fas fa-trash-alt"></i> Remove
+      </button>
+    </div>
+  `);
+}
+
+function addEducationField(edu = { degree:'', institution:'', location:'', year:'' }) {
+  const id = nextId('edu');
+  const c = document.getElementById('education-container');
+  c.insertAdjacentHTML('beforeend', `
+    <div class="dyn-card" id="${id}">
+      <div class="dyn-card-label">Education</div>
+      <div class="field"><label>Degree / Certification</label><input type="text" class="edu-degree" value="${esc(edu.degree)}" placeholder="Bachelor of Science"></div>
+      <div class="field"><label>Institution</label><input type="text" class="edu-institution" value="${esc(edu.institution)}" placeholder="University of…"></div>
+      <div class="two-col">
+        <div class="field"><label>Location</label><input type="text" class="edu-location" value="${esc(edu.location)}"></div>
+        <div class="field"><label>Year / Duration</label><input type="text" class="edu-year" value="${esc(edu.year)}" placeholder="2015 – 2019"></div>
+      </div>
+      <button class="btn btn-danger" type="button" onclick="document.getElementById('${id}').remove()">
+        <i class="fas fa-trash-alt"></i> Remove
+      </button>
+    </div>
+  `);
+}
+
+function addLanguageField(lang = { name:'', level: 50 }) {
+  const id = nextId('lang');
+  const c = document.getElementById('languages-container');
+  c.insertAdjacentHTML('beforeend', `
+    <div class="dyn-card" id="${id}">
+      <div class="dyn-card-label">Language</div>
+      <div class="two-col">
+        <div class="field"><label>Language</label><input type="text" class="lang-name" value="${esc(lang.name)}" placeholder="e.g. English"></div>
+        <div class="field">
+          <label>Proficiency</label>
+          <div class="range-row">
+            <input type="range" class="lang-level-input" min="0" max="100" value="${lang.level}">
+            <span class="range-val lang-level-value">${lang.level}%</span>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-danger" type="button" onclick="document.getElementById('${id}').remove()">
+        <i class="fas fa-trash-alt"></i> Remove
+      </button>
+    </div>
+  `);
+  bindRange(id, '.lang-level-input', '.lang-level-value');
+}
+
+function addProjectField(project = { name:'', description:'', liveUrl:'', codeUrl:'' }) {
+  const id = nextId('project');
+  const c = document.getElementById('projects-container');
+  c.insertAdjacentHTML('beforeend', `
+    <div class="dyn-card" id="${id}">
+      <div class="dyn-card-label">Project</div>
+      <div class="field"><label>Project Name</label><input type="text" class="project-name" value="${esc(project.name)}"></div>
+      <div class="field"><label>Description</label><textarea class="project-description">${esc(project.description)}</textarea></div>
+      <div class="two-col">
+        <div class="field"><label>Live URL</label><input type="url" class="project-live-url" value="${esc(project.liveUrl)}" placeholder="https://"></div>
+        <div class="field"><label>Code URL</label><input type="url" class="project-code-url" value="${esc(project.codeUrl)}" placeholder="https://github.com/"></div>
+      </div>
+      <button class="btn btn-danger" type="button" onclick="document.getElementById('${id}').remove()">
+        <i class="fas fa-trash-alt"></i> Remove
+      </button>
+    </div>
+  `);
+}
+
+function addSocialField(social = { name:'Portfolio', url:'' }) {
+  const id = nextId('social');
+  const c = document.getElementById('social-container');
+  const opts = ['Portfolio','GitHub','LinkedIn','Facebook','Twitter','Instagram'].map(n =>
+    `<option value="${n}" ${social.name === n ? 'selected' : ''}>${n}</option>`).join('');
+  c.insertAdjacentHTML('beforeend', `
+    <div class="dyn-card" id="${id}">
+      <div class="dyn-card-label">Social Link</div>
+      <div class="two-col">
+        <div class="field"><label>Platform</label><select class="social-name">${opts}</select></div>
+        <div class="field"><label>Profile URL</label><input type="url" class="social-url" value="${esc(social.url)}" placeholder="https://"></div>
+      </div>
+      <button class="btn btn-danger" type="button" onclick="document.getElementById('${id}').remove()">
+        <i class="fas fa-trash-alt"></i> Remove
+      </button>
+    </div>
+  `);
+}
+
+// ── HELPERS ──
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function bindRange(containerId, rangeSelector, valueSelector) {
+  const card = document.getElementById(containerId);
+  const range = card.querySelector(rangeSelector);
+  const val = card.querySelector(valueSelector);
+  range.addEventListener('input', () => val.textContent = range.value + '%');
+}
+
+// ── GENERATE ──
+function generateResume() {
+  const required = ['firstName','lastName','jobTitle','email','phone','location','about'];
+  for (const f of required) {
+    const el = document.getElementById(f);
+    if (!el.value.trim()) {
+      showToast(`Please fill in: ${f.replace(/([A-Z])/g,' $1').toLowerCase()}`);
+      el.focus(); return;
+    }
+  }
+  const data = collectData();
+  downloadJSON(data);
+  showToast('✓ resume-data.json downloaded!');
+}
+
+function previewResume() {
+  const data = collectData();
+  const encoded = encodeURIComponent(JSON.stringify(data));
+  window.open(`index.html#data=${encoded}`, '_blank');
+}
+
+function collectData() {
+  const data = {
+    personalInfo: {
+      firstName: document.getElementById('firstName').value,
+      lastName:  document.getElementById('lastName').value,
+      jobTitle:  document.getElementById('jobTitle').value,
+      email:     document.getElementById('email').value,
+      phone:     document.getElementById('phone').value,
+      location:  document.getElementById('location').value,
+    },
+    about: document.getElementById('about').value,
+    skills: [], experience: [], education: [],
+    languages: [], projects: [], socialLinks: []
+  };
+
+  document.querySelectorAll('.dyn-card[id^="skill-"]').forEach(s => {
+    const name = s.querySelector('.skill-name').value.trim();
+    if (name) data.skills.push({ name, level: +s.querySelector('.skill-level-input').value });
+  });
+
+  document.querySelectorAll('.dyn-card[id^="exp-"]').forEach(s => {
+    const position = s.querySelector('.exp-position').value.trim();
+    const company  = s.querySelector('.exp-company').value.trim();
+    if (position && company) {
+      const details = s.querySelector('.exp-details').value.split('\n').filter(d => d.trim());
+      data.experience.push({
+        position, company,
+        startDate:   s.querySelector('.exp-start').value.trim(),
+        endDate:     s.querySelector('.exp-end').value.trim(),
+        description: s.querySelector('.exp-description').value.trim(),
+        details
+      });
+    }
+  });
+
+  document.querySelectorAll('.dyn-card[id^="edu-"]').forEach(s => {
+    const degree = s.querySelector('.edu-degree').value.trim();
+    const institution = s.querySelector('.edu-institution').value.trim();
+    if (degree && institution) {
+      data.education.push({
+        degree, institution,
+        location: s.querySelector('.edu-location').value.trim(),
+        year:     s.querySelector('.edu-year').value.trim()
+      });
+    }
+  });
+
+  document.querySelectorAll('.dyn-card[id^="lang-"]').forEach(s => {
+    const name = s.querySelector('.lang-name').value.trim();
+    if (name) data.languages.push({ name, level: +s.querySelector('.lang-level-input').value });
+  });
+
+  document.querySelectorAll('.dyn-card[id^="project-"]').forEach(s => {
+    const name = s.querySelector('.project-name').value.trim();
+    if (name) data.projects.push({
+      name,
+      description: s.querySelector('.project-description').value.trim(),
+      liveUrl:     s.querySelector('.project-live-url').value.trim(),
+      codeUrl:     s.querySelector('.project-code-url').value.trim()
+    });
+  });
+
+  document.querySelectorAll('.dyn-card[id^="social-"]').forEach(s => {
+    const url = s.querySelector('.social-url').value.trim();
+    if (url) data.socialLinks.push({ name: s.querySelector('.social-name').value, url });
+  });
+
+  return data;
+}
+
+function downloadJSON(data) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'resume-data.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+</script>
+</body>
+</html>

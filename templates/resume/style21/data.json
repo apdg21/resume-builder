@@ -1,0 +1,131 @@
+{
+  "personalInfo": {
+    "firstName": "Marisol",
+    "lastName": "Reyes",
+    "jobTitle": "Virtual Assistant & E-commerce Operations Specialist",
+    "email": "marisol.reyes.va@gmail.com",
+    "phone": "0927 481 3390",
+    "location": "Bacoor City, Cavite, Philippines",
+    "profileImage": "assets/profile.jpg"
+  },
+  "about": "Organized and reliable Virtual Assistant with over 5 years of experience supporting e-commerce operations, order fulfillment, and supplier coordination for Shopify and WooCommerce stores. I specialize in keeping product catalogs clean, inventory accurate, and customer communication timely. Having worked with teams in Australia, Canada, and the Philippines, I bring strong written English, calm problem-solving under pressure, and a genuine interest in making online stores run smoothly from the back end.",
+  "skills": [
+    {
+      "name": "Shopify & WooCommerce Management",
+      "level": 93
+    },
+    {
+      "name": "Order Fulfillment & Tracking",
+      "level": 90
+    },
+    {
+      "name": "Customer Support (Email/Chat)",
+      "level": 88
+    },
+    {
+      "name": "Inventory & Supplier Coordination",
+      "level": 85
+    },
+    {
+      "name": "Data Entry & Reporting",
+      "level": 87
+    },
+    {
+      "name": "Calendar & Inbox Management",
+      "level": 80
+    },
+    {
+      "name": "Canva & Basic Graphic Design",
+      "level": 72
+    }
+  ],
+  "experience": [
+    {
+      "position": "E-commerce Virtual Assistant",
+      "company": "Northline Goods, Australia (Remote)",
+      "startDate": "Jan 2023",
+      "endDate": "Present",
+      "description": "Supporting daily store operations for an Australia-based Shopify brand, covering fulfillment, supplier follow-up, and customer service.",
+      "details": [
+        "Process and track daily orders across Shopify and third-party fulfillment partners",
+        "Coordinate directly with suppliers for restocks, delays, and quality issues",
+        "Respond to customer inquiries via email and live chat within a 2-hour SLA",
+        "Maintain accurate inventory counts and flag low-stock items weekly",
+        "Prepare monthly summary reports on order volume, refunds, and support tickets"
+      ]
+    },
+    {
+      "position": "Administrative & Listings Assistant",
+      "company": "Harborview Trading, Canada (Remote)",
+      "startDate": "Jun 2021",
+      "endDate": "Dec 2022",
+      "description": "Handled product listings, catalog upkeep, and general administrative support for a small e-commerce team.",
+      "details": [
+        "Uploaded and formatted new product listings with accurate descriptions and pricing",
+        "Organized product categories and collections for easier customer navigation",
+        "Managed the shared inbox and calendar for two team leads",
+        "Assisted with basic bookkeeping entries and expense tracking"
+      ]
+    },
+    {
+      "position": "Customer Service Representative",
+      "company": "ClearPath BPO Solutions",
+      "startDate": "Aug 2019",
+      "endDate": "May 2021",
+      "description": "Delivered phone and chat-based support for a US retail account, focused on order issues and account inquiries.",
+      "details": [
+        "Handled inbound calls and chats regarding orders, refunds, and shipping delays",
+        "Maintained a customer satisfaction score above 92% across tenure",
+        "Escalated complex cases to team leads with clear documentation",
+        "Trained 4 newly hired agents on internal tools and call procedures"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "Bachelor of Science in Office Administration",
+      "institution": "Cavite State University",
+      "location": "Indang, Cavite, Philippines",
+      "year": "2015 – 2019"
+    },
+    {
+      "degree": "Certified Virtual Assistant Program",
+      "institution": "VA Academy Philippines",
+      "year": "Mar 2021"
+    }
+  ],
+  "languages": [
+    {
+      "name": "Filipino",
+      "level": 100
+    },
+    {
+      "name": "English",
+      "level": 88
+    }
+  ],
+  "projects": [
+    {
+      "name": "Personal Portfolio & Resume Site",
+      "description": "A personal site showcasing my professional profile, work history, and an interactive online resume for prospective clients.",
+      "liveUrl": "https://marisol-reyes.pages.dev",
+      "codeUrl": ""
+    },
+    {
+      "name": "VA Client Onboarding Checklist",
+      "description": "A reusable onboarding template I built to help new e-commerce clients get their Shopify back-end organized within the first week of engagement.",
+      "liveUrl": "https://marisol-reyes.pages.dev/onboarding-checklist",
+      "codeUrl": ""
+    }
+  ],
+  "socialLinks": [
+    {
+      "name": "Portfolio",
+      "url": "https://marisol-reyes.pages.dev"
+    },
+    {
+      "name": "LinkedIn",
+      "url": "https://linkedin.com/in/marisolreyesva"
+    }
+  ]
+}

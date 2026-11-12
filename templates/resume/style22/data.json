@@ -1,0 +1,140 @@
+{
+  "personalInfo": {
+    "firstName": "Ramon",
+    "lastName": "Villareal",
+    "jobTitle": "Email Marketing & CRM Strategist",
+    "email": "ramon.villareal.crm@gmail.com",
+    "phone": "+63 917 204 5581",
+    "location": "Tagaytay City, Cavite, Philippines · Available Remote",
+    "profileImage": "assets/profile.jpg"
+  },
+  "about": "CRM and email marketing strategist with a focus on lifecycle campaigns that keep revenue steady between big promotions. I design and maintain Klaviyo and Mailchimp flows, write direct-response copy, and lean on testing rather than guesswork to improve open and click performance. Over the past several years I've supported DTC brands in the US and Australia, balancing hands-on template building with the reporting side — tracking what a flow actually contributes to revenue, not just how it looks.",
+  "skills": [
+    {
+      "name": "Email Marketing Strategy",
+      "level": 93
+    },
+    {
+      "name": "Klaviyo Flow Building",
+      "level": 91
+    },
+    {
+      "name": "Copywriting / CRO",
+      "level": 89
+    },
+    {
+      "name": "List Segmentation",
+      "level": 87
+    },
+    {
+      "name": "Mailchimp & ActiveCampaign",
+      "level": 82
+    },
+    {
+      "name": "HTML Email Development",
+      "level": 80
+    },
+    {
+      "name": "Campaign Reporting & Analytics",
+      "level": 84
+    }
+  ],
+  "experience": [
+    {
+      "position": "CRM & Email Marketing Manager",
+      "company": "Freelance · Remote (US, AU)",
+      "startDate": "2024",
+      "endDate": "Present",
+      "description": "Managing full lifecycle email programs for two DTC brands, from flow strategy through campaign calendar and reporting.",
+      "details": [
+        "Rebuilt core Klaviyo flows (welcome, abandoned cart, post-purchase) resulting in a 29% lift in flow-attributed revenue",
+        "Introduced quarterly A/B testing cadence across subject lines and send times, raising average open rate from 34% to 46%",
+        "Built and maintained segmentation logic across 6 customer lifecycle stages",
+        "Delivered monthly performance reports tying email activity directly to store revenue"
+      ]
+    },
+    {
+      "position": "Email Marketing Specialist",
+      "company": "Palm & Co. Agency",
+      "startDate": "2022",
+      "endDate": "2024",
+      "description": "Handled email execution for a roster of 8–10 e-commerce clients, focused on campaign build and flow optimization.",
+      "details": [
+        "Managed weekly campaign sends for 8+ Shopify clients across fashion and home goods",
+        "Designed and deployed win-back and VIP loyalty flows contributing to $410K in attributed sales",
+        "Coordinated with design team to keep templates on-brand and mobile-responsive",
+        "Reduced list churn by 15% through a re-engagement sunset sequence"
+      ]
+    },
+    {
+      "position": "Marketing Coordinator",
+      "company": "Bright Leaf Retail",
+      "startDate": "2020",
+      "endDate": "2022",
+      "description": "Supported the marketing team across email, basic paid social, and promotional calendar planning.",
+      "details": [
+        "Assisted in planning and scheduling the monthly email promotional calendar",
+        "Wrote and proofread campaign copy for weekly newsletters",
+        "Tracked campaign performance and compiled results for leadership review"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "Klaviyo Certified Email Specialist",
+      "institution": "Klaviyo",
+      "location": "",
+      "year": "2023"
+    },
+    {
+      "degree": "BS in Marketing Management",
+      "institution": "De La Salle University – Dasmariñas",
+      "location": "Dasmariñas, Cavite, Philippines",
+      "year": "2015 – 2019"
+    }
+  ],
+  "languages": [
+    {
+      "name": "Filipino",
+      "level": 100
+    },
+    {
+      "name": "English",
+      "level": 92
+    }
+  ],
+  "projects": [
+    {
+      "name": "Lifecycle Flow Rebuild",
+      "description": "A full audit and rebuild of a client's core Klaviyo flows — welcome, browse abandonment, cart recovery, and post-purchase — resulting in a 29% lift in flow revenue.",
+      "liveUrl": "",
+      "codeUrl": ""
+    },
+    {
+      "name": "VIP Loyalty Email Series",
+      "description": "A tiered loyalty campaign built around purchase frequency, designed to reward repeat customers and reduce discount dependency.",
+      "liveUrl": "",
+      "codeUrl": ""
+    },
+    {
+      "name": "Personal Portfolio Site",
+      "description": "A portfolio and interactive resume showcasing case studies, campaign samples, and results for prospective clients.",
+      "liveUrl": "https://ramon-villareal.pages.dev",
+      "codeUrl": ""
+    }
+  ],
+  "socialLinks": [
+    {
+      "name": "Portfolio",
+      "url": "https://ramon-villareal.pages.dev"
+    },
+    {
+      "name": "LinkedIn",
+      "url": "https://linkedin.com/in/ramonvillarealcrm"
+    },
+    {
+      "name": "GitHub",
+      "url": "https://github.com/rvillareal"
+    }
+  ]
+}

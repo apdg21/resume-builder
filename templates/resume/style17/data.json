@@ -1,0 +1,77 @@
+{
+  "profile_image": "assets/profile.jpg",
+  "name": "Priya Venkataraman",
+  "title": "Marine Biologist & Ocean Conservation Lead",
+  "about": "I study the intersection of coral reef ecology and climate science, working to understand and protect the ocean ecosystems most threatened by a warming world. With fieldwork across the Indo-Pacific and the Caribbean, I bring both laboratory precision and deep-sea curiosity to every project I take on.",
+  "phone": "+61 2 9876 5432",
+  "email": "priya.v@coralwatch.org",
+  "location": "Sydney, NSW, Australia",
+  "languages": [
+    "English (Native)",
+    "Tamil (Fluent)",
+    "Bahasa Indonesia (Working)"
+  ],
+  "expertise": [
+    "Coral Reef Ecology",
+    "Marine Biodiversity Assessment",
+    "Climate Impact Modeling",
+    "SCUBA & Mixed-Gas Diving",
+    "Environmental DNA Sampling",
+    "Science Communication"
+  ],
+  "summary": "Award-winning marine biologist with 10 years of field and laboratory research experience across Indo-Pacific reef systems. Led multi-institutional coral resilience studies and authored 14 peer-reviewed publications on ocean warming impacts. Passionate about translating complex ecological data into actionable conservation policy. Recipient of the 2023 Pew Marine Fellowship.",
+  "experience": [
+    {
+      "role": "Senior Research Scientist",
+      "company": "Australian Institute of Marine Science — Townsville, QLD",
+      "period": "2020 – Present",
+      "description": "Lead a 12-person research team investigating thermal bleaching thresholds across the Great Barrier Reef. Secured AUD 3.2M in competitive research grants. Developed a predictive bleaching model adopted by the Great Barrier Reef Marine Park Authority for annual reef health reports."
+    },
+    {
+      "role": "Marine Ecologist",
+      "company": "Coral Triangle Initiative — Manado, Indonesia",
+      "period": "2017 – 2020",
+      "description": "Conducted baseline biodiversity surveys across 40+ reef sites in the Coral Triangle. Trained 25 local conservation officers in eDNA sampling and underwater photographic survey methods. Published findings in Nature Climate Change and Marine Ecology Progress Series."
+    },
+    {
+      "role": "Junior Research Fellow",
+      "company": "University of Queensland — Brisbane, QLD",
+      "period": "2014 – 2017",
+      "description": "Investigated symbiodinium shuffling in bleached Acropora corals under laboratory temperature stress conditions. Co-authored 5 peer-reviewed papers during PhD candidature. Awarded university medal for best doctoral thesis in biological sciences."
+    }
+  ],
+  "education": [
+    {
+      "institution": "University of Queensland",
+      "degree": "Ph.D. Marine Biology",
+      "year": "2014 – 2017"
+    },
+    {
+      "institution": "James Cook University",
+      "degree": "B.Sc. (Honours) Marine Science",
+      "year": "2010 – 2014"
+    }
+  ],
+  "skills": [
+    { "name": "Reef Survey Methods", "level": 97 },
+    { "name": "Statistical Modelling (R)", "level": 88 },
+    { "name": "eDNA Analysis", "level": 85 },
+    { "name": "Science Writing", "level": 92 },
+    { "name": "Grant Writing", "level": 80 },
+    { "name": "GIS & Remote Sensing", "level": 74 }
+  ],
+  "footer": {
+    "copyright": "© [year] [name]. All rights reserved.",
+    "social_links": [
+      { "name": "LinkedIn", "url": "https://linkedin.com/in/priyavenkataraman", "icon": "fab fa-linkedin" },
+      { "name": "GitHub", "url": "https://github.com/priyav-marine", "icon": "fab fa-github" },
+      { "name": "Twitter", "url": "https://twitter.com/priyavmarine", "icon": "fab fa-twitter" },
+      { "name": "Email", "url": "mailto:priya.v@coralwatch.org", "icon": "fas fa-envelope" }
+    ]
+  },
+  "theme": {
+    "gradientStart": "#f5f0e8",
+    "gradientEnd": "#ede5d8",
+    "accentColor": "#c0392b"
+  }
+}

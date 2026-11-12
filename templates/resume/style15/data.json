@@ -1,0 +1,114 @@
+{
+  "name": "Marcus Reyes",
+  "title": "Senior Financial Analyst",
+  "theme": {
+    "gradientStart": "#fdf8f3",
+    "gradientEnd": "#f5ede3",
+    "accentColor": "#c0622f",
+    "accentLight": "#f0c4a8",
+    "accentDark": "#8b3d18"
+  },
+  "about": "CFA charterholder and financial analyst with 8 years of experience in investment analysis, financial modelling, and corporate valuation across banking and asset management. I turn complex financial data into clear, actionable insights — helping institutions and executives make confident, high-stakes decisions.",
+  "experience": [
+    {
+      "company": "BDO Unibank",
+      "role": "Senior Financial Analyst",
+      "start": "Mar 2021",
+      "end": "Present",
+      "details": [
+        "Lead equity research coverage for 14 listed Philippine companies across consumer, property, and utilities sectors.",
+        "Built DCF, DDM, and comparable company models that informed ₱2.4B in institutional investment decisions.",
+        "Produce weekly market commentary and monthly sector reports distributed to 600+ institutional clients.",
+        "Mentor 3 junior analysts and co-lead the team's financial modelling training programme."
+      ]
+    },
+    {
+      "company": "Security Bank Corporation",
+      "role": "Financial Analyst II",
+      "start": "Jun 2018",
+      "end": "Feb 2021",
+      "details": [
+        "Conducted credit analysis and loan structuring for corporate clients with combined credit lines of ₱800M.",
+        "Developed an automated Excel-based financial spreading tool that reduced analysis turnaround by 35%.",
+        "Prepared board-level presentations on portfolio credit quality and risk exposure metrics."
+      ]
+    },
+    {
+      "company": "SGV & Co. (Ernst & Young Philippines)",
+      "role": "Assurance Associate",
+      "start": "Jul 2016",
+      "end": "May 2018",
+      "details": [
+        "Performed financial statement audits for clients in banking, real estate, and manufacturing sectors.",
+        "Led substantive testing procedures for revenue, receivables, and fixed assets portfolios.",
+        "Assisted in the preparation of SEC and BSP regulatory filings for two listed banking clients."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "CFA Charter",
+      "institution": "CFA Institute",
+      "start": "2020",
+      "end": "2022"
+    },
+    {
+      "degree": "Bachelor of Science in Accountancy",
+      "institution": "De La Salle University",
+      "start": "2012",
+      "end": "2016"
+    }
+  ],
+  "skills": [
+    "Financial Modelling & Valuation",
+    "Equity Research",
+    "Credit Analysis",
+    "Bloomberg Terminal",
+    "Advanced Excel & VBA",
+    "Power BI",
+    "Python (Pandas, NumPy)",
+    "Risk Management",
+    "IFRS & PAS Reporting",
+    "Capital Markets"
+  ],
+  "languages": [
+    "Filipino (Native)",
+    "English (Fluent)",
+    "Mandarin (Basic)"
+  ],
+  "references": [
+    {
+      "name": "Patricia Lim, CFA",
+      "role": "Head of Research — BDO Unibank",
+      "phone": "+63 2 8840 7000",
+      "email": "p.lim@bdo.com.ph"
+    },
+    {
+      "name": "Jonathan Cruz",
+      "role": "VP Corporate Banking — Security Bank",
+      "phone": "+63 2 8887 9188",
+      "email": "j.cruz@securitybank.com"
+    }
+  ],
+  "contact": {
+    "phone": "+63 917 623 4410",
+    "email": "marcus.reyes@finmail.ph",
+    "address": "Makati City, Metro Manila, Philippines"
+  },
+  "footer": {
+    "text": "© 2025 Marcus Reyes, CFA. All rights reserved.",
+    "socials": [
+      {
+        "name": "LinkedIn",
+        "url": "https://linkedin.com/in/marcusreyes"
+      },
+      {
+        "name": "Twitter",
+        "url": "https://twitter.com/marcusreyes_cfa"
+      }
+    ]
+  },
+  "profile": {
+    "image": "assets/profile.jpg"
+  }
+}

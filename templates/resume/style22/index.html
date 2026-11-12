@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume | Your Name</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Libraries used to turn the actual rendered resume into a PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --ink: #111111;
+      --paper: #f4f0e8;
+      --cream: #ede8db;
+      --cream2: #e5dfd0;
+      --rust: #bf4626;
+      --rust-light: #e8c4b4;
+      --rust-dark: #8c3218;
+      --sand: #c9bfa8;
+      --muted: #6b6659;
+      --white: #ffffff;
+      --shadow-sm: 0 4px 24px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.04);
+      --shadow-md: 0 10px 40px rgba(0,0,0,0.09);
+      --radius: 18px;
+      --serif: 'Fraunces', Georgia, serif;
+      --sans: 'Instrument Sans', sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --nav-h: 60px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--paper);
+      color: var(--ink);
+      min-height: 100vh;
+      line-height: 1.55;
+    }
+
+    /* ── NAV ── */
+    .top-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(244,240,232,0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--cream2);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem;
+      height: var(--nav-h);
+      gap: 1.25rem;
+    }
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 1.05rem; font-weight: 400; font-style: italic;
+      color: var(--rust);
+      text-decoration: none;
+      white-space: nowrap;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .nav-links { display: flex; gap: 0.25rem; list-style: none; flex-wrap: wrap; }
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 0.32rem 0.75rem;
+      border-radius: 20px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { background: var(--rust); color: var(--white); }
+
+    .nav-actions { display: flex; gap: 0.6rem; align-items: center; flex-shrink: 0; }
+
+    .btn-pdf {
+      font-family: var(--sans);
+      font-size: 0.72rem; font-weight: 600;
+      background: var(--rust);
+      color: var(--white);
+      border: none; cursor: pointer;
+      padding: 0.42rem 1rem;
+      border-radius: 30px;
+      transition: background 0.2s, transform 0.2s;
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      white-space: nowrap;
+    }
+    .btn-pdf:hover { background: var(--rust-dark); transform: translateY(-1px); }
+    .btn-pdf:disabled { opacity: 0.7; cursor: default; transform: none; }
+
+    .btn-upload-json {
+      font-family: var(--sans);
+      font-size: 0.72rem; font-weight: 600;
+      background: transparent;
+      color: var(--muted);
+      border: 1.5px solid var(--sand);
+      cursor: pointer;
+      padding: 0.38rem 0.95rem;
+      border-radius: 30px;
+      transition: all 0.2s;
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      white-space: nowrap;
+    }
+    .btn-upload-json:hover { color: var(--rust); border-color: var(--rust); }
+
+    .hamburger {
+      display: none;
+      background: none; border: none; cursor: pointer;
+      color: var(--rust); font-size: 1.2rem;
+      padding: 0.35rem;
+      z-index: 110;
+    }
+
+    .mobile-dropdown {
+      display: none;
+      position: fixed;
+      top: var(--nav-h); left: 0; right: 0;
+      z-index: 99;
+      background: rgba(244,240,232,0.98);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--cream2);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+      padding: 0.4rem 0 0.9rem;
+      flex-direction: column;
+    }
+    .mobile-dropdown.open { display: flex; }
+    .mobile-dropdown a {
+      font-family: var(--mono);
+      font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 0.85rem 2rem;
+      border-bottom: 1px solid var(--cream2);
+      transition: color 0.2s, background 0.2s;
+    }
+    .mobile-dropdown a:hover { color: var(--rust); background: rgba(191,70,38,0.05); }
+    .mobile-dropdown a.offline-only { display: none; }
+
+    /* ── HERO ── */
+    .hero {
+      max-width: 1200px;
+      margin: calc(var(--nav-h) + 2.2rem) auto 1.8rem;
+      background: var(--ink);
+      border-radius: var(--radius);
+      padding: 3rem 3.25rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2.5rem;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -70px; right: -70px;
+      width: 320px; height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(191,70,38,0.22) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -90px; left: -60px;
+      width: 240px; height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,191,168,0.10) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-text { position: relative; z-index: 1; }
+    .hero-label {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--rust);
+      margin-bottom: 0.85rem;
+    }
+    .hero-name {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      color: var(--white);
+      line-height: 1.05;
+      margin-bottom: 0.5rem;
+    }
+    .hero-name em { color: var(--rust); font-style: italic; }
+    .hero-title {
+      font-family: var(--sans);
+      font-size: 0.98rem; font-weight: 400;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 1.4rem;
+    }
+    .hero-contacts { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+    .hero-contact-item {
+      display: flex; align-items: center; gap: 0.5rem;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 0.42rem 0.9rem;
+      border-radius: 30px;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.8);
+    }
+    .hero-contact-item i { color: var(--rust); font-size: 0.72rem; }
+
+    .hero-photo-wrap { position: relative; z-index: 1; }
+    .hero-photo {
+      width: 150px; height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      border: 3px solid var(--rust);
+      box-shadow: 0 0 0 7px rgba(191,70,38,0.12);
+    }
+
+    /* ── LAYOUT ── */
+    .resume-layout {
+      max-width: 1200px;
+      margin: 0 auto 2.5rem;
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 1.8rem;
+      padding: 0 1.5rem;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      background: var(--cream);
+      border: 1px solid var(--cream2);
+      border-radius: var(--radius);
+      padding: 2.2rem 2rem;
+      box-shadow: var(--shadow-sm);
+      position: sticky; top: calc(var(--nav-h) + 1.5rem);
+      height: fit-content;
+      max-height: calc(100vh - var(--nav-h) - 3rem);
+      overflow-y: auto;
+    }
+    .sidebar::-webkit-scrollbar { width: 5px; }
+    .sidebar::-webkit-scrollbar-track { background: transparent; }
+    .sidebar::-webkit-scrollbar-thumb { background: var(--sand); border-radius: 3px; }
+
+    .sidebar-section { margin-bottom: 2.2rem; }
+    .sidebar-section:last-child { margin-bottom: 0; }
+    .sidebar-heading {
+      font-family: var(--serif);
+      font-size: 1rem; font-weight: 400;
+      color: var(--ink);
+      border-bottom: 2px solid var(--rust);
+      padding-bottom: 5px;
+      margin-bottom: 1.1rem;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .sidebar-heading i { color: var(--rust); font-size: 0.8rem; }
+
+    .skill-item { margin-bottom: 0.9rem; }
+    .skill-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+    .skill-name { font-size: 0.78rem; font-weight: 500; color: var(--ink); }
+    .skill-pct { font-family: var(--mono); font-size: 0.66rem; color: var(--muted); }
+    .skill-track { height: 4px; background: var(--cream2); border-radius: 4px; overflow: hidden; }
+    .skill-fill {
+      height: 100%;
+      background: var(--rust);
+      border-radius: 4px;
+      width: 0;
+      transition: width 1.2s cubic-bezier(.22,.68,0,1.2);
+    }
+
+    .edu-item { margin-bottom: 1.2rem; }
+    .edu-item:last-child { margin-bottom: 0; }
+    .edu-degree { font-family: var(--serif); font-size: 0.87rem; font-weight: 400; color: var(--ink); line-height: 1.3; margin-bottom: 0.2rem; }
+    .edu-school { font-size: 0.76rem; color: var(--muted); margin-bottom: 0.35rem; }
+    .edu-year {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      color: var(--muted);
+      background: var(--white);
+      border: 1px solid var(--cream2);
+      display: inline-block;
+      padding: 0.15rem 0.6rem;
+      border-radius: 20px;
+    }
+
+    .lang-item { margin-bottom: 0.85rem; }
+    .lang-item:last-child { margin-bottom: 0; }
+    .lang-header { display: flex; justify-content: space-between; align-items: center; }
+    .lang-name { font-size: 0.78rem; font-weight: 500; color: var(--ink); }
+    .lang-dots { display: flex; gap: 4px; }
+    .lang-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--cream2); }
+    .lang-dot.filled { background: var(--rust); }
+
+    .social-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .social-link {
+      width: 34px; height: 34px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--white);
+      border: 1px solid var(--cream2);
+      border-radius: 50%;
+      color: var(--rust);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: all 0.22s;
+    }
+    .social-link:hover { background: var(--rust); color: var(--white); border-color: var(--rust); transform: translateY(-2px); }
+
+    /* ── MAIN CONTENT ── */
+    .main-content { display: flex; flex-direction: column; gap: 1.8rem; }
+
+    .content-section {
+      background: var(--white);
+      border: 1px solid var(--cream2);
+      border-radius: var(--radius);
+      padding: 2.2rem 2.4rem;
+      box-shadow: var(--shadow-sm);
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .content-section.visible { opacity: 1; transform: translateY(0); }
+
+    .section-header { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 1.6rem; }
+    .section-icon {
+      width: 34px; height: 34px;
+      border-radius: 9px;
+      background: var(--rust);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--white); font-size: 0.82rem;
+      flex-shrink: 0;
+    }
+    .section-title {
+      font-family: var(--serif);
+      font-size: 1.3rem; font-weight: 400;
+      color: var(--ink);
+      border-bottom: 2px solid var(--rust);
+      padding-bottom: 4px;
+    }
+    .section-line { flex: 1; height: 1px; background: var(--cream2); }
+
+    #aboutText { font-size: 0.92rem; line-height: 1.85; color: var(--muted); max-width: 720px; }
+
+    /* Experience */
+    .exp-item {
+      padding-bottom: 1.6rem;
+      margin-bottom: 1.6rem;
+      border-bottom: 1px solid #f0ece3;
+    }
+    .exp-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .exp-head {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 1rem; flex-wrap: wrap; margin-bottom: 0.2rem;
+    }
+    .exp-position { font-family: var(--serif); font-size: 1.05rem; font-weight: 400; color: var(--ink); line-height: 1.25; }
+    .exp-dates {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      color: var(--muted);
+      background: var(--cream);
+      border: 1px solid var(--cream2);
+      padding: 0.22rem 0.65rem;
+      border-radius: 20px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .exp-company { font-size: 0.78rem; font-weight: 600; color: var(--rust); margin-bottom: 0.5rem; }
+    .exp-desc { font-size: 0.85rem; line-height: 1.65; color: var(--muted); margin-bottom: 0.7rem; }
+    .exp-details { list-style: none; display: flex; flex-direction: column; gap: 0.38rem; }
+    .exp-details li {
+      font-size: 0.83rem; line-height: 1.55; color: var(--muted);
+      padding-left: 1.15rem; position: relative;
+    }
+    .exp-details li::before {
+      content: '';
+      position: absolute; left: 0; top: 0.58rem;
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--rust);
+    }
+
+    /* Projects */
+    .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.1rem; }
+    .project-card {
+      background: var(--cream);
+      border: 1px solid var(--cream2);
+      border-radius: 12px;
+      padding: 1.4rem;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .project-card:hover { transform: translateY(-3px); box-shadow: 0 6px 24px rgba(0,0,0,0.07); }
+    .project-icon {
+      width: 32px; height: 32px;
+      background: var(--rust);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--white); font-size: 0.8rem;
+      margin-bottom: 0.75rem;
+    }
+    .project-title { font-family: var(--serif); font-size: 0.98rem; font-weight: 400; color: var(--ink); margin-bottom: 0.45rem; line-height: 1.3; }
+    .project-desc { font-size: 0.8rem; line-height: 1.55; color: var(--muted); margin-bottom: 1rem; }
+    .project-links { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .project-links a {
+      font-family: var(--sans);
+      font-size: 0.7rem; font-weight: 600;
+      color: var(--white);
+      background: var(--rust);
+      text-decoration: none;
+      padding: 0.35rem 0.85rem;
+      border-radius: 30px;
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .project-links a:hover { background: var(--rust-dark); transform: translateY(-1px); }
+
+    /* ── FOOTER ── */
+    .resume-footer {
+      max-width: 1200px;
+      margin: 0 auto 2.5rem;
+      background: var(--cream);
+      border: 1px solid var(--cream2);
+      border-radius: var(--radius);
+      padding: 1.3rem 2.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 0.8rem;
+    }
+    .footer-name { font-family: var(--serif); font-style: italic; font-size: 1.1rem; color: var(--rust); }
+    .footer-copy { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.04em; color: var(--muted); }
+
+    /* ── UPLOAD OVERLAY ── */
+    .upload-overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(17,17,17,0.6);
+      backdrop-filter: blur(6px);
+      align-items: center; justify-content: center;
+    }
+    .upload-overlay.show { display: flex; }
+    .upload-box {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 2.8rem;
+      text-align: center;
+      max-width: 440px; width: 90%;
+      box-shadow: var(--shadow-md);
+    }
+    .upload-box h2 { font-family: var(--serif); font-weight: 400; font-size: 1.6rem; color: var(--ink); margin-bottom: 0.7rem; }
+    .upload-box p { font-size: 0.85rem; line-height: 1.7; color: var(--muted); margin-bottom: 1.8rem; }
+    .upload-box p a { color: var(--rust); text-decoration: none; font-weight: 600; }
+    .upload-box code { font-family: var(--mono); font-size: 0.78rem; color: var(--rust); }
+    .upload-select-btn {
+      font-family: var(--sans);
+      font-size: 0.82rem; font-weight: 600;
+      background: var(--rust);
+      color: var(--white); border: none; cursor: pointer;
+      padding: 0.75rem 1.8rem; border-radius: 30px;
+      display: inline-flex; align-items: center; gap: 0.55rem;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .upload-select-btn:hover { background: var(--rust-dark); transform: translateY(-2px); }
+
+    /* ── MOBILE ── */
+    @media (max-width: 1100px) {
+      .hero { margin: calc(var(--nav-h) + 1.8rem) 1.5rem 1.5rem; padding: 2.5rem; }
+      .resume-layout { padding: 0 1.5rem; }
+    }
+    @media (max-width: 900px) {
+      .resume-layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+      .hero { grid-template-columns: 1fr; text-align: center; gap: 1.5rem; }
+      .hero-photo-wrap { order: -1; margin: 0 auto; }
+      .hero-contacts { justify-content: center; }
+      .top-nav { padding: 0 1.25rem; }
+      .nav-links { display: none !important; }
+      .nav-actions .btn-upload-json { display: none; }
+      .hamburger { display: block; }
+      .resume-footer { flex-direction: column; text-align: center; margin: 0 1.5rem 2rem; }
+    }
+    @media (max-width: 600px) {
+      .hero { padding: 2rem 1.5rem; }
+      .hero-photo { width: 100px; height: 100px; }
+      .content-section { padding: 1.6rem; }
+      .projects-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Applied to body while html2canvas is capturing, so scroll-reveal
+       sections and transitions don't show mid-animation */
+    .pdf-capturing .content-section {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+    .pdf-capturing .skill-fill { transition: none !important; }
+
+    /* ── PRINT ── */
+    @media print {
+      .top-nav, .mobile-dropdown, .btn-pdf, .btn-upload-json, .upload-overlay { display: none !important; }
+      body { background: var(--white); }
+      .hero { margin-top: 0; box-shadow: none; }
+      .resume-layout { display: block; }
+      .sidebar { position: static; margin-bottom: 1.2rem; box-shadow: none; }
+      .content-section { opacity: 1; transform: none; margin-bottom: 1rem; box-shadow: none; break-inside: avoid; }
+      .exp-item, .project-card, .sidebar-section { break-inside: avoid; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOP NAVIGATION -->
+<nav class="top-nav">
+  <a class="nav-logo" href="index.html" id="navLogo">Portfolio</a>
+  <ul class="nav-links">
+    <li><a href="#aboutSection">About</a></li>
+    <li><a href="#experienceSection">Experience</a></li>
+    <li><a href="#projectsSection">Projects</a></li>
+    <li><a href="#skillsSection">Skills</a></li>
+    <li class="edit-link-item" style="display:none"><a href="form.html">Edit</a></li>
+  </ul>
+  <div class="nav-actions">
+    <input type="file" id="jsonUploadInput" accept=".json" style="display:none">
+    <button class="btn-upload-json" id="uploadJsonBtn" title="Upload data.json for offline viewing">
+      <i class="fas fa-upload"></i> Load JSON
+    </button>
+    <button class="btn-pdf" id="downloadPdfBtn">
+      <i class="fa-regular fa-file-pdf"></i> Download PDF
+    </button>
+  </div>
+  <button class="hamburger" id="hamburger" aria-label="Open menu">
+    <i class="fas fa-bars" id="hamburgerIcon"></i>
+  </button>
+</nav>
+
+<!-- MOBILE DROPDOWN NAV -->
+<div class="mobile-dropdown" id="mobileDropdown">
+  <a href="#aboutSection">About</a>
+  <a href="#experienceSection">Experience</a>
+  <a href="#projectsSection">Projects</a>
+  <a href="#skillsSection">Skills</a>
+  <a href="form.html" class="offline-only" id="mobileEditLink">Edit</a>
+  <a href="#" id="mobileLoadJson" class="offline-only" style="color:var(--rust)"><i class="fas fa-upload"></i> Load JSON</a>
+</div>
+
+<!-- Everything inside #resumeContent is exactly what gets exported to the PDF -->
+<div id="resumeContent">
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-text">
+    <div class="hero-label" id="heroLabel">Available for Work</div>
+    <h1 class="hero-name" id="fullName">Loading…</h1>
+    <p class="hero-title" id="jobTitle">Loading…</p>
+    <div class="hero-contacts">
+      <div class="hero-contact-item"><i class="fas fa-envelope"></i><span id="emailVal">—</span></div>
+      <div class="hero-contact-item"><i class="fas fa-mobile-alt"></i><span id="phoneVal">—</span></div>
+      <div class="hero-contact-item"><i class="fas fa-map-marker-alt"></i><span id="locationVal">—</span></div>
+    </div>
+  </div>
+  <div class="hero-photo-wrap">
+    <img class="hero-photo" src="assets/profile.jpg" alt="Profile Photo" id="profileImage">
+  </div>
+</header>
+
+<!-- BODY LAYOUT -->
+<div class="resume-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="sidebar-section" id="skillsSection">
+      <h4 class="sidebar-heading"><i class="fas fa-code"></i> Skills</h4>
+      <div id="skillsList"></div>
+    </div>
+
+    <div class="sidebar-section" id="educationSection">
+      <h4 class="sidebar-heading"><i class="fas fa-graduation-cap"></i> Education</h4>
+      <div id="educationList"></div>
+    </div>
+
+    <div class="sidebar-section" id="languagesSection">
+      <h4 class="sidebar-heading"><i class="fas fa-language"></i> Languages</h4>
+      <div id="languagesList"></div>
+    </div>
+
+    <div class="sidebar-section">
+      <h4 class="sidebar-heading"><i class="fas fa-share-alt"></i> Connect</h4>
+      <div class="social-row" id="socialLinks"></div>
+    </div>
+
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <section class="content-section" id="aboutSection">
+      <div class="section-header">
+        <div class="section-icon"><i class="fas fa-user"></i></div>
+        <h2 class="section-title">About Me</h2>
+        <div class="section-line"></div>
+      </div>
+      <p id="aboutText">Loading…</p>
+    </section>
+
+    <section class="content-section" id="experienceSection">
+      <div class="section-header">
+        <div class="section-icon"><i class="fas fa-briefcase"></i></div>
+        <h2 class="section-title">Experience</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="timeline" id="experienceList"></div>
+    </section>
+
+    <section class="content-section" id="projectsSection">
+      <div class="section-header">
+        <div class="section-icon"><i class="fas fa-layer-group"></i></div>
+        <h2 class="section-title">Projects</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="projects-grid" id="projectsList"></div>
+    </section>
+
+  </main>
+</div>
+
+</div><!-- /#resumeContent -->
+
+<!-- FOOTER -->
+<footer class="resume-footer">
+  <span class="footer-name" id="footerName">Your Name</span>
+  <span class="footer-copy">&copy; <span id="currentYear"></span> · All rights reserved</span>
+</footer>
+
+<!-- FILE UPLOAD OVERLAY (offline fallback) -->
+<div class="upload-overlay" id="uploadOverlay">
+  <div class="upload-box">
+    <h2>Load Your Resume</h2>
+    <p>Upload your <code>data.json</code> file to view the resume.<br>
+       Don't have one yet? <a href="form.html">Create it here →</a></p>
+    <input type="file" id="overlayFileInput" accept=".json" style="display:none">
+    <button class="upload-select-btn" id="overlaySelectBtn">
+      <i class="fas fa-folder-open"></i> Select File
+    </button>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+  // ── Offline vs deployed detection ──
+  const isLocal = window.location.protocol === 'file:';
+
+  const uploadJsonBtn = document.getElementById('uploadJsonBtn');
+  const jsonUploadInput = document.getElementById('jsonUploadInput');
+  const editLinkItem = document.querySelector('.edit-link-item');
+
+  if (isLocal) {
+    uploadJsonBtn.style.display = '';
+    if (editLinkItem) editLinkItem.style.display = '';
+    document.querySelectorAll('.offline-only').forEach(el => el.style.display = '');
+  } else {
+    uploadJsonBtn.style.display = 'none';
+    if (editLinkItem) editLinkItem.style.display = 'none';
+  }
+
+  uploadJsonBtn.addEventListener('click', () => jsonUploadInput.click());
+  jsonUploadInput.addEventListener('change', e => handleFileUpload(e.target.files[0]));
+
+  const mobileLoadJson = document.getElementById('mobileLoadJson');
+  if (mobileLoadJson) {
+    mobileLoadJson.addEventListener('click', e => {
+      e.preventDefault();
+      jsonUploadInput.click();
+      closeMobileMenu();
+    });
+  }
+
+  // ── Hamburger ──
+  const hamburger = document.getElementById('hamburger');
+  const hamburgerIcon = document.getElementById('hamburgerIcon');
+  const mobileDropdown = document.getElementById('mobileDropdown');
+  let menuOpen = false;
+
+  hamburger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    menuOpen = !menuOpen;
+    mobileDropdown.classList.toggle('open', menuOpen);
+    hamburgerIcon.className = menuOpen ? 'fas fa-times' : 'fas fa-bars';
+    hamburger.setAttribute('aria-label', menuOpen ? 'Close menu' : 'Open menu');
+  });
+
+  mobileDropdown.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', () => closeMobileMenu());
+  });
+
+  document.addEventListener('click', (e) => {
+    if (menuOpen && !hamburger.contains(e.target) && !mobileDropdown.contains(e.target)) {
+      closeMobileMenu();
+    }
+  });
+
+  function closeMobileMenu() {
+    menuOpen = false;
+    mobileDropdown.classList.remove('open');
+    hamburgerIcon.className = 'fas fa-bars';
+    hamburger.setAttribute('aria-label', 'Open menu');
+  }
+
+  // ── Overlay ──
+  document.getElementById('overlaySelectBtn').addEventListener('click', () =>
+    document.getElementById('overlayFileInput').click());
+  document.getElementById('overlayFileInput').addEventListener('change', e => {
+    handleFileUpload(e.target.files[0]);
+  });
+
+  loadData();
+
+  // ── PDF download ──
+  document.getElementById('downloadPdfBtn').addEventListener('click', downloadResumePdf);
+
+  // ── Scroll animations ──
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.content-section').forEach(s => observer.observe(s));
+
+  setupNavHighlight();
+});
+
+async function loadData() {
+  try {
+    const r = await fetch('data.json');
+    if (!r.ok) throw new Error();
+    populateResume(await r.json());
+  } catch {
+    if (window.location.hash.startsWith('#data=')) {
+      try {
+        populateResume(JSON.parse(decodeURIComponent(window.location.hash.slice(6))));
+        return;
+      } catch {}
+    }
+    document.getElementById('uploadOverlay').classList.add('show');
+  }
+}
+
+function handleFileUpload(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      populateResume(JSON.parse(e.target.result));
+      document.getElementById('uploadOverlay').classList.remove('show');
+    } catch { alert('Invalid JSON file. Please check the format.'); }
+  };
+  reader.readAsText(file);
+}
+
+// Themes recolour only the page frame: header/nav, hero and footer.
+// The rest of the page keeps its original design.
+function rpIsDarkHex(hex) {
+  if (!hex || hex.charAt(0) !== '#') return false;
+  var c = hex.substring(1);
+  if (c.length === 3) c = c.split('').map(function (x) { return x + x; }).join('');
+  if (c.length !== 6) return false;
+  var r = parseInt(c.substring(0, 2), 16) / 255;
+  var g = parseInt(c.substring(2, 4), 16) / 255;
+  var b = parseInt(c.substring(4, 6), 16) / 255;
+  return (0.2126 * r + 0.7152 * g + 0.0722 * b) < 0.55;
+}
+
+function rpApplyFrameTheme(theme, regions) {
+  var MARK = 'data-rp-frame-themed';
+  var marked = document.querySelectorAll('[' + MARK + ']');
+  for (var i = 0; i < marked.length; i++) {
+    marked[i].removeAttribute(MARK);
+    marked[i].style.removeProperty('background');
+    marked[i].style.removeProperty('background-color');
+    marked[i].style.removeProperty('background-image');
+  }
+  var styleEl = document.getElementById('rpFrameThemeStyle');
+  if (styleEl) styleEl.parentNode.removeChild(styleEl);
+  if (!theme || !theme.gradientStart) return;
+
+  var g1 = theme.gradientStart;
+  var g2 = theme.gradientEnd || g1;
+  var dark = rpIsDarkHex(g1);
+  var tc = theme.textColor || (dark ? '#f1f5f9' : '#1e293b');
+  var hc = theme.headingColor || (dark ? '#ffffff' : '#0f172a');
+
+  var found = document.querySelectorAll(regions.join(','));
+  var picked = [];
+  for (var j = 0; j < found.length; j++) {
+    var nested = false;
+    for (var k = 0; k < picked.length; k++) {
+      if (picked[k] !== found[j] && picked[k].contains(found[j])) { nested = true; break; }
+    }
+    if (!nested) picked.push(found[j]);
+  }
+  for (var m = 0; m < picked.length; m++) {
+    picked[m].setAttribute(MARK, '1');
+    picked[m].style.setProperty('background', 'linear-gradient(135deg, ' + g1 + ' 0%, ' + g2 + ' 100%)', 'important');
+  }
+
+  styleEl = document.createElement('style');
+  styleEl.id = 'rpFrameThemeStyle';
+  // Year chips and social circles are light surfaces inside the sidebar, so
+  // their text/icons need their own colours to stay legible on dark themes.
+  var chipBg = dark ? 'rgba(255,255,255,0.14)' : 'var(--white)';
+  var chipText = dark ? tc : 'var(--muted)';
+  var chipBorder = dark ? 'rgba(255,255,255,0.28)' : 'var(--cream2)';
+  var socialIcon = dark ? tc : 'var(--rust)';
+  styleEl.textContent =
+    '[' + MARK + '] { color: ' + tc + ' !important; }' +
+    '[' + MARK + '] h1, [' + MARK + '] h2, [' + MARK + '] h3, [' + MARK + '] h4, [' + MARK + '] h5, [' + MARK + '] h6 { color: ' + hc + ' !important; }' +
+    '[' + MARK + '] p, [' + MARK + '] span, [' + MARK + '] li, [' + MARK + '] a, [' + MARK + '] strong, [' + MARK + '] em, [' + MARK + '] small, [' + MARK + '] blockquote, [' + MARK + '] figcaption, [' + MARK + '] time { color: ' + tc + ' !important; }' +
+    '[' + MARK + '] .edu-year { background: ' + chipBg + ' !important; color: ' + chipText + ' !important; border-color: ' + chipBorder + ' !important; }' +
+    '[' + MARK + '] .social-link { background: ' + chipBg + ' !important; border-color: ' + chipBorder + ' !important; color: ' + socialIcon + ' !important; }' +
+    '[' + MARK + '] .social-link i { color: ' + socialIcon + ' !important; }' +
+    '[' + MARK + '] .social-link:hover { background: var(--rust) !important; border-color: var(--rust) !important; color: var(--white) !important; }' +
+    '[' + MARK + '] .social-link:hover i { color: var(--white) !important; }';
+  document.head.appendChild(styleEl);
+}
+
+function applyTheme(theme) {
+  rpApplyFrameTheme(theme, ['nav.top-nav', 'aside.sidebar', '.project-card', '.mobile-dropdown', 'header.hero', 'footer.resume-footer']);
+}
+window.applyTheme = applyTheme;
+
+function populateResume(data) {
+  applyTheme(data.theme);
+  const p = data.personalInfo;
+  const fullName = `${p.firstName} ${p.lastName}`;
+
+  // Last name rendered in rust italic, matching the hero treatment
+  document.getElementById('fullName').innerHTML = `${escapeHtml(p.firstName)} <em>${escapeHtml(p.lastName)}</em>`;
+  document.getElementById('jobTitle').textContent = p.jobTitle;
+  document.getElementById('emailVal').textContent = p.email;
+  document.getElementById('phoneVal').textContent = p.phone;
+  document.getElementById('locationVal').textContent = p.location;
+  document.getElementById('footerName').textContent = fullName;
+  document.getElementById('navLogo').textContent = fullName;
+  document.getElementById('aboutText').textContent = data.about;
+  document.title = `${fullName} — Resume`;
+
+  // Profile photo — apply from data so user-uploaded images work both
+  // in standalone mode (offline file:// or hosted) and in the live preview.
+  if (p.profileImage) {
+    const profileImageEl = document.getElementById('profileImage');
+    if (profileImageEl) profileImageEl.src = p.profileImage;
+  }
+
+  // Skills
+  const sl = document.getElementById('skillsList');
+  sl.innerHTML = '';
+  data.skills.forEach(sk => {
+    sl.insertAdjacentHTML('beforeend', `
+      <div class="skill-item">
+        <div class="skill-header">
+          <span class="skill-name">${escapeHtml(sk.name)}</span>
+          <span class="skill-pct">${sk.level}%</span>
+        </div>
+        <div class="skill-track"><div class="skill-fill" data-width="${sk.level}"></div></div>
+      </div>
+    `);
+  });
+  setTimeout(() => {
+    document.querySelectorAll('.skill-fill').forEach(f => f.style.width = f.dataset.width + '%');
+  }, 200);
+
+  // Education
+  const el = document.getElementById('educationList');
+  el.innerHTML = '';
+  data.education.forEach(edu => {
+    el.insertAdjacentHTML('beforeend', `
+      <div class="edu-item">
+        <p class="edu-degree">${escapeHtml(edu.degree)}</p>
+        <p class="edu-school">${escapeHtml(edu.institution)}${edu.location ? ' · ' + escapeHtml(edu.location) : ''}</p>
+        <p class="edu-year">${escapeHtml(edu.year)}</p>
+      </div>
+    `);
+  });
+
+  // Languages
+  const ll = document.getElementById('languagesList');
+  ll.innerHTML = '';
+  data.languages.forEach(lang => {
+    const filled = Math.round(lang.level / 20);
+    const dots = Array.from({length:5}, (_,i) =>
+      `<div class="lang-dot ${i < filled ? 'filled' : ''}"></div>`).join('');
+    ll.insertAdjacentHTML('beforeend', `
+      <div class="lang-item">
+        <div class="lang-header">
+          <span class="lang-name">${escapeHtml(lang.name)}</span>
+          <div class="lang-dots">${dots}</div>
+        </div>
+      </div>
+    `);
+  });
+
+  // Experience
+  const xl = document.getElementById('experienceList');
+  xl.innerHTML = '';
+  data.experience.forEach(exp => {
+    xl.insertAdjacentHTML('beforeend', `
+      <div class="exp-item">
+        <div class="exp-head">
+          <span class="exp-position">${escapeHtml(exp.position)}</span>
+          <span class="exp-dates">${escapeHtml(exp.startDate)} — ${escapeHtml(exp.endDate)}</span>
+        </div>
+        <p class="exp-company">${escapeHtml(exp.company)}</p>
+        ${exp.description ? `<p class="exp-desc">${escapeHtml(exp.description)}</p>` : ''}
+        <ul class="exp-details">
+          ${exp.details.map(d => `<li>${escapeHtml(d)}</li>`).join('')}
+        </ul>
+      </div>
+    `);
+  });
+
+  // Projects
+  const pl = document.getElementById('projectsList');
+  pl.innerHTML = '';
+  data.projects.forEach(proj => {
+    pl.insertAdjacentHTML('beforeend', `
+      <div class="project-card">
+        <div class="project-icon"><i class="fas fa-bolt"></i></div>
+        <h4 class="project-title">${escapeHtml(proj.name)}</h4>
+        <p class="project-desc">${escapeHtml(proj.description)}</p>
+        <div class="project-links">
+          ${proj.liveUrl ? `<a href="${escapeHtml(proj.liveUrl)}" target="_blank"><i class="fas fa-external-link-alt"></i> Live</a>` : ''}
+          ${proj.codeUrl ? `<a href="${escapeHtml(proj.codeUrl)}" target="_blank"><i class="fab fa-github"></i> Source</a>` : ''}
+        </div>
+      </div>
+    `);
+  });
+
+  // Social
+  const soc = document.getElementById('socialLinks');
+  soc.innerHTML = '';
+  const iconMap = { github:'fab fa-github', linkedin:'fab fa-linkedin-in', twitter:'fab fa-twitter', facebook:'fab fa-facebook-f', instagram:'fab fa-instagram' };
+  data.socialLinks.forEach(link => {
+    const icon = iconMap[link.name.toLowerCase()] || 'fas fa-link';
+    soc.insertAdjacentHTML('beforeend', `
+      <a class="social-link" href="${escapeHtml(link.url)}" target="_blank" title="${escapeHtml(link.name)}">
+        <i class="${icon}"></i>
+      </a>
+    `);
+  });
+
+  // Cards are created above, so theme them after rendering.
+  applyTheme(data.theme);
+}
+
+function escapeHtml(str) {
+  if (str === undefined || str === null) return '';
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// PDF Download — captures the ACTUAL rendered resume (same fonts, colors,
+// layout, icons as the webpage) using html2canvas, then places that image
+// into a paginated A4 PDF.
+async function downloadResumePdf() {
+  const btn = document.getElementById('downloadPdfBtn');
+  const originalHTML = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating…';
+  btn.disabled = true;
+
+  const content = document.getElementById('resumeContent');
+
+  try {
+    // Reveal every scroll-triggered section and freeze transitions
+    document.querySelectorAll('.content-section').forEach(s => s.classList.add('visible'));
+    document.querySelectorAll('.skill-fill').forEach(f => {
+      if (f.dataset.width) f.style.width = f.dataset.width + '%';
+    });
+    document.body.classList.add('pdf-capturing');
+
+    await new Promise(resolve => setTimeout(resolve, 120));
+
+    const canvas = await html2canvas(content, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#f4f0e8',
+      windowWidth: content.scrollWidth,
+      windowHeight: content.scrollHeight
+    });
+
+    document.body.classList.remove('pdf-capturing');
+
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+
+    const fullName = document.getElementById('fullName')?.textContent || 'Resume';
+    pdf.setProperties({
+      title: `${fullName} — Resume`,
+      subject: 'Curriculum Vitae',
+      author: fullName,
+      creator: 'Resume PDF Generator'
+    });
+
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    const imgWidth = pageWidth;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+
+    const totalPages = pdf.internal.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      pdf.setPage(i);
+      pdf.setTextColor(150, 150, 150);
+      pdf.setFontSize(8);
+      pdf.text(`Page ${i} of ${totalPages}`, pageWidth / 2, pageHeight - 5, { align: 'center' });
+    }
+
+    const fileSafeName = fullName.trim().replace(/\s+/g, '_') || 'Resume';
+    pdf.save(`${fileSafeName}_Resume.pdf`);
+
+    btn.innerHTML = originalHTML;
+    btn.disabled = false;
+
+    showNotification('PDF downloaded successfully!', 'success');
+
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    document.body.classList.remove('pdf-capturing');
+
+    btn.innerHTML = originalHTML;
+    btn.disabled = false;
+
+    showNotification('Error generating PDF. Please try again.', 'error');
+  }
+}
+
+function showNotification(message, type) {
+  const existing = document.querySelector('.pdf-notification');
+  if (existing) existing.remove();
+
+  const notification = document.createElement('div');
+  notification.className = 'pdf-notification';
+  notification.innerHTML = `
+    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+    <span>${message}</span>
+  `;
+  notification.style.cssText = `
+    position: fixed;
+    top: 76px;
+    right: 20px;
+    background: ${type === 'success' ? '#111111' : '#8c3218'};
+    color: #f4f0e8;
+    padding: 13px 18px;
+    border-left: 3px solid #bf4626;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    z-index: 1000;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 0.82rem;
+    animation: pdfSlideIn 0.3s ease-out;
+  `;
+
+  if (!document.getElementById('pdfNotificationStyles')) {
+    const style = document.createElement('style');
+    style.id = 'pdfNotificationStyles';
+    style.textContent = `
+      @keyframes pdfSlideIn { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+      @keyframes pdfSlideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(110%); opacity: 0; } }
+    `;
+    document.head.appendChild(style);
+  }
+
+  document.body.appendChild(notification);
+  setTimeout(() => {
+    notification.style.animation = 'pdfSlideOut 0.3s ease-out';
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
+}
+
+function setupNavHighlight() {
+  const sections = document.querySelectorAll('.content-section, .sidebar-section');
+  const links = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.pageYOffset >= s.offsetTop - 130) cur = s.id; });
+    links.forEach(l => {
+      l.classList.toggle('active', l.getAttribute('href') === '#' + cur);
+    });
+  });
+}
+</script>
+
+<script src="assets/jspdf.umd.min.js"></script>
+<script src="assets/rp-pdf.js"></script>
+</body>
+</html>

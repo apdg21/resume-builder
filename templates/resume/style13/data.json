@@ -1,0 +1,114 @@
+{
+  "name": "Andrei Villanueva",
+  "title": "Aerospace Engineer",
+  "theme": {
+    "gradientStart": "#0f0c29",
+    "gradientEnd": "#302b63",
+    "accentColor": "#a78bfa"
+  },
+  "about": "Aerospace engineer with 7 years of experience in propulsion systems, structural analysis, and flight dynamics. I thrive at the boundary between rigorous mathematics and real-world hardware — from initial concept through test campaign. Currently focused on small-satellite launch vehicle development and in-space propulsion.",
+  "skills": [
+    {
+      "name": "Propulsion Systems Design",
+      "level": 93
+    },
+    {
+      "name": "Structural & FEA Analysis",
+      "level": 88
+    },
+    {
+      "name": "CFD (Ansys Fluent / OpenFOAM)",
+      "level": 85
+    },
+    {
+      "name": "MATLAB & Python",
+      "level": 90
+    },
+    {
+      "name": "Systems Engineering (MBSE)",
+      "level": 82
+    },
+    {
+      "name": "Thermal Analysis",
+      "level": 79
+    }
+  ],
+  "education": [
+    {
+      "degree": "M.Sc. Aerospace Engineering",
+      "university": "Delft University of Technology",
+      "address": "Delft, Netherlands",
+      "years": "2018 – 2020"
+    },
+    {
+      "degree": "B.Sc. Mechanical Engineering",
+      "university": "University of the Philippines Diliman",
+      "address": "Quezon City, Philippines",
+      "years": "2013 – 2018"
+    }
+  ],
+  "languages": [
+    {
+      "name": "Filipino",
+      "level": 100
+    },
+    {
+      "name": "English",
+      "level": 97
+    },
+    {
+      "name": "Dutch",
+      "level": 60
+    },
+    {
+      "name": "Spanish",
+      "level": 45
+    }
+  ],
+  "experience": [
+    {
+      "title": "Senior Propulsion Engineer",
+      "period": "Mar 2022 – Present",
+      "company": "Orbion Space Technology",
+      "description": "Lead propulsion system design for a next-generation 1U Hall-effect thruster. Managed a 4-person subsystem team through PDR and CDR milestones. Conducted over 200 hours of vacuum chamber test campaigns and reduced thrust-specific impulse variance by 18% through nozzle geometry optimization."
+    },
+    {
+      "title": "Propulsion & Structures Engineer",
+      "period": "Aug 2020 – Feb 2022",
+      "company": "Airbus Defence and Space",
+      "description": "Performed structural margin analysis for Ariane 6 payload fairing components using NASTRAN and custom Python post-processing pipelines. Collaborated with ESA on propellant management device (PMD) qualification testing for the Vega-C upper stage."
+    },
+    {
+      "title": "Graduate Research Assistant",
+      "period": "Sep 2018 – Jul 2020",
+      "company": "TU Delft — Space Systems Engineering Lab",
+      "description": "Thesis on hybrid rocket motor regression-rate modelling using machine learning surrogates. Experimental work on paraffin-based fuel grains; developed an open-source Python toolkit (HybridSim) with 180+ GitHub stars."
+    }
+  ],
+  "contact": {
+    "phone": "+31 6 4821 9903",
+    "website": "andreivillanueva.space",
+    "address": "Delft, Netherlands",
+    "email": "andrei@andreivillanueva.space",
+    "social": [
+      {
+        "name": "LinkedIn",
+        "url": "https://linkedin.com/in/andreivillanueva",
+        "icon": "linkedin"
+      },
+      {
+        "name": "GitHub",
+        "url": "https://github.com/andreivillanueva",
+        "icon": "github"
+      },
+      {
+        "name": "Twitter",
+        "url": "https://twitter.com/andrei_aero",
+        "icon": "twitter"
+      }
+    ]
+  },
+  "profile": {
+    "image": "assets/profile.jpg"
+  }
+}
