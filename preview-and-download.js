@@ -2224,35 +2224,30 @@ async function publishSite(dataObj) {
   }
   const payload = { ...files, 'data.json': { content: JSON.stringify(dataObj, null, 2), encoding: 'utf-8' } };
 
-  const rawName = dataObj.name 
-    || dataObj.header 
-    || (dataObj.personal && dataObj.personal.name) 
-    || (dataObj.personalInfo && dataObj.personalInfo.name)
-    || (dataObj.hero && dataObj.hero.name)
-    || (dataObj.basics && dataObj.basics.name)
-    || (dataObj.htmlTitle ? dataObj.htmlTitle.split(/[—–|-]/)[0].trim() : '')
-    || '';
-
-  const nameSlug = rawName
-    .toLowerCase()
-    .trim()
-    .normalize('NFD').replace(/[̀-ͯ]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 30);
-
+  // The name lives in a different place in every template's data.json, so
+  // the server derives the branch slug from data.json itself -- one
+  // extraction rule instead of a second copy here that can drift.
   try {
     const res = await fetch('/api/publish', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(nameSlug ? { 'X-Resume-Slug': nameSlug } : {}),
         ...(currentPublishedId ? { 'X-Resume-Id': currentPublishedId } : {}),
+        // /api/publish verifies this itself -- publishing is a paid action.
+        ...(window.__licenseKey ? { 'X-License-Key': window.__licenseKey } : {}),
+        'X-License-Template': key,
       },
       body: JSON.stringify(payload),
     });
     const result = await res.json();
-    if (!res.ok) throw new Error(result.error || 'Publish failed');
+    if (!res.ok) {
+      // The server rejected the key (refunded, revoked, wrong template...),
+      // so drop the local unlock and make the next click re-prompt.
+      if (res.status === 403 || result.code === 'license_invalid') {
+        clearStoredLicense();
+      }
+      throw new Error(result.error || 'Publish failed');
+    }
 
     currentPublishedId = result.resume_id;
     setPublishedResumeId(key, currentPublishedId);
@@ -2307,12 +2302,59 @@ async function publishSite(dataObj) {
 //   2. Manual fallback — a small modal with an input field, for anyone
 //      returning later without that URL (using the key from their Gumroad
 //      receipt email instead).
-// Once verified, unlocked for the rest of the page visit — no re-prompting
-// per download.
+// Once verified, the unlock is kept in sessionStorage so it survives moving
+// between index.html and resume-form.html in the same tab — no re-prompting
+// per download or page.
+
+const LICENSE_STORAGE_KEY = 'rpLicense';
+const PENDING_LICENSE_STORAGE_KEY = 'rpPendingLicenseKey';
 
 window.__licenseVerified = false;
 window.__licenseVerifiedTemplate = null; // which template the current __licenseVerified=true actually covers
 window.__licenseEmail = null;
+window.__licenseKey = null;
+
+// Verification used to live only in memory, so walking from index.html to
+// resume-form.html (openEditForm) dropped the unlock and asked for the key
+// again. Keep it in sessionStorage instead -- same tab and origin, gone when
+// the tab closes.
+function storeLicense(key, template, email) {
+  const trimmed = typeof key === 'string' ? key.trim() : '';
+  window.__licenseKey = trimmed;
+  window.__licenseVerified = true;
+  window.__licenseVerifiedTemplate = template;
+  window.__licenseEmail = email || null;
+  try {
+    sessionStorage.setItem(LICENSE_STORAGE_KEY, JSON.stringify({ key: trimmed, template, email: email || null }));
+  } catch (_) {}
+  clearPendingLicense();
+}
+
+function clearPendingLicense() {
+  window.__pendingUrlLicenseKey = null;
+  try { sessionStorage.removeItem(PENDING_LICENSE_STORAGE_KEY); } catch (_) {}
+}
+
+function clearStoredLicense() {
+  window.__licenseVerified = false;
+  window.__licenseVerifiedTemplate = null;
+  window.__licenseEmail = null;
+  window.__licenseKey = null;
+  try { sessionStorage.removeItem(LICENSE_STORAGE_KEY); } catch (_) {}
+}
+
+(function restoreLicenseState() {
+  try {
+    const raw = sessionStorage.getItem(LICENSE_STORAGE_KEY);
+    if (!raw) return;
+    const stored = JSON.parse(raw);
+    if (!stored || !stored.key) return;
+    window.__licenseKey = stored.key;
+    window.__licenseEmail = stored.email || null;
+    window.__licenseVerifiedTemplate = stored.template || null;
+    window.__licenseVerified = !!stored.template;
+  } catch (_) {}
+})();
 
 // Each gated style has its OWN Gumroad product, so it needs its own checkout
 // link too -- mirrors PRODUCT_ID_ENV_BY_TEMPLATE on the backend. Add a line
@@ -2337,9 +2379,7 @@ async function verifyLicenseKey(key) {
     });
     const result = await res.json();
     if (result.valid) {
-      window.__licenseVerified = true;
-      window.__licenseVerifiedTemplate = currentTemplate;
-      window.__licenseEmail = result.email || null;
+      storeLicense(key, currentTemplate, result.email);
     }
     // surface server-side errors distinctly instead of masking them as "invalid key"
     if (result.error && !result.reason) {
@@ -2457,16 +2497,19 @@ function requireLicense(onVerified) {
     return;
   }
 
-  if (window.__pendingUrlLicenseKey) {
-    const key = window.__pendingUrlLicenseKey;
-    verifyLicenseKey(key).then(result => {
+  // A key we already know -- grabbed from ?license_key= or entered earlier --
+  // can be re-checked against the template selected right now without asking
+  // the customer to find it again.
+  const keyToTry = window.__pendingUrlLicenseKey || window.__licenseKey;
+  if (keyToTry) {
+    verifyLicenseKey(keyToTry).then(result => {
       if (result.valid) {
         onVerified();
       } else {
-        // The URL-provided key didn't work for this template (e.g. it's
-        // already locked to a different one) — fall back to the manual
-        // modal so the person can see why and decide what to do.
-        window.__pendingUrlLicenseKey = null;
+        // The key didn't work for this template (e.g. it belongs to a
+        // different product) — fall back to the manual modal so the person
+        // can see why and decide what to do.
+        if (keyToTry === window.__pendingUrlLicenseKey) clearPendingLicense();
         showLicenseModal(onVerified, result.reason);
       }
     });
@@ -2495,15 +2538,24 @@ function showLicenseModal(onVerified, prefilledError) {
 // immediately — verifying now would lock it to whatever template happens
 // to be selected by default on page load, before the customer has actually
 // chosen what they want. The URL itself is still cleaned up right away so
-// the key doesn't linger visibly in the address bar or browser history.
+// the key doesn't linger visibly in the address bar or browser history;
+// sessionStorage keeps it for the rest of the tab instead.
 (function checkUrlForLicenseKey() {
   const params = new URLSearchParams(window.location.search);
   const keyFromUrl = params.get('license_key');
   if (keyFromUrl) {
     window.__pendingUrlLicenseKey = keyFromUrl;
+    // The URL param is stripped below, so remember the key for the rest of
+    // the tab -- otherwise navigating to resume-form.html loses it.
+    try { sessionStorage.setItem(PENDING_LICENSE_STORAGE_KEY, keyFromUrl); } catch (_) {}
     params.delete('license_key');
     const cleanUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
     window.history.replaceState({}, '', cleanUrl);
+  } else {
+    try {
+      const pending = sessionStorage.getItem(PENDING_LICENSE_STORAGE_KEY);
+      if (pending) window.__pendingUrlLicenseKey = pending;
+    } catch (_) {}
   }
 })();
 
