@@ -19,12 +19,49 @@
 // X-License-Key / X-License-Template headers and are verified here -- the
 // client-side requireLicense() gate alone can be bypassed by POSTing here
 // directly.
+//
+// Branch ownership: the first publish writes .resumepro-owner into the branch
+// holding an HMAC of the license key (PUBLISH_OWNER_SECRET), and later updates
+// must present a key that hashes to the same value. Without it, any valid key
+// could force-update any existing branch by copying its public name into
+// data.json. Requires one more secret:
+//   PUBLISH_OWNER_SECRET — any long random string. Changing it orphans every
+//   existing site (they can no longer be updated).
 
 import { verifyLicense } from './_license.js';
 
 const OWNER = 'apdg21';
 const REPO = 'resumepro-builds';
 const BASE_BRANCH = 'main';
+const OWNER_FILE = '.resumepro-owner';
+
+async function ownerToken(secret, licenseKey) {
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw', enc.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+  );
+  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(licenseKey));
+  return [...new Uint8Array(sig)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+function sameToken(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string' || a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
+// A missing marker means the branch predates ownership tracking: let this
+// caller claim it (the marker is written on this same publish) rather than
+// locking every existing customer out of their own site.
+async function readBranchOwner(gh, branch) {
+  const res = await gh(`/contents/${OWNER_FILE}?ref=${encodeURIComponent(branch)}`, {
+    headers: { Accept: 'application/vnd.github.raw' },
+  });
+  if (res.status === 404) return { missing: true };
+  if (!res.ok) return { error: `Could not read ${OWNER_FILE}: ${await res.text()}` };
+  return { token: (await res.text()).trim() };
+}
 
 // Every template's data.json keeps the person's name somewhere different:
 // name (style1..10, 12, 13, 15..17), profile.name (style14, style20),
@@ -71,11 +108,8 @@ export async function onRequestPost({ request, env }) {
     return Response.json({ error: 'Server is missing GITHUB_TOKEN.' }, { status: 500 });
   }
 
-  const license = await verifyLicense(
-    env,
-    request.headers.get('X-License-Key'),
-    request.headers.get('X-License-Template')
-  );
+  const licenseKey = (request.headers.get('X-License-Key') || '').trim();
+  const license = await verifyLicense(env, licenseKey, request.headers.get('X-License-Template'));
   if (!license.ok) {
     const serverError = license.status === 500;
     return Response.json(
@@ -86,6 +120,12 @@ export async function onRequestPost({ request, env }) {
       { status: serverError ? 500 : 403 }
     );
   }
+
+  const ownerSecret = env.PUBLISH_OWNER_SECRET;
+  if (!ownerSecret) {
+    return Response.json({ error: 'Server is missing PUBLISH_OWNER_SECRET.' }, { status: 500 });
+  }
+  const ownerHash = await ownerToken(ownerSecret, licenseKey);
 
   const gh = (path, opts = {}) =>
     fetch(`https://api.github.com/repos/${OWNER}/${REPO}${path}`, {
@@ -194,6 +234,9 @@ export async function onRequestPost({ request, env }) {
     // 2. Create a blob for each file
     const treeItems = [];
     for (const [filePath, file] of Object.entries(files)) {
+      // The ownership marker is server-written only -- never let a caller
+      // supply their own.
+      if (filePath === OWNER_FILE) continue;
       const blobRes = await gh(`/git/blobs`, {
         method: 'POST',
         body: JSON.stringify({
@@ -207,6 +250,15 @@ export async function onRequestPost({ request, env }) {
       const blob = await blobRes.json();
       treeItems.push({ path: filePath, mode: '100644', type: 'blob', sha: blob.sha });
     }
+
+    const ownerBlob = await gh(`/git/blobs`, {
+      method: 'POST',
+      body: JSON.stringify({ content: ownerHash, encoding: 'utf-8' }),
+    });
+    if (!ownerBlob.ok) {
+      return Response.json({ error: `Failed to write ${OWNER_FILE}: ${await ownerBlob.text()}` }, { status: 502 });
+    }
+    treeItems.push({ path: OWNER_FILE, mode: '100644', type: 'blob', sha: (await ownerBlob.json()).sha });
 
     // 3. Create a new tree based on the base tree (so nothing outside these
     //    files gets touched, but anything already on main that ISN'T
@@ -238,7 +290,20 @@ export async function onRequestPost({ request, env }) {
       if (!createRefRes.ok) {
         return Response.json({ error: `Failed to create branch: ${await createRefRes.text()}` }, { status: 502 });
       }
-    } else {
+    } else if (refCheck.ok) {
+      const owner = await readBranchOwner(gh, branchName);
+      if (owner.error) {
+        return Response.json({ error: owner.error }, { status: 502 });
+      }
+      if (!owner.missing && !sameToken(owner.token, ownerHash)) {
+        return Response.json(
+          {
+            error: 'This published site belongs to a different license key. Publish under a different name in your details, or use the key that created it.',
+            code: 'branch_forbidden',
+          },
+          { status: 403 }
+        );
+      }
       const updateRefRes = await gh(`/git/refs/heads/${branchName}`, {
         method: 'PATCH',
         body: JSON.stringify({ sha: commit.sha, force: true }),
@@ -246,6 +311,11 @@ export async function onRequestPost({ request, env }) {
       if (!updateRefRes.ok) {
         return Response.json({ error: `Failed to update branch: ${await updateRefRes.text()}` }, { status: 502 });
       }
+    } else {
+      return Response.json(
+        { error: `Could not read branch "${branchName}": ${await refCheck.text()}` },
+        { status: 502 }
+      );
     }
 
     return Response.json({
