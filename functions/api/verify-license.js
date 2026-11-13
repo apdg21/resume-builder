@@ -34,6 +34,8 @@ const PRODUCT_ID_ENV_BY_TEMPLATE = {
   "resume/style18": "GUMROAD_PRODUCT_ID_LINEN",
   "resume/style19": "GUMROAD_PRODUCT_ID_PRISM",
   "resume/style20": "GUMROAD_PRODUCT_ID_OBSIDIAN",
+  "resume/style21": "GUMROAD_PRODUCT_ID_AURORA",
+  "resume/style22": "GUMROAD_PRODUCT_ID_MERIDIAN",
 };
 
 export async function onRequestPost(context) {
