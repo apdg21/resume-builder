@@ -713,10 +713,14 @@ function ensurePaymentModal() {
     gcashView.style.display = 'block';
   });
 
+  // These two buttons both say "I already have a key", so go straight to the
+  // entry field. requireLicense() would first re-try any remembered key and,
+  // on success, unlock silently -- leaving the customer staring at a closed
+  // modal with nothing visibly changed.
   choiceView.querySelector('#rpOpenKeyFromChoice')?.addEventListener('click', (e) => {
     e.preventDefault();
     closePaymentModal();
-    requireLicense(() => {});
+    showLicenseModal(() => {});
   });
 
   gcashView.querySelector('#rpBackToChoiceBtn')?.addEventListener('click', () => {
@@ -726,7 +730,7 @@ function ensurePaymentModal() {
 
   gcashView.querySelector('#rpAlreadyHaveKeyBtn')?.addEventListener('click', () => {
     closePaymentModal();
-    requireLicense(() => {});
+    showLicenseModal(() => {});
   });
 
   document.body.appendChild(overlay);
@@ -2117,7 +2121,19 @@ ${JSON.stringify(schemaObj, null, 2)}
 
 // --- FULL SITE DOWNLOAD (.zip) -----------------------------------------
 
+let downloadInFlight = false;
+
 async function downloadFullSite(dataObj) {
+  if (downloadInFlight) return;
+  downloadInFlight = true;
+  try {
+    await downloadFullSiteInner(dataObj);
+  } finally {
+    downloadInFlight = false;
+  }
+}
+
+async function downloadFullSiteInner(dataObj) {
   const key = templateKey();
   const files = await fetchTemplateFiles(key);
 
@@ -2182,7 +2198,22 @@ function setPublishedResumeId(tplKey, id) {
 
 let currentPreviewData = null;
 
+// One publish at a time: requireLicense() already blocks a second click while
+// the key is being checked, but two different entry points (page button and
+// preview modal) can still overlap once verification is cached.
+let publishInFlight = false;
+
 async function publishSite(dataObj) {
+  if (publishInFlight) return;
+  publishInFlight = true;
+  try {
+    await publishSiteInner(dataObj);
+  } finally {
+    publishInFlight = false;
+  }
+}
+
+async function publishSiteInner(dataObj) {
   const key = templateKey();
   const publishStatus = document.getElementById('publishStatus');
   const publishResult = document.getElementById('publishResult');
@@ -2241,9 +2272,11 @@ async function publishSite(dataObj) {
     });
     const result = await res.json();
     if (!res.ok) {
-      // The server rejected the key (refunded, revoked, wrong template...),
-      // so drop the local unlock and make the next click re-prompt.
-      if (res.status === 403 || result.code === 'license_invalid') {
+      // Only drop the local unlock when the key itself was rejected
+      // (refunded, revoked, wrong template...). A 403 "branch_forbidden" means
+      // the key is fine but this name belongs to someone else -- clearing it
+      // would force a paying customer to retype a valid key.
+      if (result.code === 'license_invalid') {
         clearStoredLicense();
       }
       throw new Error(result.error || 'Publish failed');
@@ -2328,6 +2361,7 @@ function storeLicense(key, template, email) {
     sessionStorage.setItem(LICENSE_STORAGE_KEY, JSON.stringify({ key: trimmed, template, email: email || null }));
   } catch (_) {}
   clearPendingLicense();
+  updatePublishButtonState();
 }
 
 function clearPendingLicense() {
@@ -2341,6 +2375,7 @@ function clearStoredLicense() {
   window.__licenseEmail = null;
   window.__licenseKey = null;
   try { sessionStorage.removeItem(LICENSE_STORAGE_KEY); } catch (_) {}
+  updatePublishButtonState();
 }
 
 (function restoreLicenseState() {
@@ -2370,25 +2405,47 @@ function clearStoredLicense() {
 // templates mid-session -- without it, a session that unlocked "modern"
 // would never re-ask the server after switching to "classic".
 async function verifyLicenseKey(key) {
+  const currentTemplate = templateKey();
+  const unreachable = {
+    valid: false,
+    // "transient" means the key itself was never judged -- a network blip,
+    // timeout, or server outage. Callers must not discard the key over it.
+    transient: true,
+    reason: 'Could not reach the verification server. Check your connection and try again.'
+  };
+
+  let res;
   try {
-    const currentTemplate = templateKey();
-    const res = await fetch('/api/verify-license', {
+    res = await fetch('/api/verify-license', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ licenseKey: key, templateKey: currentTemplate })
     });
-    const result = await res.json();
-    if (result.valid) {
-      storeLicense(key, currentTemplate, result.email);
-    }
-    // surface server-side errors distinctly instead of masking them as "invalid key"
-    if (result.error && !result.reason) {
-      result.reason = `Server error: ${result.error}`;
-    }
-    return result;
-  } catch (err) {
-    return { valid: false, reason: 'Could not reach the verification server. Check your connection and try again.' };
+  } catch (_) {
+    return unreachable;
   }
+
+  // A 502/503 from Cloudflare or a rate limit can return HTML/JSON that
+  // isn't ours; treat an unreadable body as "try again", never as "bad key".
+  let result = {};
+  try { result = await res.json(); } catch (_) {}
+
+  if (result.valid) {
+    storeLicense(key, currentTemplate, result.email);
+    return result;
+  }
+
+  const transient = res.status >= 500 || res.status === 429;
+  if (!result.reason) {
+    // surface server-side errors distinctly instead of masking them as "invalid key"
+    result.reason = result.error
+      ? `Server error: ${result.error}`
+      : transient
+        ? 'The license server is temporarily unavailable. Please try again in a moment.'
+        : 'Could not verify your license key.';
+  }
+  if (transient) result.transient = true;
+  return result;
 }
 
 let licenseModalEls = null;
@@ -2478,6 +2535,34 @@ function ensureLicenseModal() {
   return licenseModalEls;
 }
 
+// Verification is async, so the first click has to block every other gated
+// button until it settles -- otherwise an impatient double-click fires two
+// /api/verify-license calls and then two publishes once both pass.
+let licenseCheckInFlight = false;
+
+function setGatedButtonsBusy(busy, label) {
+  ['publishBtn', 'downloadSiteBtn', 'previewFooterPublishBtn', 'previewHeaderPublishBtn'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (busy) {
+      if (!el.dataset.rpOriginalText) el.dataset.rpOriginalText = el.textContent;
+      el.disabled = true;
+      if (label) el.textContent = label;
+    } else {
+      el.disabled = false;
+      // The license check usually unlocks the template on its way out, so the
+      // publish label must be recomputed -- restoring the captured "$15" text
+      // would immediately undo it.
+      if (id === 'publishBtn') {
+        updatePublishButtonState();
+      } else if (el.dataset.rpOriginalText) {
+        el.textContent = el.dataset.rpOriginalText;
+      }
+      delete el.dataset.rpOriginalText;
+    }
+  });
+}
+
 // Call as requireLicense(() => { ...actual download/publish logic... }).
 // Three paths:
 //   1. Already verified this visit -> run immediately.
@@ -2501,29 +2586,42 @@ function requireLicense(onVerified) {
   // can be re-checked against the template selected right now without asking
   // the customer to find it again.
   const keyToTry = window.__pendingUrlLicenseKey || window.__licenseKey;
-  if (keyToTry) {
-    verifyLicenseKey(keyToTry).then(result => {
-      if (result.valid) {
-        onVerified();
-      } else {
-        // The key didn't work for this template (e.g. it belongs to a
-        // different product) — fall back to the manual modal so the person
-        // can see why and decide what to do.
-        if (keyToTry === window.__pendingUrlLicenseKey) clearPendingLicense();
-        showLicenseModal(onVerified, result.reason);
-      }
-    });
+  if (!keyToTry) {
+    showLicenseModal(onVerified);
     return;
   }
 
-  showLicenseModal(onVerified);
+  if (licenseCheckInFlight) return;
+  licenseCheckInFlight = true;
+  setGatedButtonsBusy(true, 'Checking your license…');
+
+  verifyLicenseKey(keyToTry).then(result => {
+    licenseCheckInFlight = false;
+    setGatedButtonsBusy(false);
+    if (result.valid) {
+      onVerified();
+      return;
+    }
+    // The key didn't work for this template (e.g. it belongs to a different
+    // product) — fall back to the manual modal so the person can see why.
+    // Keep the key only when verification never actually reached the server:
+    // a network error says nothing about whether the key is good.
+    if (!result.transient && keyToTry === window.__pendingUrlLicenseKey) clearPendingLicense();
+    showLicenseModal(onVerified, result.reason);
+  }).catch(err => {
+    licenseCheckInFlight = false;
+    setGatedButtonsBusy(false);
+    showLicenseModal(onVerified, (err && err.message) || 'Could not check your license. Please try again.');
+  });
 }
 
 function showLicenseModal(onVerified, prefilledError) {
   const { overlay, input, status, gumroadLink } = ensureLicenseModal();
   status.textContent = prefilledError || '';
   status.style.color = '#C0392B';
-  input.value = '';
+  // Keep a key we already know so a customer whose key failed for this
+  // template can fix a typo instead of retyping the whole thing.
+  input.value = window.__licenseKey || '';
   pendingAfterVerify = onVerified;
   if (gumroadLink) {
     gumroadLink.href = CHECKOUT_URL_BY_TEMPLATE[templateKey()] || DEFAULT_CHECKOUT_URL;
@@ -2586,9 +2684,16 @@ document.getElementById('publishBtn')?.addEventListener('click', () => {
 
 function updatePublishButtonState() {
   const publishBtn = document.getElementById('publishBtn');
-  if (publishBtn) {
-    const curId = getPublishedResumeId();
-    publishBtn.textContent = curId ? 'Update published site →' : 'Publish My Website — $15';
+  if (!publishBtn) return;
+  // Only advertise the price while the customer still has to pay for THIS
+  // template; showing "$15" to someone who has already unlocked it reads
+  // like a second charge.
+  if (getPublishedResumeId()) {
+    publishBtn.textContent = 'Update published site →';
+  } else if (window.__licenseVerified && window.__licenseVerifiedTemplate === templateKey()) {
+    publishBtn.textContent = 'Publish My Website →';
+  } else {
+    publishBtn.textContent = 'Publish My Website — $15';
   }
 }
 
