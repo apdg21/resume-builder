@@ -14,15 +14,77 @@
 // in the X-Resume-Id header, so the SAME branch gets force-updated with a
 // new commit instead of a new branch (and therefore a new URL) being
 // created every time.
+//
+// Publishing is a paid action, so the license key + template travel in the
+// X-License-Key / X-License-Template headers and are verified here -- the
+// client-side requireLicense() gate alone can be bypassed by POSTing here
+// directly.
+
+import { verifyLicense } from './_license.js';
 
 const OWNER = 'apdg21';
 const REPO = 'resumepro-builds';
 const BASE_BRANCH = 'main';
 
+// Every template's data.json keeps the person's name somewhere different:
+// name (style1..10, 12, 13, 15..17), profile.name (style14, style20),
+// header (style19), hero.title (style18), or personalInfo.firstName +
+// lastName (style11, 21, 22). Pick the first non-empty string instead of
+// assuming one shape, otherwise those templates all collapse to the
+// "resume" fallback URL.
+function extractNameFromData(data) {
+  if (!data || typeof data !== 'object') return '';
+
+  const personName = (person) => {
+    if (!person || typeof person !== 'object') return '';
+    if (typeof person.name === 'string' && person.name.trim()) return person.name.trim();
+    const first = typeof person.firstName === 'string' ? person.firstName.trim() : '';
+    const last = typeof person.lastName === 'string' ? person.lastName.trim() : '';
+    return [first, last].filter(Boolean).join(' ');
+  };
+
+  const candidates = [
+    data.name,
+    data.fullName,
+    data.header,
+    data.profile && data.profile.name,
+    data.hero && data.hero.name,
+    data.hero && data.hero.title,
+    personName(data.personalInfo),
+    personName(data.personal),
+    personName(data.basics),
+  ];
+
+  for (const candidate of candidates) {
+    if (typeof candidate === 'string' && candidate.trim()) return candidate.trim();
+  }
+
+  const title = typeof data.htmlTitle === 'string' ? data.htmlTitle
+    : typeof data.pageTitle === 'string' ? data.pageTitle
+    : '';
+  return title ? title.split(/[—–|-]/)[0].trim() : '';
+}
+
 export async function onRequestPost({ request, env }) {
   const token = env.GITHUB_TOKEN;
   if (!token) {
     return Response.json({ error: 'Server is missing GITHUB_TOKEN.' }, { status: 500 });
+  }
+
+  const license = await verifyLicense(
+    env,
+    request.headers.get('X-License-Key'),
+    request.headers.get('X-License-Template')
+  );
+  if (!license.ok) {
+    const serverError = license.status === 500;
+    return Response.json(
+      {
+        error: license.reason || 'A valid license key is required to publish.',
+        code: serverError ? 'license_server_error' : 'license_invalid',
+      },
+      { status: serverError ? 500 : 403 }
+    );
   }
 
   const gh = (path, opts = {}) =>
@@ -63,20 +125,7 @@ export async function onRequestPost({ request, env }) {
     let slug = request.headers.get('X-Resume-Slug');
     if (!slug && files['data.json'] && files['data.json'].content) {
       try {
-        const dataObj = JSON.parse(files['data.json'].content);
-        let rawName = dataObj.name 
-          || dataObj.header 
-          || (dataObj.personal && dataObj.personal.name) 
-          || (dataObj.personalInfo && dataObj.personalInfo.name)
-          || (dataObj.hero && dataObj.hero.name)
-          || (dataObj.basics && dataObj.basics.name)
-          || '';
-
-        if (!rawName && dataObj.htmlTitle) {
-          rawName = dataObj.htmlTitle.split(/[—–|-]/)[0].trim();
-        }
-
-        slug = rawName;
+        slug = extractNameFromData(JSON.parse(files['data.json'].content));
       } catch (_) {}
     }
 
